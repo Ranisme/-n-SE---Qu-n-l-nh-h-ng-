@@ -1,0 +1,158 @@
+import React from 'react';
+import { RequireAuth, RequireRole, RequirePermission } from './guards.jsx';
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import ManagerDashboard from '../pages/dashboard/ManagerDashboard';
+import TablesView from '../pages/pos/TablesView';
+import TableMapEditor from '../pages/pos/TableMapEditor';
+import OrderPad from '../pages/pos/OrderPad';
+import KdsBoard from '../pages/kds/KdsBoard';
+import OpenBills from '../pages/billing/OpenBills';
+import CashierShift from '../pages/billing/CashierShift';
+import Categories from '../pages/menu/Categories';
+import Dishes from '../pages/menu/Dishes';
+import InventoryView from '../pages/inventory/InventoryView';
+import Materials from '../pages/inventory/Materials';
+import Alerts from '../pages/inventory/Alerts';
+import PurchaseOrders from '../pages/purchase/PurchaseOrders';
+import Receipts from '../pages/purchase/Receipts';
+import Suppliers from '../pages/purchase/Suppliers';
+import Adjustments from '../pages/stock/Adjustments';
+import Reservations from '../pages/reservations/Reservations';
+import Customers from '../pages/customers/Customers';
+import Loyalty from '../pages/loyalty/Loyalty';
+import CashierShifts from '../pages/shifts/CashierShifts';
+import Schedules from '../pages/hr/Schedules';
+import Attendance from '../pages/hr/Attendance';
+import Employees from '../pages/hr/Employees';
+import ReportsDashboard from '../pages/reports/ReportsDashboard';
+import SalesReport from '../pages/reports/SalesReport';
+import MenuPerformance from '../pages/reports/MenuPerformance';
+import InventoryReport from '../pages/reports/InventoryReport';
+import AttendanceReport from '../pages/reports/AttendanceReport';
+import Users from '../pages/admin/Users';
+import Roles from '../pages/admin/Roles';
+import AuditLogs from '../pages/admin/AuditLogs';
+import Config from '../pages/admin/Config';
+
+const routes = [
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Register /> },
+  {
+    element: <RequireAuth />,
+    children: [
+      // Dashboard - accessible to all authenticated
+      { path: '/', element: <ManagerDashboard /> },
+      
+      // POS/Tables view - accessible to all authenticated
+      { path: '/pos', element: <TablesView /> },
+      
+      // Orders - requires ORDER_CREATE permission (PhucVu, Manager, Admin)
+      {
+        element: <RequirePermission permissions={['ORDER_CREATE']} />,
+        children: [
+          { path: '/pos/order', element: <OrderPad /> },
+        ],
+      },
+      
+      // Table Editor - requires TABLE_MANAGE permission (Manager, Admin)
+      {
+        element: <RequirePermission permissions={['TABLE_MANAGE']} />,
+        children: [
+          { path: '/pos/tables', element: <TableMapEditor /> },
+        ],
+      },
+      
+      // KDS - requires KDS_ACCESS permission (Bep, Manager, Admin)
+      {
+        element: <RequirePermission permissions={['KDS_ACCESS']} />,
+        children: [
+          { path: '/kds', element: <KdsBoard /> },
+        ],
+      },
+      
+      // Billing - requires PAYMENT_PROCESS permission (ThuNgan, Manager, Admin)
+      {
+        element: <RequirePermission permissions={['PAYMENT_PROCESS']} />,
+        children: [
+          { path: '/billing', element: <OpenBills /> },
+          { path: '/billing/shifts', element: <CashierShift /> },
+          { path: '/shifts', element: <CashierShifts /> },
+        ],
+      },
+      
+      // Menu management - requires MENU_MANAGE permission (Manager, Admin)
+      {
+        element: <RequirePermission permissions={['MENU_MANAGE']} />,
+        children: [
+          { path: '/menu/categories', element: <Categories /> },
+          { path: '/menu/dishes', element: <Dishes /> },
+        ],
+      },
+      
+      // Inventory - requires INVENTORY_ADJUST permission (ThuKho, Manager, Admin)
+      {
+        element: <RequirePermission permissions={['INVENTORY_ADJUST']} />,
+        children: [
+          { path: '/inventory', element: <InventoryView /> },
+          { path: '/inventory/materials', element: <Materials /> },
+          { path: '/inventory/alerts', element: <Alerts /> },
+          { path: '/stock/adjustments', element: <Adjustments /> },
+        ],
+      },
+      
+      // Purchase - requires PURCHASE_APPROVE permission (ThuKho, Manager, Admin)
+      {
+        element: <RequirePermission permissions={['PURCHASE_APPROVE']} />,
+        children: [
+          { path: '/purchase/orders', element: <PurchaseOrders /> },
+          { path: '/purchase/receipts', element: <Receipts /> },
+          { path: '/purchase/suppliers', element: <Suppliers /> },
+        ],
+      },
+      
+      // Reservations - accessible to all authenticated (PhucVu can manage)
+      { path: '/reservations', element: <Reservations /> },
+      
+      // Customers - accessible to all authenticated
+      { path: '/customers', element: <Customers /> },
+      { path: '/loyalty', element: <Loyalty /> },
+      
+      // HR - requires HR_MANAGE permission (Manager, Admin)
+      {
+        element: <RequirePermission permissions={['HR_MANAGE']} />,
+        children: [
+          { path: '/hr/schedules', element: <Schedules /> },
+          { path: '/hr/employees', element: <Employees /> },
+        ],
+      },
+      // Attendance - accessible to all (self check-in/out)
+      { path: '/hr/attendance', element: <Attendance /> },
+      
+      // Reports - requires REPORT_VIEW permission (Manager, Admin)
+      {
+        element: <RequirePermission permissions={['REPORT_VIEW']} />,
+        children: [
+          { path: '/reports', element: <ReportsDashboard /> },
+          { path: '/reports/sales', element: <SalesReport /> },
+          { path: '/reports/menu', element: <MenuPerformance /> },
+          { path: '/reports/inventory', element: <InventoryReport /> },
+          { path: '/reports/attendance', element: <AttendanceReport /> },
+        ],
+      },
+      
+      // Admin - requires ADMIN_MANAGE permission (Admin only)
+      {
+        element: <RequirePermission permissions={['ADMIN_MANAGE']} />,
+        children: [
+          { path: '/admin/users', element: <Users /> },
+          { path: '/admin/roles', element: <Roles /> },
+          { path: '/admin/audit', element: <AuditLogs /> },
+          { path: '/admin/config', element: <Config /> },
+        ],
+      },
+    ],
+  },
+];
+
+export default routes;

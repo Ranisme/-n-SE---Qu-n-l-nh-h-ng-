@@ -1,0 +1,1301 @@
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  IconButton,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+  Chip,
+  ToggleButton,
+  ToggleButtonGroup,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Divider,
+  Alert,
+  Snackbar,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  GridOn as GridOnIcon,
+  GridOff as GridOffIcon,
+  Visibility as PreviewIcon,
+  VisibilityOff as EditModeIcon,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+  DragIndicator as DragIcon,
+  Layers as LayersIcon,
+  Home as AreaIcon,
+  TableRestaurant as TableIcon,
+  Close as CloseIcon,
+  Check as CheckIcon,
+  Warning as WarningIcon,
+  FitScreen as FitScreenIcon,
+} from '@mui/icons-material';
+import {
+  useTables,
+  useCreateTable,
+  useUpdateTable,
+  useDeleteTable,
+  useUpdateTablePosition,
+  useAreas,
+  useCreateArea,
+  useUpdateArea,
+  useDeleteArea,
+} from '../../hooks/useTables';
+
+// ==================== PREMIUM EDITOR COLORS ====================
+const EDITOR_COLORS = {
+  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+  surface: 'rgba(255, 255, 255, 0.05)',
+  surfaceHover: 'rgba(255, 255, 255, 0.1)',
+  primary: '#6C63FF',
+  primaryGlow: 'rgba(108, 99, 255, 0.4)',
+  secondary: '#00D9FF',
+  secondaryGlow: 'rgba(0, 217, 255, 0.4)',
+  success: '#4ADE80',
+  warning: '#FBBF24',
+  error: '#F87171',
+  text: '#E2E8F0',
+  textMuted: 'rgba(255, 255, 255, 0.6)',
+  border: 'rgba(255, 255, 255, 0.1)',
+  grid: 'rgba(255, 255, 255, 0.05)',
+  gridMajor: 'rgba(255, 255, 255, 0.1)',
+  selection: 'rgba(108, 99, 255, 0.3)',
+  
+  // Table status colors
+  trong: { bg: '#4ADE80', glow: 'rgba(74, 222, 128, 0.4)' },
+  dangphucvu: { bg: '#F87171', glow: 'rgba(248, 113, 113, 0.4)' },
+  datruoc: { bg: '#FBBF24', glow: 'rgba(251, 191, 36, 0.4)' },
+  ghep: { bg: '#A78BFA', glow: 'rgba(167, 139, 250, 0.4)' },
+  
+  // Area colors - expanded palette
+  areaColors: [
+    { color: '#6C63FF', bg: 'rgba(108, 99, 255, 0.2)' },
+    { color: '#00D9FF', bg: 'rgba(0, 217, 255, 0.2)' },
+    { color: '#4ADE80', bg: 'rgba(74, 222, 128, 0.2)' },
+    { color: '#FBBF24', bg: 'rgba(251, 191, 36, 0.2)' },
+    { color: '#F472B6', bg: 'rgba(244, 114, 182, 0.2)' },
+    { color: '#FB923C', bg: 'rgba(251, 146, 60, 0.2)' },
+    { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.2)' },
+    { color: '#2DD4BF', bg: 'rgba(45, 212, 191, 0.2)' },
+  ],
+};
+
+// ==================== GRID CONFIG ====================
+const GRID_SIZE = 20;
+const CANVAS_WIDTH = 1200;
+const CANVAS_HEIGHT = 800;
+
+// ==================== SNAP TO GRID ====================
+const snapToGrid = (value) => Math.round(value / GRID_SIZE) * GRID_SIZE;
+
+// ==================== GET AREA COLOR BY INDEX ====================
+const getAreaColorByIndex = (index) => {
+  return EDITOR_COLORS.areaColors[index % EDITOR_COLORS.areaColors.length];
+};
+
+// ==================== DRAGGABLE TABLE COMPONENT ====================
+const DraggableTable = ({
+  table,
+  isSelected,
+  isPreview,
+  zoom,
+  onSelect,
+  onDragEnd,
+  onDoubleClick,
+  areaColor,
+}) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: table.posX || 0, y: table.posY || 0 });
+  const dragRef = useRef(null);
+  const startPos = useRef({ x: 0, y: 0 });
+  const startMousePos = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setPosition({ x: table.posX || 0, y: table.posY || 0 });
+  }, [table.posX, table.posY]);
+
+  const handleMouseDown = (e) => {
+    if (isPreview) return;
+    e.stopPropagation();
+    onSelect(table.id);
+    setIsDragging(true);
+    startPos.current = { x: position.x, y: position.y };
+    startMousePos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDragging) return;
+    const dx = (e.clientX - startMousePos.current.x) / zoom;
+    const dy = (e.clientY - startMousePos.current.y) / zoom;
+    setPosition({
+      x: snapToGrid(startPos.current.x + dx),
+      y: snapToGrid(startPos.current.y + dy),
+    });
+  }, [isDragging, zoom]);
+
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      if (position.x !== table.posX || position.y !== table.posY) {
+        onDragEnd(table.id, position.x, position.y);
+      }
+    }
+  }, [isDragging, position, table, onDragEnd]);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
+  const tableSize = Math.max(70, 50 + (table.soGhe || 4) * 5);
+  const statusKey = table.trangThai?.toLowerCase() || 'trong';
+  const statusColor = EDITOR_COLORS[statusKey] || EDITOR_COLORS.trong;
+
+  return (
+    <motion.div
+      ref={dragRef}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ 
+        scale: 1, 
+        opacity: 1,
+        x: position.x,
+        y: position.y,
+      }}
+      whileHover={!isPreview ? { scale: 1.05 } : {}}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      style={{
+        position: 'absolute',
+        width: tableSize,
+        height: tableSize,
+        cursor: isPreview ? 'default' : isDragging ? 'grabbing' : 'grab',
+        zIndex: isDragging ? 1000 : isSelected ? 100 : 10,
+      }}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={() => !isPreview && onDoubleClick(table)}
+    >
+      {/* Selection Ring */}
+      <AnimatePresence>
+        {isSelected && !isPreview && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            style={{
+              position: 'absolute',
+              inset: -8,
+              borderRadius: table.shape === 'circle' ? '50%' : 16,
+              border: `2px dashed ${EDITOR_COLORS.primary}`,
+              background: EDITOR_COLORS.selection,
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Table Shape */}
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          borderRadius: table.shape === 'circle' ? '50%' : 3,
+          background: `linear-gradient(145deg, ${statusColor.bg}, ${statusColor.bg}dd)`,
+          boxShadow: `
+            0 4px 20px ${statusColor.glow},
+            inset 0 1px 0 rgba(255,255,255,0.2),
+            inset 0 -1px 0 rgba(0,0,0,0.1)
+          `,
+          border: `3px solid ${areaColor || statusColor.bg}`,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          '&:hover': !isPreview ? {
+            boxShadow: `
+              0 8px 30px ${statusColor.glow},
+              inset 0 1px 0 rgba(255,255,255,0.3)
+            `,
+          } : {},
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: '#fff',
+            fontWeight: 700,
+            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+            fontSize: '0.85rem',
+            textAlign: 'center',
+            lineHeight: 1.2,
+            px: 0.5,
+          }}
+        >
+          {table.ten}
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3, mt: 0.5 }}>
+          <TableIcon sx={{ fontSize: 12, color: 'rgba(255,255,255,0.8)' }} />
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.7rem' }}>
+            {table.soGhe || 4} ghế
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Drag Handle Indicator */}
+      {isSelected && !isPreview && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -22,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: EDITOR_COLORS.primary,
+            borderRadius: 2,
+            px: 1,
+            py: 0.3,
+          }}
+        >
+          <DragIcon sx={{ fontSize: 14, color: '#fff' }} />
+        </Box>
+      )}
+    </motion.div>
+  );
+};
+
+// ==================== AREA SECTION COMPONENT ====================
+const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+    >
+      <Paper
+        sx={{
+          background: colorConfig.bg,
+          border: `1px solid ${colorConfig.color}40`,
+          borderRadius: 2,
+          mb: 1.5,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 1.5,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
+              sx={{
+                width: 14,
+                height: 14,
+                borderRadius: '50%',
+                background: colorConfig.color,
+                boxShadow: `0 0 10px ${colorConfig.color}80`,
+              }}
+            />
+            <Typography variant="subtitle2" sx={{ color: EDITOR_COLORS.text, fontWeight: 600 }}>
+              {area.ten}
+            </Typography>
+            <Chip
+              label={`${tables.length} bàn`}
+              size="small"
+              sx={{
+                height: 22,
+                fontSize: '0.7rem',
+                background: 'rgba(255,255,255,0.1)',
+                color: EDITOR_COLORS.textMuted,
+              }}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <Tooltip title="Chỉnh sửa">
+              <IconButton
+                size="small"
+                onClick={() => onEditArea(area)}
+                sx={{ color: EDITOR_COLORS.textMuted, '&:hover': { color: EDITOR_COLORS.primary } }}
+              >
+                <EditIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Xóa">
+              <IconButton
+                size="small"
+                onClick={() => onDeleteArea(area.id)}
+                sx={{ color: EDITOR_COLORS.textMuted, '&:hover': { color: EDITOR_COLORS.error } }}
+              >
+                <DeleteIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+      </Paper>
+    </motion.div>
+  );
+};
+
+// ==================== MAIN COMPONENT ====================
+export default function TableMapEditor() {
+  const { data: tablesData, isLoading: tablesLoading } = useTables();
+  const { data: areas = [], isLoading: areasLoading } = useAreas();
+  const createTableMutation = useCreateTable();
+  const updateTableMutation = useUpdateTable();
+  const deleteTableMutation = useDeleteTable();
+  const updatePositionMutation = useUpdateTablePosition();
+  const createAreaMutation = useCreateArea();
+  const updateAreaMutation = useUpdateArea();
+  const deleteAreaMutation = useDeleteArea();
+
+  const tables = tablesData?.items || [];
+
+  // State
+  const [selectedTableId, setSelectedTableId] = useState(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [showGrid, setShowGrid] = useState(true);
+  const [zoom, setZoom] = useState(1);
+  const [filterArea, setFilterArea] = useState('all');
+  
+  // Dialogs
+  const [tableDialog, setTableDialog] = useState({ open: false, table: null });
+  const [areaDialog, setAreaDialog] = useState({ open: false, area: null });
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, type: null, id: null });
+  
+  // Snackbar
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  // Canvas ref
+  const canvasRef = useRef(null);
+
+  // ==================== AREA COLOR MAP ====================
+  const areaColorMap = useMemo(() => {
+    const map = {};
+    areas.forEach((area, index) => {
+      map[area.id] = getAreaColorByIndex(index);
+    });
+    return map;
+  }, [areas]);
+
+  // ==================== HANDLERS ====================
+  const handleSelectTable = (id) => {
+    setSelectedTableId(id === selectedTableId ? null : id);
+  };
+
+  const handleDragEnd = async (id, x, y) => {
+    try {
+      await updatePositionMutation.mutateAsync({ id, posX: x, posY: y });
+      setSnackbar({ open: true, message: 'Đã cập nhật vị trí bàn', severity: 'success' });
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Lỗi cập nhật vị trí', severity: 'error' });
+    }
+  };
+
+  const handleOpenTableDialog = (table = null) => {
+    if (table) {
+      // Edit mode - map from API response to dialog form
+      setTableDialog({
+        open: true,
+        table: {
+          id: table.id,
+          ten: table.ten,
+          soGhe: table.soGhe || 4,
+          khuVucId: table.khuVuc?.id || areas[0]?.id || null,
+          posX: table.posX || 100,
+          posY: table.posY || 100,
+        },
+      });
+    } else {
+      // Create mode
+      setTableDialog({
+        open: true,
+        table: {
+          ten: '',
+          soGhe: 4,
+          khuVucId: areas[0]?.id || null,
+          posX: 100,
+          posY: 100,
+        },
+      });
+    }
+  };
+
+  const handleSaveTable = async () => {
+    const { table } = tableDialog;
+    try {
+      if (table.id) {
+        await updateTableMutation.mutateAsync({
+          id: table.id,
+          ten: table.ten,
+          soGhe: table.soGhe,
+          khuVucId: table.khuVucId,
+          posX: table.posX,
+          posY: table.posY,
+        });
+        setSnackbar({ open: true, message: 'Đã cập nhật bàn', severity: 'success' });
+      } else {
+        await createTableMutation.mutateAsync({
+          ten: table.ten,
+          soGhe: table.soGhe,
+          khuVucId: table.khuVucId,
+          posX: table.posX || 100,
+          posY: table.posY || 100,
+        });
+        setSnackbar({ open: true, message: 'Đã thêm bàn mới', severity: 'success' });
+      }
+      setTableDialog({ open: false, table: null });
+    } catch (error) {
+      setSnackbar({ open: true, message: error.message || 'Lỗi lưu bàn', severity: 'error' });
+    }
+  };
+
+  const handleDeleteTable = async () => {
+    try {
+      await deleteTableMutation.mutateAsync(deleteConfirm.id);
+      setSnackbar({ open: true, message: 'Đã xóa bàn', severity: 'success' });
+      setDeleteConfirm({ open: false, type: null, id: null });
+      setSelectedTableId(null);
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Lỗi xóa bàn', severity: 'error' });
+    }
+  };
+
+  const handleOpenAreaDialog = (area = null) => {
+    setAreaDialog({
+      open: true,
+      area: area ? { id: area.id, ten: area.ten } : { ten: '' },
+    });
+  };
+
+  const handleSaveArea = async () => {
+    const { area } = areaDialog;
+    try {
+      if (area.id) {
+        await updateAreaMutation.mutateAsync({
+          id: area.id,
+          ten: area.ten,
+        });
+        setSnackbar({ open: true, message: 'Đã cập nhật khu vực', severity: 'success' });
+      } else {
+        await createAreaMutation.mutateAsync({
+          ten: area.ten,
+        });
+        setSnackbar({ open: true, message: 'Đã thêm khu vực mới', severity: 'success' });
+      }
+      setAreaDialog({ open: false, area: null });
+    } catch (error) {
+      setSnackbar({ open: true, message: error.message || 'Lỗi lưu khu vực', severity: 'error' });
+    }
+  };
+
+  const handleDeleteArea = async () => {
+    try {
+      await deleteAreaMutation.mutateAsync(deleteConfirm.id);
+      setSnackbar({ open: true, message: 'Đã xóa khu vực', severity: 'success' });
+      setDeleteConfirm({ open: false, type: null, id: null });
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Không thể xóa khu vực', severity: 'error' });
+    }
+  };
+
+  const handleCanvasClick = (e) => {
+    if (e.target === canvasRef.current) {
+      setSelectedTableId(null);
+    }
+  };
+
+  // ==================== COMPUTED ====================
+  const filteredTables = useMemo(() => {
+    if (filterArea === 'all') return tables;
+    return tables.filter((t) => t.khuVuc?.id === filterArea);
+  }, [tables, filterArea]);
+
+  const selectedTable = tables.find((t) => t.id === selectedTableId);
+
+  const getTableAreaColor = (table) => {
+    if (!table.khuVuc?.id) return EDITOR_COLORS.primary;
+    return areaColorMap[table.khuVuc.id]?.color || EDITOR_COLORS.primary;
+  };
+
+  // ==================== RENDER ====================
+  if (tablesLoading || areasLoading) {
+    return (
+      <Box
+        sx={{
+          height: '100vh',
+          background: EDITOR_COLORS.background,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+        >
+          <TableIcon sx={{ fontSize: 60, color: EDITOR_COLORS.primary }} />
+        </motion.div>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        height: '100vh',
+        background: EDITOR_COLORS.background,
+        display: 'flex',
+        overflow: 'hidden',
+      }}
+    >
+      {/* ==================== LEFT SIDEBAR ==================== */}
+      <Paper
+        elevation={0}
+        sx={{
+          width: 280,
+          background: 'rgba(0, 0, 0, 0.3)',
+          borderRight: `1px solid ${EDITOR_COLORS.border}`,
+          display: 'flex',
+          flexDirection: 'column',
+          backdropFilter: 'blur(20px)',
+        }}
+      >
+        {/* Header */}
+        <Box sx={{ p: 2, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LayersIcon sx={{ color: '#fff', fontSize: 24 }} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ color: EDITOR_COLORS.text, fontWeight: 700, lineHeight: 1.2 }}>
+                Table Map
+              </Typography>
+              <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted }}>
+                Editor v2.0
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Quick Stats */}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Chip
+              icon={<TableIcon sx={{ fontSize: 14 }} />}
+              label={`${tables.length} bàn`}
+              size="small"
+              sx={{
+                background: 'rgba(108, 99, 255, 0.2)',
+                color: EDITOR_COLORS.primary,
+                border: `1px solid ${EDITOR_COLORS.primary}40`,
+              }}
+            />
+            <Chip
+              icon={<AreaIcon sx={{ fontSize: 14 }} />}
+              label={`${areas.length} khu vực`}
+              size="small"
+              sx={{
+                background: 'rgba(0, 217, 255, 0.2)',
+                color: EDITOR_COLORS.secondary,
+                border: `1px solid ${EDITOR_COLORS.secondary}40`,
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Areas List */}
+        <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="subtitle2" sx={{ color: EDITOR_COLORS.textMuted, fontWeight: 600, letterSpacing: 1 }}>
+              KHU VỰC
+            </Typography>
+            <Tooltip title="Thêm khu vực">
+              <IconButton
+                size="small"
+                onClick={() => handleOpenAreaDialog()}
+                sx={{
+                  background: EDITOR_COLORS.primary,
+                  color: '#fff',
+                  width: 26,
+                  height: 26,
+                  '&:hover': { background: EDITOR_COLORS.primary, opacity: 0.9 },
+                }}
+              >
+                <AddIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          <AnimatePresence>
+            {areas.map((area, index) => {
+              const areaTables = tables.filter((t) => t.khuVuc?.id === area.id);
+              return (
+                <AreaSection
+                  key={area.id}
+                  area={area}
+                  tables={areaTables}
+                  colorConfig={getAreaColorByIndex(index)}
+                  onEditArea={handleOpenAreaDialog}
+                  onDeleteArea={(id) => setDeleteConfirm({ open: true, type: 'area', id })}
+                />
+              );
+            })}
+          </AnimatePresence>
+
+          {areas.length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <AreaIcon sx={{ fontSize: 40, color: EDITOR_COLORS.textMuted, opacity: 0.3, mb: 1 }} />
+              <Typography variant="body2" sx={{ color: EDITOR_COLORS.textMuted }}>
+                Chưa có khu vực nào
+              </Typography>
+              <Button
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => handleOpenAreaDialog()}
+                sx={{ mt: 1, color: EDITOR_COLORS.primary }}
+              >
+                Thêm khu vực
+              </Button>
+            </Box>
+          )}
+        </Box>
+
+        {/* Add Table Button */}
+        <Box sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Button
+            fullWidth
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenTableDialog()}
+            disabled={areas.length === 0}
+            sx={{
+              background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+              py: 1.5,
+              borderRadius: 2,
+              fontWeight: 600,
+              boxShadow: `0 4px 20px ${EDITOR_COLORS.primaryGlow}`,
+              '&:hover': {
+                boxShadow: `0 6px 30px ${EDITOR_COLORS.primaryGlow}`,
+              },
+              '&:disabled': {
+                background: 'rgba(255,255,255,0.1)',
+                color: EDITOR_COLORS.textMuted,
+              },
+            }}
+          >
+            Thêm Bàn Mới
+          </Button>
+          {areas.length === 0 && (
+            <Typography variant="caption" sx={{ color: EDITOR_COLORS.warning, display: 'block', mt: 1, textAlign: 'center' }}>
+              Vui lòng tạo khu vực trước
+            </Typography>
+          )}
+        </Box>
+      </Paper>
+
+      {/* ==================== MAIN CANVAS ==================== */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Toolbar */}
+        <Paper
+          elevation={0}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 1.5,
+            background: 'rgba(0, 0, 0, 0.2)',
+            borderBottom: `1px solid ${EDITOR_COLORS.border}`,
+            backdropFilter: 'blur(20px)',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* View Mode Toggle */}
+            <ToggleButtonGroup
+              value={isPreviewMode ? 'preview' : 'edit'}
+              exclusive
+              onChange={(e, v) => v && setIsPreviewMode(v === 'preview')}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: EDITOR_COLORS.textMuted,
+                  borderColor: EDITOR_COLORS.border,
+                  px: 2,
+                  '&.Mui-selected': {
+                    background: EDITOR_COLORS.primary,
+                    color: '#fff',
+                    '&:hover': { background: EDITOR_COLORS.primary },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="edit">
+                <EditModeIcon sx={{ mr: 1, fontSize: 18 }} /> Chỉnh sửa
+              </ToggleButton>
+              <ToggleButton value="preview">
+                <PreviewIcon sx={{ mr: 1, fontSize: 18 }} /> Xem trước
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <Divider orientation="vertical" flexItem sx={{ borderColor: EDITOR_COLORS.border }} />
+
+            {/* Grid Toggle */}
+            <Tooltip title={showGrid ? 'Ẩn lưới' : 'Hiện lưới'}>
+              <IconButton
+                onClick={() => setShowGrid(!showGrid)}
+                sx={{
+                  color: showGrid ? EDITOR_COLORS.primary : EDITOR_COLORS.textMuted,
+                  background: showGrid ? 'rgba(108, 99, 255, 0.2)' : 'transparent',
+                }}
+              >
+                {showGrid ? <GridOnIcon /> : <GridOffIcon />}
+              </IconButton>
+            </Tooltip>
+
+            {/* Area Filter */}
+            <FormControl size="small" sx={{ minWidth: 150 }}>
+              <Select
+                value={filterArea}
+                onChange={(e) => setFilterArea(e.target.value)}
+                sx={{
+                  color: EDITOR_COLORS.text,
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.border },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
+                  '.MuiSvgIcon-root': { color: EDITOR_COLORS.textMuted },
+                }}
+              >
+                <MenuItem value="all">Tất cả khu vực</MenuItem>
+                {areas.map((area) => (
+                  <MenuItem key={area.id} value={area.id}>
+                    {area.ten}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Zoom Controls */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 2, px: 1.5, py: 0.5 }}>
+              <IconButton
+                size="small"
+                onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
+                sx={{ color: EDITOR_COLORS.textMuted }}
+              >
+                <ZoomOutIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+              <Typography variant="caption" sx={{ color: EDITOR_COLORS.text, minWidth: 45, textAlign: 'center' }}>
+                {Math.round(zoom * 100)}%
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => setZoom((z) => Math.min(2, z + 0.1))}
+                sx={{ color: EDITOR_COLORS.textMuted }}
+              >
+                <ZoomInIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+              <Tooltip title="Fit to screen">
+                <IconButton
+                  size="small"
+                  onClick={() => setZoom(1)}
+                  sx={{ color: EDITOR_COLORS.textMuted }}
+                >
+                  <FitScreenIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Canvas Area */}
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 3,
+          }}
+        >
+          <Box
+            ref={canvasRef}
+            onClick={handleCanvasClick}
+            sx={{
+              width: CANVAS_WIDTH,
+              height: CANVAS_HEIGHT,
+              minWidth: CANVAS_WIDTH,
+              minHeight: CANVAS_HEIGHT,
+              background: EDITOR_COLORS.surface,
+              borderRadius: 4,
+              position: 'relative',
+              transform: `scale(${zoom})`,
+              transformOrigin: 'center center',
+              transition: 'transform 0.2s ease',
+              boxShadow: `
+                0 0 0 1px ${EDITOR_COLORS.border},
+                0 20px 60px rgba(0, 0, 0, 0.5)
+              `,
+              // Grid pattern
+              ...(showGrid && {
+                backgroundImage: `
+                  linear-gradient(${EDITOR_COLORS.grid} 1px, transparent 1px),
+                  linear-gradient(90deg, ${EDITOR_COLORS.grid} 1px, transparent 1px),
+                  linear-gradient(${EDITOR_COLORS.gridMajor} 1px, transparent 1px),
+                  linear-gradient(90deg, ${EDITOR_COLORS.gridMajor} 1px, transparent 1px)
+                `,
+                backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px, ${GRID_SIZE}px ${GRID_SIZE}px, ${GRID_SIZE * 5}px ${GRID_SIZE * 5}px, ${GRID_SIZE * 5}px ${GRID_SIZE * 5}px`,
+              }),
+            }}
+          >
+            {/* Tables */}
+            <AnimatePresence>
+              {filteredTables.map((table) => (
+                <DraggableTable
+                  key={table.id}
+                  table={table}
+                  isSelected={selectedTableId === table.id}
+                  isPreview={isPreviewMode}
+                  zoom={zoom}
+                  onSelect={handleSelectTable}
+                  onDragEnd={handleDragEnd}
+                  onDoubleClick={handleOpenTableDialog}
+                  areaColor={getTableAreaColor(table)}
+                />
+              ))}
+            </AnimatePresence>
+
+            {/* Empty State */}
+            {filteredTables.length === 0 && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <TableIcon sx={{ fontSize: 80, color: EDITOR_COLORS.textMuted, opacity: 0.3, mb: 2 }} />
+                <Typography variant="h6" sx={{ color: EDITOR_COLORS.textMuted }}>
+                  {filterArea === 'all' ? 'Chưa có bàn nào' : 'Không có bàn trong khu vực này'}
+                </Typography>
+                <Typography variant="body2" sx={{ color: EDITOR_COLORS.textMuted, mb: 3 }}>
+                  {areas.length === 0 ? 'Tạo khu vực trước, sau đó thêm bàn' : 'Nhấn "Thêm Bàn Mới" để bắt đầu'}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Box>
+
+      {/* ==================== RIGHT SIDEBAR - Selected Table Info ==================== */}
+      <AnimatePresence>
+        {selectedTable && !isPreviewMode && (
+          <motion.div
+            initial={{ x: 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 300, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                width: 280,
+                height: '100%',
+                background: 'rgba(0, 0, 0, 0.3)',
+                borderLeft: `1px solid ${EDITOR_COLORS.border}`,
+                backdropFilter: 'blur(20px)',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* Header */}
+              <Box sx={{ p: 2, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="subtitle1" sx={{ color: EDITOR_COLORS.text, fontWeight: 700 }}>
+                    Chi tiết bàn
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => setSelectedTableId(null)}
+                    sx={{ color: EDITOR_COLORS.textMuted }}
+                  >
+                    <CloseIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Box>
+                <Typography variant="h5" sx={{ color: EDITOR_COLORS.primary, fontWeight: 700 }}>
+                  {selectedTable.ten}
+                </Typography>
+              </Box>
+
+              {/* Properties */}
+              <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                    SỐ GHẾ
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TableIcon sx={{ color: EDITOR_COLORS.primary }} />
+                    <Typography variant="h6" sx={{ color: EDITOR_COLORS.text }}>
+                      {selectedTable.soGhe} ghế
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                    KHU VỰC
+                  </Typography>
+                  <Chip
+                    label={selectedTable.khuVuc?.ten || 'Không xác định'}
+                    sx={{
+                      background: 'rgba(108, 99, 255, 0.2)',
+                      color: EDITOR_COLORS.primary,
+                      border: `1px solid ${EDITOR_COLORS.primary}40`,
+                    }}
+                  />
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                    VỊ TRÍ
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: EDITOR_COLORS.text }}>
+                    X: {selectedTable.posX || 0}px, Y: {selectedTable.posY || 0}px
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                    TRẠNG THÁI
+                  </Typography>
+                  <Chip
+                    label={
+                      selectedTable.trangThai === 'TRONG' ? 'Trống' :
+                      selectedTable.trangThai === 'DANGPHUCVU' ? 'Đang phục vụ' :
+                      selectedTable.trangThai === 'DATRUOC' ? 'Đã đặt trước' :
+                      selectedTable.trangThai === 'GHEP' ? 'Ghép bàn' :
+                      selectedTable.trangThai || 'Trống'
+                    }
+                    sx={{
+                      background: EDITOR_COLORS[selectedTable.trangThai?.toLowerCase()]?.glow || EDITOR_COLORS.trong.glow,
+                      color: '#fff',
+                      fontWeight: 600,
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              {/* Actions */}
+              <Box sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}`, display: 'flex', gap: 1 }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  onClick={() => handleOpenTableDialog(selectedTable)}
+                  sx={{
+                    color: EDITOR_COLORS.primary,
+                    borderColor: EDITOR_COLORS.primary,
+                    '&:hover': {
+                      background: 'rgba(108, 99, 255, 0.1)',
+                      borderColor: EDITOR_COLORS.primary,
+                    },
+                  }}
+                >
+                  Sửa
+                </Button>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => setDeleteConfirm({ open: true, type: 'table', id: selectedTable.id })}
+                  sx={{
+                    color: EDITOR_COLORS.error,
+                    borderColor: EDITOR_COLORS.error,
+                    '&:hover': {
+                      background: 'rgba(248, 113, 113, 0.1)',
+                      borderColor: EDITOR_COLORS.error,
+                    },
+                  }}
+                >
+                  Xóa
+                </Button>
+              </Box>
+            </Paper>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ==================== TABLE DIALOG ==================== */}
+      <Dialog
+        open={tableDialog.open}
+        onClose={() => setTableDialog({ open: false, table: null })}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            borderRadius: 3,
+            border: `1px solid ${EDITOR_COLORS.border}`,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: EDITOR_COLORS.text, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <TableIcon sx={{ color: EDITOR_COLORS.primary }} />
+            {tableDialog.table?.id ? 'Chỉnh sửa bàn' : 'Thêm bàn mới'}
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+            <TextField
+              label="Tên bàn"
+              fullWidth
+              value={tableDialog.table?.ten || ''}
+              onChange={(e) => setTableDialog((prev) => ({
+                ...prev,
+                table: { ...prev.table, ten: e.target.value },
+              }))}
+              placeholder="VD: Bàn 1, VIP 01..."
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: EDITOR_COLORS.text,
+                  '& fieldset': { borderColor: EDITOR_COLORS.border },
+                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
+                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                },
+                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+              }}
+            />
+
+            <TextField
+              label="Số ghế"
+              type="number"
+              fullWidth
+              value={tableDialog.table?.soGhe || 4}
+              onChange={(e) => setTableDialog((prev) => ({
+                ...prev,
+                table: { ...prev.table, soGhe: parseInt(e.target.value) || 4 },
+              }))}
+              inputProps={{ min: 1, max: 20 }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: EDITOR_COLORS.text,
+                  '& fieldset': { borderColor: EDITOR_COLORS.border },
+                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
+                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                },
+                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+              }}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel sx={{ color: EDITOR_COLORS.textMuted }}>Khu vực</InputLabel>
+              <Select
+                value={tableDialog.table?.khuVucId || ''}
+                onChange={(e) => setTableDialog((prev) => ({
+                  ...prev,
+                  table: { ...prev.table, khuVucId: e.target.value },
+                }))}
+                label="Khu vực"
+                sx={{
+                  color: EDITOR_COLORS.text,
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.border },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
+                  '.MuiSvgIcon-root': { color: EDITOR_COLORS.textMuted },
+                }}
+              >
+                {areas.map((area) => (
+                  <MenuItem key={area.id} value={area.id}>
+                    {area.ten}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Button
+            onClick={() => setTableDialog({ open: false, table: null })}
+            sx={{ color: EDITOR_COLORS.textMuted }}
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={handleSaveTable}
+            variant="contained"
+            startIcon={<CheckIcon />}
+            disabled={!tableDialog.table?.ten || !tableDialog.table?.khuVucId}
+            sx={{
+              background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+              '&:disabled': { background: 'rgba(255,255,255,0.1)' },
+            }}
+          >
+            {tableDialog.table?.id ? 'Cập nhật' : 'Thêm mới'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ==================== AREA DIALOG ==================== */}
+      <Dialog
+        open={areaDialog.open}
+        onClose={() => setAreaDialog({ open: false, area: null })}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            borderRadius: 3,
+            border: `1px solid ${EDITOR_COLORS.border}`,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: EDITOR_COLORS.text, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <AreaIcon sx={{ color: EDITOR_COLORS.secondary }} />
+            {areaDialog.area?.id ? 'Chỉnh sửa khu vực' : 'Thêm khu vực mới'}
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 1 }}>
+            <TextField
+              label="Tên khu vực"
+              fullWidth
+              value={areaDialog.area?.ten || ''}
+              onChange={(e) => setAreaDialog((prev) => ({
+                ...prev,
+                area: { ...prev.area, ten: e.target.value },
+              }))}
+              placeholder="VD: Tầng 1, Sân vườn, VIP..."
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: EDITOR_COLORS.text,
+                  '& fieldset': { borderColor: EDITOR_COLORS.border },
+                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
+                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                },
+                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+              }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+          <Button
+            onClick={() => setAreaDialog({ open: false, area: null })}
+            sx={{ color: EDITOR_COLORS.textMuted }}
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={handleSaveArea}
+            variant="contained"
+            startIcon={<CheckIcon />}
+            disabled={!areaDialog.area?.ten}
+            sx={{
+              background: `linear-gradient(135deg, ${EDITOR_COLORS.secondary}, ${EDITOR_COLORS.primary})`,
+              '&:disabled': { background: 'rgba(255,255,255,0.1)' },
+            }}
+          >
+            {areaDialog.area?.id ? 'Cập nhật' : 'Thêm mới'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ==================== DELETE CONFIRM DIALOG ==================== */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, type: null, id: null })}
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            borderRadius: 3,
+            border: `1px solid ${EDITOR_COLORS.error}40`,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: EDITOR_COLORS.error }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <WarningIcon />
+            Xác nhận xóa
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: EDITOR_COLORS.text }}>
+            Bạn có chắc chắn muốn xóa {deleteConfirm.type === 'table' ? 'bàn' : 'khu vực'} này?
+            {deleteConfirm.type === 'area' && (
+              <Box component="span" sx={{ display: 'block', color: EDITOR_COLORS.warning, mt: 1 }}>
+                Lưu ý: Các bàn trong khu vực sẽ được chuyển sang "Khu vực chung"
+              </Box>
+            )}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={() => setDeleteConfirm({ open: false, type: null, id: null })}
+            sx={{ color: EDITOR_COLORS.textMuted }}
+          >
+            Hủy
+          </Button>
+          <Button
+            onClick={deleteConfirm.type === 'table' ? handleDeleteTable : handleDeleteArea}
+            variant="contained"
+            startIcon={<DeleteIcon />}
+            sx={{
+              background: EDITOR_COLORS.error,
+              '&:hover': { background: '#dc2626' },
+            }}
+          >
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ==================== SNACKBAR ==================== */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{
+            background: snackbar.severity === 'success' ? 'rgba(74, 222, 128, 0.9)' : 'rgba(248, 113, 113, 0.9)',
+            color: '#fff',
+            fontWeight: 600,
+            borderRadius: 2,
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+}

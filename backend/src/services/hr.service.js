@@ -1,0 +1,368 @@
+const { prisma } = require('../config/db');
+
+// ==================== SHIFTS (Ca làm việc) ====================
+
+const listShifts = async () => {
+  const items = await prisma.caLamViec.findMany({
+    orderBy: { batDau: 'asc' },
+  });
+  return { 
+    items: items.map((s) => ({
+      id: s.id,
+      ten: s.ten,
+      batDau: s.batDau,
+      ketThuc: s.ketThuc,
+    })),
+  };
+};
+
+const createShift = async (payload) => {
+  const { ten, batDau, ketThuc } = payload;
+  if (!ten || !batDau || !ketThuc) {
+    throw Object.assign(new Error('Thiếu thông tin ca làm việc'), { status: 400 });
+  }
+  const shift = await prisma.caLamViec.create({
+    data: { ten, batDau, ketThuc },
+  });
+  return { message: 'Tạo ca làm việc thành công', shift };
+};
+
+const updateShift = async (id, payload) => {
+  const { ten, batDau, ketThuc } = payload;
+  const shift = await prisma.caLamViec.update({
+    where: { id },
+    data: {
+      ...(ten && { ten }),
+      ...(batDau && { batDau }),
+      ...(ketThuc && { ketThuc }),
+    },
+  }).catch(() => null);
+  if (!shift) throw Object.assign(new Error('Ca làm việc không tồn tại'), { status: 404 });
+  return { message: 'Cập nhật ca làm việc thành công', shift };
+};
+
+const deleteShift = async (id) => {
+  // Check if shift is used in schedules
+  const count = await prisma.lichPhanCa.count({ where: { caLamViecId: id } });
+  if (count > 0) {
+    throw Object.assign(new Error('Không thể xóa ca đang được sử dụng'), { status: 400 });
+  }
+  await prisma.caLamViec.delete({ where: { id } }).catch(() => null);
+  return { message: 'Xóa ca làm việc thành công' };
+};
+
+// ==================== EMPLOYEES (Nhân viên) ====================
+
+const listEmployees = async () => {
+  const items = await prisma.nhanVien.findMany({
+    orderBy: { hoTen: 'asc' },
+  });
+  return {
+    items: items.map((e) => ({
+      id: e.id,
+      hoTen: e.hoTen,
+      email: e.email,
+      soDienThoai: e.soDienThoai,
+      chucVu: e.chucVu,
+      trangThai: e.trangThai,
+    })),
+  };
+};
+
+const createEmployee = async (payload) => {
+  const { hoTen, email, soDienThoai, chucVu, trangThai } = payload;
+  if (!hoTen) {
+    throw Object.assign(new Error('Họ tên không được để trống'), { status: 400 });
+  }
+  const employee = await prisma.nhanVien.create({
+    data: {
+      hoTen,
+      email: email || null,
+      soDienThoai: soDienThoai || null,
+      chucVu: chucVu || 'Nhân viên',
+      trangThai: trangThai || 'DANGLAM',
+    },
+  });
+  return { message: 'Thêm nhân viên thành công', employee };
+};
+
+const updateEmployee = async (id, payload) => {
+  const { hoTen, email, soDienThoai, chucVu, trangThai } = payload;
+  const employee = await prisma.nhanVien.update({
+    where: { id },
+    data: {
+      ...(hoTen && { hoTen }),
+      ...(email !== undefined && { email }),
+      ...(soDienThoai !== undefined && { soDienThoai }),
+      ...(chucVu && { chucVu }),
+      ...(trangThai && { trangThai }),
+    },
+  }).catch(() => null);
+  if (!employee) throw Object.assign(new Error('Nhân viên không tồn tại'), { status: 404 });
+  return { message: 'Cập nhật nhân viên thành công', employee };
+};
+
+const deleteEmployee = async (id) => {
+  // Check if employee has schedules
+  const scheduleCount = await prisma.lichPhanCa.count({ where: { nhanVienId: id } });
+  if (scheduleCount > 0) {
+    throw Object.assign(new Error('Không thể xóa nhân viên đang có lịch phân ca'), { status: 400 });
+  }
+  await prisma.nhanVien.delete({ where: { id } }).catch(() => null);
+  return { message: 'Xóa nhân viên thành công' };
+};
+
+// ==================== SCHEDULES (Lịch phân ca) ====================
+
+const listSchedules = async (query = {}) => {
+  const where = {};
+  
+  // Filter by date range
+  if (query.startDate || query.endDate) {
+    where.ngay = {};
+    if (query.startDate) where.ngay.gte = new Date(query.startDate);
+    if (query.endDate) {
+      const end = new Date(query.endDate);
+      end.setHours(23, 59, 59, 999);
+      where.ngay.lte = end;
+    }
+  }
+  
+  // Filter by employee
+  if (query.nhanVienId) where.nhanVienId = query.nhanVienId;
+
+  const items = await prisma.lichPhanCa.findMany({
+    where,
+    include: { 
+      nhanVien: true, 
+      caLamViec: true,
+      chamCong: true,
+    },
+    orderBy: { ngay: 'desc' },
+  });
+  
+  return { 
+    items: items.map((s) => ({
+      id: s.id,
+      ngay: s.ngay,
+      nhanVien: s.nhanVien ? { id: s.nhanVien.id, hoTen: s.nhanVien.hoTen } : null,
+      caLamViec: s.caLamViec ? { id: s.caLamViec.id, ten: s.caLamViec.ten, batDau: s.caLamViec.batDau, ketThuc: s.caLamViec.ketThuc } : null,
+      chamCong: s.chamCong.map((c) => ({
+        id: c.id,
+        thoiGianVao: c.thoiGianVao,
+        thoiGianRa: c.thoiGianRa,
+        trangThai: c.trangThai,
+      })),
+    })),
+  };
+};
+
+const createSchedule = async (payload) => {
+  const { nhanVienId, caLamViecId, ngay } = payload;
+  
+  if (!nhanVienId || !caLamViecId || !ngay) {
+    throw Object.assign(new Error('Thiếu thông tin phân ca'), { status: 400 });
+  }
+
+  // Check if employee already has schedule for this day and shift
+  const existing = await prisma.lichPhanCa.findFirst({
+    where: {
+      nhanVienId,
+      caLamViecId,
+      ngay: new Date(ngay),
+    },
+  });
+  if (existing) {
+    throw Object.assign(new Error('Nhân viên đã có lịch cho ca này'), { status: 400 });
+  }
+
+  const sched = await prisma.lichPhanCa.create({
+    data: { nhanVienId, caLamViecId, ngay: new Date(ngay) },
+    include: { nhanVien: true, caLamViec: true },
+  });
+  return { message: 'Tạo lịch phân ca thành công', schedule: sched };
+};
+
+const updateSchedule = async (id, payload) => {
+  const { nhanVienId, caLamViecId, ngay } = payload;
+  
+  const existing = await prisma.lichPhanCa.findUnique({ where: { id } });
+  if (!existing) throw Object.assign(new Error('Lịch phân ca không tồn tại'), { status: 404 });
+
+  const sched = await prisma.lichPhanCa.update({
+    where: { id },
+    data: {
+      ...(nhanVienId && { nhanVienId }),
+      ...(caLamViecId && { caLamViecId }),
+      ...(ngay && { ngay: new Date(ngay) }),
+    },
+    include: { nhanVien: true, caLamViec: true },
+  });
+  return { message: 'Cập nhật lịch phân ca thành công', schedule: sched };
+};
+
+const deleteSchedule = async (id) => {
+  // Delete related attendance records first
+  await prisma.chamCong.deleteMany({ where: { lichPhanCaId: id } });
+  await prisma.lichPhanCa.delete({ where: { id } }).catch(() => null);
+  return { message: 'Xóa lịch phân ca thành công' };
+};
+
+// Bulk create schedules for a week
+const createBulkSchedules = async (payload) => {
+  const { nhanVienId, caLamViecId, startDate, endDate } = payload;
+  
+  if (!nhanVienId || !caLamViecId || !startDate || !endDate) {
+    throw Object.assign(new Error('Thiếu thông tin'), { status: 400 });
+  }
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const schedules = [];
+  
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toISOString().split('T')[0];
+    const existing = await prisma.lichPhanCa.findFirst({
+      where: { nhanVienId, caLamViecId, ngay: new Date(dateStr) },
+    });
+    if (!existing) {
+      schedules.push({ nhanVienId, caLamViecId, ngay: new Date(dateStr) });
+    }
+  }
+
+  if (schedules.length > 0) {
+    await prisma.lichPhanCa.createMany({ data: schedules });
+  }
+
+  return { message: `Đã tạo ${schedules.length} lịch phân ca`, count: schedules.length };
+};
+
+// ==================== ATTENDANCE (Chấm công) ====================
+
+const checkIn = async (user) => {
+  if (!user?.id) throw Object.assign(new Error('Thiếu thông tin nhân viên'), { status: 400 });
+  const today = new Date();
+  const startOfDay = new Date(today.toDateString());
+  const endOfDay = new Date(startOfDay.getTime() + 86400000);
+
+  // Check for existing open check-in
+  const existing = await prisma.chamCong.findFirst({
+    where: {
+      lichPhanCa: { 
+        nhanVienId: user.id, 
+        ngay: { gte: startOfDay, lt: endOfDay },
+      },
+      thoiGianRa: null,
+    },
+    orderBy: { thoiGianVao: 'desc' },
+  });
+  if (existing) return existing;
+
+  // Find or create schedule for today
+  let schedule = await prisma.lichPhanCa.findFirst({
+    where: { 
+      nhanVienId: user.id, 
+      ngay: { gte: startOfDay, lt: endOfDay },
+    },
+  });
+
+  if (!schedule) {
+    // Get default shift or first shift
+    const defaultShift = await prisma.caLamViec.findFirst();
+    schedule = await prisma.lichPhanCa.create({
+      data: { 
+        nhanVienId: user.id, 
+        caLamViecId: defaultShift?.id || null, 
+        ngay: startOfDay,
+      },
+    });
+  }
+
+  const record = await prisma.chamCong.create({
+    data: {
+      lichPhanCaId: schedule.id,
+      thoiGianVao: new Date(),
+      trangThai: 'LAMVIEC',
+    },
+  });
+  return record;
+};
+
+const checkOut = async (user) => {
+  if (!user?.id) throw Object.assign(new Error('Thiếu thông tin nhân viên'), { status: 400 });
+  
+  const record = await prisma.chamCong.findFirst({
+    where: { 
+      lichPhanCa: { nhanVienId: user.id }, 
+      thoiGianRa: null,
+    },
+    orderBy: { thoiGianVao: 'desc' },
+  });
+  
+  if (!record) throw Object.assign(new Error('Chưa check-in'), { status: 400 });
+  
+  const updated = await prisma.chamCong.update({
+    where: { id: record.id },
+    data: { thoiGianRa: new Date(), trangThai: 'DAXONG' },
+  });
+  return updated;
+};
+
+const attendanceReport = async (query = {}) => {
+  const where = {};
+  
+  if (query.startDate || query.endDate) {
+    where.thoiGianVao = {};
+    if (query.startDate) where.thoiGianVao.gte = new Date(query.startDate);
+    if (query.endDate) {
+      const end = new Date(query.endDate);
+      end.setHours(23, 59, 59, 999);
+      where.thoiGianVao.lte = end;
+    }
+  }
+
+  const items = await prisma.chamCong.findMany({
+    where,
+    include: { lichPhanCa: { include: { nhanVien: true, caLamViec: true } } },
+    orderBy: { thoiGianVao: 'desc' },
+  });
+  
+  return { 
+    items: items.map((r) => {
+      const hours = r.thoiGianVao && r.thoiGianRa 
+        ? (new Date(r.thoiGianRa) - new Date(r.thoiGianVao)) / 3600000 
+        : null;
+      return {
+        id: r.id,
+        thoiGianVao: r.thoiGianVao,
+        thoiGianRa: r.thoiGianRa,
+        trangThai: r.trangThai,
+        hours,
+        lichPhanCa: r.lichPhanCa ? {
+          ngay: r.lichPhanCa.ngay,
+          nhanVien: r.lichPhanCa.nhanVien ? { id: r.lichPhanCa.nhanVien.id, hoTen: r.lichPhanCa.nhanVien.hoTen } : null,
+          caLamViec: r.lichPhanCa.caLamViec ? { ten: r.lichPhanCa.caLamViec.ten } : null,
+        } : null,
+      };
+    }),
+  };
+};
+
+module.exports = { 
+  listShifts,
+  createShift,
+  updateShift,
+  deleteShift,
+  listEmployees,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+  listSchedules, 
+  createSchedule,
+  updateSchedule,
+  deleteSchedule,
+  createBulkSchedules,
+  checkIn, 
+  checkOut, 
+  attendanceReport,
+};

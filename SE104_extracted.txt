@@ -1,0 +1,5157 @@
+ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH
+TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN
+
+Báo cáo giữa kỳ đồ án môn học
+Nhập môn công nghệ phần mềm
+Website Quản lý nhà hàng
+Sinh viên: Nguyễn Thiên Bảo -23520127
+Sinh viên: Đặng Quang Vinh - 23521786
+Sinh viên: Cao Lê Công Thành - 23521437
+Sinh viên: Nguyễn Thiện Nhân - 23521083
+GVHD: Đỗ Văn Tiến
+
+Ngày 28 tháng 06 năm 2025
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Mục lục
+1 Tổng quan
+1.1 Khảo sát hiện trạng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.1.1 Hiện trạng tổ chức . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.1.2 Hiện trạng nghiệp vụ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.1.3 Hiện trạng tin học . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.2 Xác định và thu thập yêu cầu . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.2.1 Yêu cầu chức năng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+1.2.2 Yêu cầu phi chức năng . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+3
+3
+3
+5
+7
+9
+9
+12
+
+2 Xác định và Mô hình hoá yêu cầu phần mềm
+2.1 Phân loại các yêu cầu phần mềm . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.1 Yêu cầu nghiệp vụ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.2 Yêu cầu tiến hóa . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.3 Yêu cầu hiệu quả . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.4 Yêu cầu tiện dụng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.5 Yêu cầu tương thích . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.6 Yêu cầu bảo mật . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.7 Yêu cầu an toàn . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.8 Yêu cầu công nghệ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.2 Bảng trách nhiệm cho các loại yêu cầu phần mềm . . . . . . . . . . . . . . . . . . .
+2.2.1 Bảng Trách Nhiệm Yêu Cầu Nghiệp Vụ . . . . . . . . . . . . . . . . . . . .
+2.2.2 Bảng Trách Nhiệm Yêu Cầu Tiến Hóa . . . . . . . . . . . . . . . . . . . . .
+2.2.3 Bảng trách nhiệm yêu cầu hiệu quả . . . . . . . . . . . . . . . . . . . . . .
+2.2.4 Bảng trách nhiệm yêu cầu tiện dụng . . . . . . . . . . . . . . . . . . . . . .
+2.2.5 Bảng trách nhiệm yêu cầu bảo mật . . . . . . . . . . . . . . . . . . . . . .
+2.2.6 Bảng trách nhiệm yêu cầu an toàn . . . . . . . . . . . . . . . . . . . . . . .
+2.3 Sơ đồ mô hình hoá yêu cầu phần mềm . . . . . . . . . . . . . . . . . . . . . . . . .
+2.3.1 Sơ đồ Usecase (Usecase Diagram) . . . . . . . . . . . . . . . . . . . . . . .
+2.3.2 Sơ đồ trạng thái (State Diagram) . . . . . . . . . . . . . . . . . . . . . . .
+2.3.3 Sơ đồ hoạt động (Activity Diagram) . . . . . . . . . . . . . . . . . . . . . .
+2.3.4 Sơ đồ tuần tự (Sequence Diagram) . . . . . . . . . . . . . . . . . . . . . . .
+2.3.5 Sơ đồ lớp (Class Diagram) . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.3.6 Sơ đồ khai thác hệ thống (Deployment Diagram) . . . . . . . . . . . . . . .
+
+14
+14
+14
+24
+24
+25
+27
+27
+28
+29
+29
+29
+31
+31
+32
+33
+34
+35
+35
+38
+41
+45
+52
+52
+
+Báo cáo đồ án SE104
+
+Trang 2/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+1
+
+Tổng quan
+
+1.1
+
+Khảo sát hiện trạng
+
+1.1.1
+
+Hiện trạng tổ chức
+
+1.1.1.1
+
+Đối nội – Cơ cấu tổ chức và Vận hành nội bộ
+
+Hình 1: Enter Caption
+Tổ chức được khảo sát là Nhà hàng L’Ami, một doanh nghiệp hoạt động trong lĩnh vực Kinh
+doanh ẩm thực (F&B), chuyên phục vụ các món ăn theo phong cách Á - Âu. Về quy mô,
+hiện tại tổ chức có khoảng 30 nhân sự và đang vận hành 01 chi nhánh duy nhất.
+Cơ cấu và Nhiệm vụ các bộ phận:
+Cơ cấu tổ chức được phân chia thành 3 bộ phận chính, phối hợp chặt chẽ để vận hành nhà hàng:
+• Bộ phận Sảnh (Front of House - FOH)
+– Vai trò chính: Là bộ mặt của nhà hàng, chịu trách nhiệm về toàn bộ trải nghiệm của
+khách hàng từ khi bước vào cho đến khi rời đi.
+– Nhiệm vụ cụ thể:
+∗ Chào đón, sắp xếp chỗ ngồi cho khách.
+∗ Tư vấn thực đơn và ghi nhận đơn hàng (order) tại bàn.
+∗ Phục vụ món ăn, đồ uống.
+∗ Xử lý quy trình thanh toán, in hóa đơn.
+• Bộ phận Bếp (Back of House - BOH)
+– Vai trò chính: Đảm bảo chất lượng, số lượng và tốc độ chế biến món ăn theo đúng tiêu
+chuẩn của nhà hàng.
+– Nhiệm vụ cụ thể:
+∗ Tiếp nhận yêu cầu chế biến từ Bộ phận Sảnh.
+∗ Chế biến món ăn, đồ uống theo đúng công thức và định lượng.
+∗ Đảm bảo vệ sinh an toàn thực phẩm trong khu vực bếp.
+∗ Thông báo cho Bộ phận Sảnh khi món ăn đã sẵn sàng.
+• Bộ phận Quản lý & Vận hành
+– Vai trò chính: Chịu trách nhiệm điều hành tổng thể, kiểm soát chi phí và đảm bảo hoạt
+động kinh doanh diễn ra hiệu quả.
+– Nhiệm vụ cụ thể:
+∗ Quản lý nhân sự: chấm công, xếp lịch làm việc, tính lương.
+Báo cáo đồ án SE104
+
+Trang 3/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+∗ Quản lý kho: đặt hàng nhà cung cấp, nhận hàng, kiểm kê tồn kho.
+∗ Giải quyết các vấn đề phát sinh, khiếu nại của khách hàng.
+∗ Theo dõi doanh thu, chi phí và lập báo cáo kinh doanh cuối ngày/cuối tháng.
+Đánh giá phối hợp liên bộ phận
+Sự phối hợp giữa các bộ phận hiện tại chủ yếu dựa trên quy trình thủ công, có những điểm mạnh
+và thách thức sau:
+• Điểm mạnh: Luồng giao tiếp chính giữa Sảnh và Bếp thông qua phiếu order giấy đã thành
+nề nếp, giúp nhân viên quen việc và thực hiện nhanh.
+• Thách thức:
+– Thông tin truyền đạt thiếu tính tức thời. Việc cập nhật tình trạng hết món từ Bếp hoặc
+Kho đến nhân viên Phục vụ còn chậm trễ, dẫn đến việc nhận đơn hàng cho món đã hết.
+– Sai sót trong quá trình ghi chép thủ công (chữ viết khó đọc, ghi nhầm món) vẫn xảy ra,
+gây lãng phí nguyên vật liệu và ảnh hưởng đến trải nghiệm khách hàng.
+– Việc đối soát sổ sách bán hàng của bộ phận Sảnh và lượng nguyên vật liệu tiêu thụ của
+Bếp/Kho cuối ngày mất nhiều thời gian và dễ sai lệch.
+1.1.1.2
+
+Đối ngoại – Môi trường và Tương tác bên ngoài
+
+Khách hàng mục tiêu
+Nhóm khách hàng chính mà Nhà hàng L’Ami đang phục vụ là:
+• Nhân viên văn phòng, các cặp đôi và nhóm bạn bè trong độ tuổi từ 25-45.
+• Các gia đình có thu nhập từ trung bình khá trở lên.
+• Nhóm khách hàng này có yêu cầu cao về chất lượng món ăn, không gian sạch sẽ và đặc biệt
+là tốc độ phục vụ nhanh chóng, chuyên nghiệp.
+Nhà cung cấp và Đối tác
+Để đảm bảo hoạt động, tổ chức đang hợp tác với các nhà cung cấp chính trong lĩnh vực:
+• Thực phẩm tươi sống (thịt, cá, rau củ).
+• Nguyên vật liệu khô (gia vị, gạo, mì...).
+• Đồ uống và các vật tư tiêu hao (hộp mang về, khăn giấy).
+Mối quan hệ với các nhà cung cấp nhìn chung được duy trì ổn định qua các đơn đặt hàng định kỳ.
+Môi trường cạnh tranh
+Thị trường kinh doanh nhà hàng hiện có mức độ cạnh tranh cao. Các đối thủ chính bao gồm:
+• Các nhà hàng khác trong cùng phân khúc và khu vực địa lý.
+• Các chuỗi F&B lớn có lợi thế về thương hiệu và các chương trình khuyến mãi rầm rộ.
+• Áp lực từ các nền tảng giao đồ ăn trực tuyến đòi hỏi nhà hàng phải tối ưu quy trình để đáp
+ứng các đơn hàng mang về một cách nhanh chóng.
+Cơ chế tương tác
+Cơ chế tương tác giữa tổ chức và môi trường bên ngoài đang có những thuận lợi và khó khăn
+nhất định:
+Báo cáo đồ án SE104
+
+Trang 4/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Thuận lợi: Nhà hàng đã xây dựng được một lượng khách hàng quen thuộc nhất định nhờ vào
+chất lượng món ăn ổn định.
+• Khó khăn:
+– Quy trình đặt hàng với nhà cung cấp vẫn chủ yếu qua điện thoại hoặc Zalo, thiếu tính
+hệ thống, khó truy vết và đối chiếu công nợ.
+– Việc thu thập và phân tích phản hồi của khách hàng còn rời rạc, chưa có công cụ để
+quản lý thông tin khách hàng thân thiết một cách hiệu quả nhằm đưa ra các chương
+trình chăm sóc phù hợp.
+1.1.2
+
+Hiện trạng nghiệp vụ
+
+1.1.2.1 Danh sách các nghiệp vụ chính
+Hiện tại, tổ chức đang thực hiện 4 nhóm nghiệp vụ chính sau:
+1. Nghiệp vụ Bán hàng và Thanh toán.
+2. Nghiệp vụ Quản lý Kho và Mua hàng.
+3. Nghiệp vụ Quản lý Nhân sự.
+4. Nghiệp vụ Báo cáo và Đối soát cuối ngày.
+1.1.2.2
+
+Phân tích chi tiết từng nghiệp vụ
+
+3.2.1. Nghiệp vụ Bán hàng và Thanh toán (Order-to-Payment)
+• Mục tiêu: Tiếp nhận chính xác yêu cầu của khách hàng, phục vụ món ăn và hoàn tất quá
+trình thanh toán một cách nhanh chóng, đảm bảo sự hài lòng của khách.
+• Đối tượng tham gia: Nhân viên Phục vụ, Thu ngân, Nhân viên Bếp, Quản lý.
+• Đầu vào (Input): Yêu cầu gọi món bằng lời nói của khách hàng.
+• Đầu ra (Output): Hóa đơn đã thanh toán, món ăn đã được phục vụ.
+• Quy trình thực hiện:
+1. Nhân viên Phục vụ dùng sổ và bút ghi lại các món khách gọi.
+2. Xé phiếu order giấy và di chuyển đến quầy Bếp để giao phiếu.
+3. Nhân viên Bếp nhận phiếu giấy, ghim lên bảng và tiến hành chế biến.
+4. Khi món ăn hoàn thành, Bếp thông báo (thường bằng cách gọi lớn) để Phục vụ đến nhận
+và mang ra cho khách.
+5. Khi khách yêu cầu thanh toán, Phục vụ cầm liên order giấy đến quầy Thu ngân.
+6. Thu ngân nhập lại từng món từ phiếu giấy vào máy tính tiền hoặc tính tay để ra tổng số
+tiền.
+7. Phục vụ mang hóa đơn đến bàn cho khách và nhận thanh toán.
+• Công cụ hỗ trợ: Sổ tay, bút, phiếu order giấy (2-3 liên), máy tính tiền cơ bản, máy in hóa
+đơn.
+3.2.2. Nghiệp vụ Quản lý Kho và Mua hàng (Procure-to-Pay)
+Báo cáo đồ án SE104
+
+Trang 5/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Mục tiêu: Đảm bảo luôn đủ nguyên vật liệu để bán hàng, kiểm soát chi phí nhập hàng và hạn
+chế thất thoát, lãng phí.
+• Đối tượng tham gia: Thủ kho (hoặc Bếp trưởng), Quản lý, Nhà cung cấp.
+• Đầu vào (Input): Ghi nhận nguyên vật liệu tồn kho xuống dưới mức an toàn.
+• Đầu ra (Output): Nguyên vật liệu được nhập vào kho, hóa đơn nhà cung cấp được thanh
+toán.
+• Quy trình thực hiện:
+1. Hàng ngày, Thủ kho hoặc Bếp trưởng kiểm tra thực tế các nguyên vật liệu trong kho.
+2. Ghi lại các mặt hàng cần nhập thêm vào một cuốn sổ hoặc file Excel.
+3. Trình danh sách cho Quản lý phê duyệt.
+4. Sử dụng điện thoại/Zalo để gọi đặt hàng cho từng nhà cung cấp.
+5. Khi nhà cung cấp giao hàng, nhân viên nhận hàng và đối chiếu số lượng thực tế với đơn
+đặt hàng
+6. ̇Ghi nhận số lượng hàng mới nhập vào sổ kho hoặc file Excel.
+7. Định kỳ (cuối tuần/tháng), tiến hành kiểm kê toàn bộ kho và so sánh với sổ sách để tìm
+ra chênh lệch.
+• Công cụ hỗ trợ: Sổ kho, file Excel, điện thoại, Zalo, hóa đơn giấy từ nhà cung cấp.
+3.2.3. Nghiệp vụ Quản lý Nhân sự
+• Mục tiêu: Theo dõi giờ công làm việc của nhân viên và lên lịch làm việc hàng tuần.
+• Đối tượng tham gia: Toàn bộ nhân viên, Quản lý.
+• Đầu vào (Input): Giờ đến và giờ về thực tế của nhân viên.
+• Đầu ra (Output): Bảng chấm công cuối tháng, lịch làm việc hàng tuần.
+• Quy trình thực hiện:
+1. Nhân viên tự ghi giờ vào/ra ca trên một bảng chấm công giấy đặt tại quầy.
+2. Quản lý dựa vào bảng chấm công giấy để theo dõi và tính tổng giờ công vào cuối tháng.
+3. Quản lý tạo lịch làm việc cho tuần tới trên file Excel hoặc ng trắng.
+4. Nhân viên xem lịch và tự thỏa thuận đổi ca với nhau nếu có nhu cầu, sau đó báo lại cho
+quản lý.
+• Công cụ hỗ trợ: Bảng chấm công giấy, bút, file Excel/Google Sheets, bảng trắng.
+1.1.2.3
+
+Tần suất và Khối lượng thực hiện
+
+Báo cáo đồ án SE104
+
+Trang 6/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Nghiệp vụ
+
+Tần suất
+
+Khối lượng
+
+Bán hàng và Thanh toán
+
+Liên tục trong giờ mở cửa
+
+Rất lớn, đặc biệt vào giờ cao
+điểm
+
+Quản lý Kho và Mua
+hàng
+
+Hàng ngày (đặt hàng, nhận
+hàng)
+
+Trung bình
+
+Quản lý Nhân sự
+
+Hàng ngày (chấm công), hàng
+tuần (xếp lịch)
+
+Trung bình
+
+Báo cáo và Đối soát
+
+Hàng ngày (đóng ca), hàng
+tháng
+
+Lớn (do tính thủ công)
+
+1.1.2.4
+
+1.1.3
+
+Đánh giá nghiệp vụ hiện tại
+
+Nghiệp vụ
+
+Điểm mạnh
+
+Điểm yếu
+
+Bán hàng và Thanh
+toán
+
+- Quy trình đơn giản, dễ đào
+tạo cho nhân viên mới.
+- Chi phí đầu tư ban đầu cho
+công cụ thấp.
+
+- Sai sót cao: Ghi nhầm món,
+đọc sai chữ, quên yêu cầu đặc
+biệt.
+- Chậm trễ: Nhân viên phải
+di chuyển nhiều, gây tắc nghẽn
+vào giờ cao điểm.
+- Khó kiểm soát: Khó truy vết
+khi có sai sót, dễ gian lận.
+
+Quản lý Kho và
+Mua hàng
+
+- Linh hoạt, nhân viên có
+thể ước lượng và đặt hàng
+nhanh qua điện thoại.
+
+- Thiếu chính xác: Tồn kho
+trên sổ sách thường không khớp
+với thực tế.
+- Không kịp thời: Không có
+cảnh báo tồn kho thấp tự động,
+dễ bị hết hàng đột ngột.
+- Khó phân tích: Không thể
+tính giá vốn (food cost) chính
+xác cho từng món ăn.
+
+Quản lý Nhân sự
+
+- Đơn giản, không đòi hỏi kỹ
+năng công nghệ.
+
+- Mất thời gian: Quản lý phải
+tổng hợp giờ công thủ công.
+- Dễ sai sót: Sai sót trong việc
+tính giờ làm, giờ tăng ca.
+
+Hiện trạng tin học
+
+1.1.3.1 Phần cứng Hạ tầng phần cứng hiện tại còn khá đơn giản, chủ yếu phục vụ các công
+việc văn phòng cơ bản và chưa được tích hợp vào quy trình vận hành chính.
+• Các thiết bị hiện tại & Số lượng:
+– Máy tính để bàn: 01 cái.
+– Máy in hóa đơn (bill printer): 01 cái.
+– Máy tính tiền cơ bản (cash register): 01 cái.
+– Modem/Router WiFi: 01 cái.
+Báo cáo đồ án SE104
+
+Trang 7/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Cấu hình:
+– Máy tính để bàn có cấu hình văn phòng phổ thông, đủ để chạy các ứng dụng cơ bản.
+– Máy tính tiền là loại độc lập, chỉ có chức năng tính tổng và in hóa đơn, không kết nối
+mạng.
+• Vị trí (vật lý):
+– Toàn bộ thiết bị (máy tính, máy in, máy tính tiền) được đặt tập trung tại quầy thu ngân.
+• Tình hình kết nối mạng:
+– Nhà hàng có một đường truyền Internet cáp quang, chủ yếu phục vụ cho máy tính của
+quản lý và phát WiFi cho khách.
+– Chưa có hệ thống mạng LAN nội bộ được cấu hình chuyên biệt cho việc vận hành. Độ
+ổn định của mạng phụ thuộc vào nhà cung cấp dịch vụ.
+• Loại kết nối: WiFi, LAN (cho máy tính để bàn).
+1.1.3.2 Phần mềm
+quản lý tập trung.
+
+Việc sử dụng phần mềm còn rất hạn chế và rời rạc, chưa có một hệ thống
+
+• Hệ điều hành:
+– Windows 10 được cài đặt trên máy tính để bàn.
+• Hệ quản trị CSDL:
+– Không có. Dữ liệu hiện đang được lưu trữ phân tán dưới dạng các tệp riêng lẻ (Excel,
+Word) hoặc sổ sách giấy.
+• Các phần mềm tiện ích khác:
+– Bộ ứng dụng Microsoft Oﬀice (chủ yếu là Excel để quản lý kho sơ bộ và chấm công).
+– Ứng dụng Zalo (trên máy tính và điện thoại cá nhân) để giao tiếp nội bộ và đặt hàng với
+nhà cung cấp.
+– Trình duyệt web để truy cập Internet.
+1.1.3.3 Con người Năng lực công nghệ của đội ngũ nhân sự là một yếu tố cần được xem xét
+khi triển khai hệ thống mới.
+• Trình độ chuyên môn Tin học:
+– Nhân viên (Phục vụ, Bếp, Thu ngân) có kỹ năng tin học ở mức cơ bản: có khả năng sử
+dụng điện thoại thông minh và các ứng dụng nhắn tin.
+– Quản lý có kỹ năng tốt hơn, có thể sử dụng thành thạo Excel để nhập liệu và tính toán
+đơn giản.
+– Tổ chức không có nhân sự chuyên trách về IT. Mọi vấn đề kỹ thuật phát sinh đều tự
+xử lý hoặc thuê dịch vụ bên ngoài theo từng sự vụ.
+
+Báo cáo đồ án SE104
+
+Trang 8/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+1.2
+
+Xác định và thu thập yêu cầu
+
+1.2.1
+
+Yêu cầu chức năng
+
+1.2.1.1
+
+Phân hệ Bán hàng (POS)
+
+• Order:
+– Nhân viên Phục vụ, sẽ ghi nhận đơn hàng tại bàn bằng máy tính bảng, để gửi yêu cầu
+đến bếp một cách nhanh chóng và chính xác.
+Mô tả chức năng:
+∗ Hệ thống phải hiển thị một sơ đồ bàn trực quan, cho phép người dùng chọn bàn
+đang có khách để bắt đầu ghi order.
+∗ Giao diện gọi món phải hiển thị thực đơn theo danh mục (khai vị, món chính, đồ
+uống...).
+∗ Người dùng có thể chọn món, tăng/giảm số lượng. Món ăn được chọn sẽ được thêm
+vào một hóa đơn tạm tính (ticket) cho bàn đó.
+∗ Khi người dùng nhấn nút ”Gửi”, hệ thống phải ngay lập tức chuyển thông tin đơn
+hàng đến các màn hình khu vực bếp chế biến.
+– Nhân viên Phục vụ, có thể dễ dàng thêm các tùy chọn (modifier) và ghi chú đặc biệt
+cho từng món ăn, để đảm bảo bếp chế biến đúng theo yêu cầu của khách hàng.
+Mô tả chức năng:
+∗ Khi chọn một món ăn, hệ thống cho phép người dùng thêm các tùy chọn có sẵn (ví
+dụ: size L, ít đường, không cay). Các tùy chọn này có thể làm thay đổi giá của món
+ăn.
+∗ Hệ thống phải cung cấp một trường văn bản để người dùng nhập các ghi chú tự do
+cho món ăn (ví dụ: ”cho em bé”, ”ít hành”).
+∗ Tất cả các tùy chọn và ghi chú phải được hiển thị rõ ràng cùng với tên món ăn trên
+màn hình POS và phiếu order gửi đến KDS.
+– Quản lý Nhà hàng, có thể phê duyệt việc hủy một món đã gửi bếp bằng mã PIN trực
+tiếp trên máy POS, để kiểm soát thất thoát một cách nhanh chóng tại chỗ.
+Mô tả chức năng:
+∗ Khi Nhân viên Phục vụ thực hiện thao tác hủy một món đã được gửi đi, hệ thống
+sẽ hiển thị một hộp thoại yêu cầu xác thực từ Quản lý.
+∗ Quản lý nhập mã PIN của mình để xác thực.
+∗ Sau khi xác thực thành công, hệ thống cho phép hủy món. Mọi thao tác hủy (món
+gì, ai hủy, ai duyệt, thời gian) phải được ghi lại trong nhật ký hệ thống (audit log)
+để phục vụ báo cáo.
+∗ Hệ thống phải gửi lệnh hủy đến màn hình KDS để thông báo cho Bếp ngừng chế
+biến món đó.
+• Thanh toán:
+– Thu ngân, sẽ xử lý thanh toán với nhiều hình thức (tiền mặt, thẻ, QR code), để mang
+lại sự tiện lợi tối đa cho khách hàng.
+Mô tả chức năng:
+∗ Giao diện thanh toán phải cho phép chọn một hoặc nhiều phương thức thanh toán
+cho một hóa đơn.
+
+Báo cáo đồ án SE104
+
+Trang 9/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+∗ Hệ thống phải tự động tính toán số tiền thừa cần trả lại cho khách khi thanh toán
+bằng tiền mặt.
+∗ Tích hợp với cổng thanh toán để xử lý giao dịch thẻ và hiển thị mã QR động để
+khách hàng quét.
+– Thu ngân, có thể quản lý và báo cáo tiền trong két khi bắt đầu và kết thúc ca làm việc,
+để đảm bảo tính minh bạch và đối soát chính xác.
+Mô tả chức năng:
+∗ Chức năng ”Mở ca”: Yêu cầu người dùng nhập số tiền mặt ban đầu có trong két
+(float).
+∗ Chức năng ”Đóng ca”: Hệ thống sẽ hiển thị tổng doanh thu dự kiến theo từng loại
+hình thanh toán trong ca. Yêu cầu người dùng nhập số tiền mặt thực tế đếm được
+trong két.
+∗ Hệ thống tự động tạo báo cáo cuối ca (Z-report), so sánh giữa số tiền lý thuyết và
+thực tế, đồng thời chỉ ra chênh lệch.
+• Quản lý Bàn & Đặt chỗ:
+– Nhân viên Phục vụ, có thể xem sơ đồ bàn trực quan với trạng thái cập nhật theo thời
+gian thực, để nhanh chóng sắp xếp chỗ ngồi cho khách.
+Mô tả chức năng:
+∗ Hiển thị sơ đồ bàn theo đúng layout vật lý của nhà hàng (có thể tùy chỉnh bởi Quản
+lý).
+∗ Mỗi bàn phải được mã hóa màu sắc để thể hiện trạng thái: Trống, Có khách, Đã đặt
+trước.
+∗ Trạng thái bàn phải tự động cập nhật khi có các hành động tương ứng (mở bàn,
+thanh toán, tạo đặt chỗ).
+– Quản lý Nhà hàng, có thể ghi nhận và quản lý thông tin đặt bàn của khách, để chuẩn
+bị đón tiếp và tối ưu hóa việc sử dụng bàn.
+Mô tả chức năng:
+∗ Cung cấp giao diện để tạo một yêu cầu đặt bàn mới với các thông tin: tên khách
+hàng, SĐT, số lượng khách, thời gian, ghi chú.
+∗ Hiển thị danh sách hoặc lịch các yêu cầu đặt bàn theo ngày/tuần.
+∗ Cho phép gán một yêu cầu đặt bàn vào một bàn cụ thể trên sơ đồ.
+1.2.1.2
+
+Phân hệ Bếp (KDS)
+
+• Nhân viên Bếp, có thể xem danh sách các yêu cầu chế biến trên màn hình KDS theo thứ tự
+thời gian, để biết cần phải làm món nào trước.
+Mô tả chức năng:
+– Các phiếu order (ticket) mới phải được hiển thị trên màn hình KDS theo thứ tự ”vào
+trước, ra trước”(FIFO).
+– Mỗi ticket phải có đồng hồ đếm thời gian kể từ lúc order được gửi, giúp Bếp nhận biết
+các order đang bị trễ.
+• Nhân viên Bếp, có thể chạm vào màn hình để cập nhật trạng thái món ăn (ví dụ: Đang làm
+→ Hoàn thành), để thông báo cho nhân viên phục vụ ra lấy món kịp thời.
+Mô tả chức năng:
+Báo cáo đồ án SE104
+
+Trang 10/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+– Người dùng có thể chạm vào một món ăn trên ticket để chuyển trạng thái.
+– Khi một món ăn được đánh dấu ”Hoàn thành”, hệ thống cần gửi thông báo (notification)
+đến ứng dụng POS của nhân viên phục vụ đã tạo order đó.
+– Khi tất cả các món trong một ticket đã hoàn thành, ticket đó sẽ được chuyển sang trạng
+thái ”Hoàn thành”và có thể được xóa khỏi màn hình chính.
+• Nhân viên Bếp, dễ dàng nhận biết được mỗi món ăn có yêu cầu đặc biệt (modifier) hoặc ghi
+chú khác nhau phải được hiển thị thành một dòng riêng biệt, để tránh nhầm lẫn khi chế biến.
+Mô tả chức năng:
+– Nếu một order có ”2 Phở Bò”nhưng 1 suất có ghi chú ”không hành”, hệ thống KDS phải
+hiển thị thành 2 dòng riêng biệt:
+∗ 1x Phở Bò
+∗ 1x Phở Bò (Ghi chú: không hành)
+– Điều này ngăn việc bếp làm gộp 2 suất giống hệt nhau. Các ghi chú, modifier phải được
+làm nổi bật (in đậm, màu khác).
+1.2.1.3
+
+Phân hệ Kho & Công thức
+
+• Quản lý Nhà hàng, có thể tạo công thức định lượng nguyên vật liệu cho từng món ăn, để
+hệ thống tự động trừ kho khi bán hàng và tính toán giá vốn chính xác.
+Mô tả chức năng:
+– Giao diện cho phép người dùng chọn một món ăn và liên kết nó với các nguyên vật liệu
+có trong kho.
+– Người dùng có thể nhập số lượng chính xác cho từng nguyên vật liệu (ví dụ: 1 Bò Bít
+Tết = 0.2 kg Thịt thăn bò, 0.05 kg Khoai tây).
+– Dựa trên công thức và giá nhập kho của nguyên vật liệu, hệ thống phải tự động tính và
+hiển thị giá vốn (food cost) cho món ăn đó.
+• Thủ kho, có thể tạo và theo dõi các đơn mua hàng (PO) gửi đến nhà cung cấp, để quản lý
+quy trình nhập hàng một cách có hệ thống.
+Mô tả chức năng:
+– Cho phép tạo một Đơn Mua Hàng (Purchase Order) mới, chọn nhà cung cấp từ danh
+sách.
+– Người dùng có thể thêm các nguyên vật liệu cần mua vào PO, nhập số lượng và đơn giá.
+– Hệ thống phải cho phép theo dõi trạng thái của PO (ví dụ: Mới tạo, Đã gửi, Đã nhận
+hàng, Đã hủy).
+• Thủ kho, có thể ghi nhận chính xác số lượng hàng hóa thực tế khi nhập kho, để đảm bảo dữ
+liệu tồn kho trên hệ thống luôn đúng.
+Mô tả chức năng:
+– Từ một PO đã gửi, người dùng có thể tạo một Phiếu Nhập Kho.
+– Hệ thống hiển thị các mặt hàng trong PO, cho phép người dùng nhập vào số lượng thực
+nhận (có thể khác với số lượng đặt hàng).
+
+Báo cáo đồ án SE104
+
+Trang 11/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+– Khi xác nhận Phiếu Nhập Kho, số lượng tồn kho của các nguyên vật liệu tương ứng phải
+được tự động cập nhật trên toàn hệ thống.
+• Là một Quản lý Nhà hàng, tôi muốn nhận được cảnh báo tự động khi một nguyên vật liệu
+sắp hết hàng, để có kế hoạch đặt hàng kịp thời, tránh gián đoạn kinh doanh.
+Mô tả chức năng:
+– Cho phép người dùng thiết lập một ”ngưỡng tồn kho tối thiểu”cho mỗi nguyên vật liệu.
+– Khi số lượng tồn kho của một mặt hàng giảm xuống dưới ngưỡng này (do bán hàng
+hoặc xuất kho thủ công), hệ thống sẽ tự động tạo một cảnh báo trên Bảng điều khiển
+(Dashboard) hoặc gửi email cho người có trách nhiệm.
+1.2.1.4
+
+Phân hệ Báo cáo & Quản lý
+
+• Là một Chủ sở hữu, tôi muốn xem bảng điều khiển (dashboard) tổng quan về doanh thu
+theo thời gian thực, để nắm bắt nhanh tình hình kinh doanh mọi lúc mọi nơi.
+Mô tả chức năng:
+– Bảng điều khiển phải hiển thị các chỉ số kinh doanh chính (KPIs): Tổng doanh thu, Số
+hóa đơn, Giá trị hóa đơn trung bình, Số lượng khách.
+– Dữ liệu phải được cập nhật gần như ngay lập tức sau mỗi giao dịch thanh toán.
+– Giao diện phải được thiết kế đáp ứng (responsive), hiển thị tốt trên cả máy tính và thiết
+bị di động.
+• Là một Quản lý Nhà hàng, tôi muốn xem báo cáo phân tích các món ăn bán chạy và bán
+chậm, để có cơ sở đưa ra quyết định tối ưu hóa thực đơn.
+Mô tả chức năng:
+– Cung cấp một báo cáo liệt kê tất cả các món ăn trong một khoảng thời gian tùy chọn.
+– Với mỗi món, báo cáo phải hiển thị: Số lượng đã bán, Tổng doanh thu mang lại, Tỷ trọng
+doanh thu.
+– Cho phép sắp xếp danh sách theo các tiêu chí trên để dễ dàng xác định món bán chạy
+nhất (best-seller) và bán chậm nhất (worst-seller).
+• Là một Quản lý Nhà hàng, tôi muốn quản lý hồ sơ và chấm công cho nhân viên, để làm cơ
+sở tính lương chính xác và hiệu quả.
+Mô tả chức năng:
+– Cung cấp chức năng tạo và lưu trữ hồ sơ nhân viên với các thông tin cơ bản (tên, SĐT,
+vai trò).
+– Nhân viên có thể chấm công (check-in/check-out) trực tiếp trên máy POS.
+– Hệ thống phải tự động ghi nhận và tổng hợp giờ làm việc, xuất ra báo cáo chấm công
+chi tiết theo từng nhân viên trong một kỳ lương tùy chọn.
+1.2.2
+
+Yêu cầu phi chức năng
+
+Phần này định nghĩa các thuộc tính chất lượng, ràng buộc và tiêu chuẩn vận hành mà hệ thống
+phải tuân thủ. Các yêu cầu này đảm bảo hệ thống không chỉ thực hiện đúng chức năng mà còn hoạt
+động một cách hiệu quả, tin cậy và an toàn.
+Báo cáo đồ án SE104
+
+Trang 12/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+1.2.2.1
+
+Tính hiệu quả (Performance)
+
+• Thao tác ghi nhận đơn hàng và gửi đến KDS phải được xử lý và phản hồi cho người dùng
+trong vòng dưới 1 giây.
+• Hệ thống phải có khả năng xử lý đồng thời ít nhất 50 đơn hàng đang hoạt động trong giờ cao
+điểm (peak hours) mà không có độ trễ đáng kể (lớn hơn 3 giây) ở các tác vụ chính.
+• Các báo cáo vận hành chính (ví dụ: báo cáo tổng kết doanh thu cuối ngày) phải được tạo và
+hiển thị trong vòng 30 giây sau khi người dùng yêu cầu.
+1.2.2.2
+
+Tính tin cậy (Reliability)
+
+• Chế độ ngoại tuyến (Offline Mode): Hệ thống phải cho phép nhân viên tiếp tục thực hiện
+các chức năng bán hàng cốt lõi (ghi order, tạm tính) khi mất kết nối Internet.
+• Dữ liệu phát sinh trong chế độ ngoại tuyến phải được lưu trữ an toàn trên thiết bị trong ít
+nhất 8 giờ và phải tự động đồng bộ hóa với máy chủ ngay khi kết nối mạng được khôi phục.
+• Độ sẵn sàng (Availability): Hệ thống phải đảm bảo thời gian hoạt động (uptime) đạt 99.5%
+trong khung giờ kinh doanh đã đăng ký của nhà hàng.
+1.2.2.3
+
+Tính dễ sử dụng (Usability)
+
+• Giao diện người dùng (UI), đặc biệt là màn hình POS, phải được thiết kế trực quan, tuân
+thủ các nguyên tắc thiết kế cho giao diện cảm ứng (touch-friendly), giảm thiểu số lần nhấn
+(clicks/taps) cho các tác vụ phổ biến.
+• Một nhân viên mới, với kỹ năng số cơ bản, phải có thể học và thực hiện thành thạo các nghiệp
+vụ chính (ghi order, thanh toán) trong vòng 30 phút đào tạo.
+1.2.2.4
+
+Tính bảo mật (Security)
+
+• Phân quyền truy cập: Hệ thống phải thực thi nghiêm ngặt mô hình Phân quyền Dựa trên
+Vai trò (RBAC) đã được định nghĩa. Người dùng không được phép truy cập vào bất kỳ chức
+năng hoặc dữ liệu nào nằm ngoài phạm vi quyền hạn của mình.
+• Nhật ký hệ thống (Audit Log): Mọi hành động có tác động lớn đến dữ liệu hoặc tài chính
+(ví dụ: hủy hóa đơn, điều chỉnh kho, áp dụng giảm giá tùy chỉnh) phải được ghi lại trong một
+nhật ký không thể sửa đổi, bao gồm thông tin về người thực hiện, hành động và thời gian
+thực hiện.
+1.2.2.5
+
+Tính tương thích (Compatibility)
+
+• Ứng dụng web-based phải tương thích và hiển thị tốt (responsive design) trên các phiên bản
+mới nhất của trình duyệt Google Chrome và Mozilla Firefox.
+• Giao diện phải được tối ưu hóa cho các thiết bị máy tính bảng (tablet) có màn hình cảm ứng
+với kích thước từ 8 inch trở lên.
+
+Báo cáo đồ án SE104
+
+Trang 13/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2
+
+Xác định và Mô hình hoá yêu cầu phần mềm
+
+2.1
+
+Phân loại các yêu cầu phần mềm
+
+2.1.1
+
+Yêu cầu nghiệp vụ
+
+2.1.1.1
+
+Bảng Yêu cầu nghiệp vụ Tổng quan - Hệ thống RMS
+
+Báo cáo đồ án SE104
+
+Trang 14/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Tên yêu cầu
+
+Biểu mẫu
+
+Qui định
+
+Ghi chú
+
+1
+
+Tiếp nhận & Xử
+lý Đơn hàng
+
+BM-POS
+
+QĐ-AVAIL,
+QĐ-VOID,
+QĐ-ROUTE
+
+Nghiệp vụ xương
+sống, ảnh hưởng
+trực tiếp đến tốc
+độ phục vụ và trải
+nghiệm khách
+hàng.
+
+2
+
+Xử lý Thanh toán
+
+BM-BILL, BM-SHIFT
+
+QĐ-PAY,
+QĐ-SPLIT,
+QĐ-DISCOUNT,
+QĐ-SHIFT
+
+Cốt lõi để đảm bảo
+dòng tiền, chống
+thất thoát và cung
+cấp sự tiện lợi cho
+khách.
+
+3
+
+Quản lý Thực đơn
+& Công thức
+
+BM-MENU, BM-RECIPE
+
+QĐ-COST,
+QĐ-LINK
+
+Cầu nối dữ liệu
+trọng yếu giữa Bán
+hàng (FOH) và
+Kho (BOH), quyết
+định tính chính xác
+của giá vốn.
+
+4
+
+Quản lý Tồn kho
+& Mua hàng
+
+BM-INV, BM-PO
+
+QĐ-DEDUCT,
+QĐ-ALERT,
+QĐ-RECEIVE
+
+Nghiệp vụ
+back-of-house,
+trung tâm của việc
+kiểm soát chi phí và
+ngăn chặn lãng phí.
+
+5
+
+Quản lý Nhân sự
+& Chấm công
+
+BM-HR, BM-TIME
+
+QĐ-ROLE,
+QĐ-WORK
+
+Tự động hóa các
+công việc hành
+chính để giảm tải
+cho quản lý và đảm
+bảo tính lương
+chính xác.
+
+6
+
+Quản lý Khách
+hàng & Đặt bàn
+
+BM-CUS, BM-RESV
+
+QĐ-LOYALTY,
+QĐ-BOOK
+
+Xây dựng mối quan
+hệ với khách hàng,
+tăng tỷ lệ quay trở
+lại và tối ưu hóa
+việc sử dụng bàn.
+
+7
+
+Xem báo cáo &
+Phân tích
+
+BM-REPORT
+
+QĐ-ACCESS,
+QĐ-REALTIME
+
+Cung cấp thông tin
+hỗ trợ ra quyết định
+dựa trên dữ liệu,
+thay vì cảm tính.
+
+8
+
+Quản trị Hệ
+thống
+
+BM-USER, BM-CONFIG
+
+QĐ-RBAC
+
+Nền tảng để đảm
+bảo hệ thống vận
+hành đúng, bảo
+mật và linh hoạt
+theo nhu cầu.
+
+Báo cáo đồ án SE104
+
+Trang 15/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2.1.1.2
+
+Diễn giải chi tiết các Biểu mẫu (BM) và Quy định (QĐ)
+
+Biểu mẫu (Forms):
+• BM-POS: Phiếu Ghi Đơn hàng (Order Ticket) trên giao diện POS.
+• BM-BILL: Hóa đơn Thanh toán (Bill/Invoice).
+• BM-SHIFT: Báo cáo cuối ca làm việc (Z-report).
+• BM-MENU: Biểu mẫu quản lý thông tin Món ăn.
+• BM-RECIPE: Biểu mẫu tạo Công thức Định lượng Nguyên vật liệu (NVL).
+• BM-INV: Biểu mẫu quản lý danh mục NVL trong kho.
+• BM-PO: Đơn Mua Hàng (Purchase Order).
+• BM-HR: Hồ sơ Nhân viên.
+• BM-TIME: Bảng chấm công điện tử.
+• BM-CUS: Hồ sơ Khách hàng.
+• BM-RESV: Phiếu Đặt bàn (Reservation).
+• BM-REPORT: Các giao diện Báo cáo (Doanh thu, Kho, Món ăn...).
+• BM-USER: Biểu mẫu quản lý tài khoản Người dùng.
+• BM-CONFIG: Giao diện cấu hình thông tin chi nhánh, hệ thống.
+Quy định (Rules):
+• QĐ-AVAIL: Món ăn phải khả dụng (còn hàng, đủ NVL) mới được thêm vào đơn hàng.
+• QĐ-VOID: Việc hủy món đã gửi bếp cần có sự phê duyệt của Quản lý.
+• QĐ-ROUTE: Đơn hàng phải được tự động định tuyến đến đúng trạm chế biến (Bếp/Bar).
+• QĐ-PAY: Hệ thống phải hỗ trợ đa dạng phương thức thanh toán.
+• QĐ-SPLIT: Hệ thống phải hỗ trợ các quy tắc tách hóa đơn (chia đều, theo món...).
+• QĐ-DISCOUNT: Việc áp dụng giảm giá tùy chỉnh cần có sự phê duyệt của Quản lý.
+• QĐ-SHIFT: Quy trình Mở ca và Đóng ca phải tuân thủ việc nhập/kiểm đếm tiền mặt.
+• QĐ-COST: Giá vốn món ăn phải được tự động tính toán dựa trên công thức và giá nhập NVL.
+• QĐ-LINK: Công thức định lượng phải được liên kết với các NVL có trong kho.
+• QĐ-DEDUCT: NVL phải được tự động trừ kho khi món ăn tương ứng được bán.
+• QĐ-ALERT: Hệ thống phải tự động cảnh báo khi tồn kho NVL xuống dưới mức tối thiểu.
+• QĐ-RECEIVE: Quy trình nhập kho phải đối chiếu với Đơn Mua Hàng.
+• QĐ-ROLE: Mỗi nhân viên có một vai trò và quyền hạn tương ứng.
+Báo cáo đồ án SE104
+
+Trang 16/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• QĐ-WORK: Giờ công phải được ghi nhận chính xác để làm cơ sở tính lương.
+• QĐ-LOYALTY: Quy tắc tích điểm và đổi điểm cho khách hàng thân thiết.
+• QĐ-BOOK: Các quy định về việc đặt bàn (thời gian giữ bàn, số lượng khách...).
+• QĐ-ACCESS: Việc truy cập báo cáo phải được phân quyền theo vai trò người dùng.
+• QĐ-REALTIME: Dữ liệu trên các báo cáo vận hành phải được cập nhật theo thời gian thực.
+• QĐ-RBAC: Hệ thống phải tuân thủ ma trận Phân quyền Dựa trên Vai trò (Role-Based Access
+Control).
+2.1.1.3
+
+1. Yêu cầu Tiếp nhận & Xử lý Đơn hàng
+
+BM-POS: Phiếu Ghi Đơn Hàng
+Mã đơn hàng tạm (Ticket
+ID):
+Số bàn:
+Thời gian tạo:
+Nhân viên tạo:
+□ Đang ghi
+
+Trạng thái:
+
+□ Đã gửi bếp
+
+□ Hoàn tất
+
+Danh Sách Món Ăn
+Tên món
+
+SL
+
+Đơn giá
+
+Thành tiền
+
+Tùy chọn / Ghi chú
+
+Tổng cộng:
+
+Ghi chú thêm:
+
+QĐ-AVAIL: Món ăn phải khả dụng.
+Quy định: Hệ thống không cho phép thêm một món ăn vào đơn hàng nếu món đó đã được Quản
+lý đánh dấu ”Tạm ngưng”trong thực đơn, hoặc nếu một trong các nguyên vật liệu chính trong công
+thức của món đó có số lượng tồn kho bằng 0.
+QĐ-VOID: Hủy món đã gửi bếp cần có sự phê duyệt.
+Quy định: Khi nhân viên thực hiện thao tác ”Hủy”một món ăn đã được gửi đến KDS, hệ thống
+phải hiển thị một cửa sổ yêu cầu xác thực bằng mã PIN hoặc thẻ của người có vai trò ”Quản lý Nhà
+hàng”. Thao tác hủy phải được ghi lại trong nhật ký hệ thống.
+QĐ-ROUTE: Đơn hàng phải được tự động định tuyến.
+Báo cáo đồ án SE104
+
+Trang 17/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Quy định: Khi một đơn hàng được gửi, hệ thống phải tự động phân tách và gửi các món ăn/đồ
+uống đến đúng trạm chế biến đã được cấu hình trước (ví dụ: ”Bò bít tết”đến KDS Bếp Nóng,
+”Salad”đến KDS Bếp Lạnh, ”Cà phê”đến KDS Quầy Bar).
+2.1.1.4
+
+2. Yêu cầu Xử lý Thanh toán
+
+• BM-BILL: Hóa đơn Thanh toán
+Thông tin Hóa đơn
+Mã hóa đơn (duy nhất):
+Số bàn:
+Thời gian vào/ra:
+Tổng tiền hàng:
+Giảm giá/Khuyến mãi:
+Thuế (VAT):
+Tổng cộng phải trả:
+Chi tiết thanh toán:
+Tiền thừa (nếu có):
+• BM-SHIFT: Báo cáo cuối ca
+Báo cáo Giao ca (Z-report)
+Nhân viên:
+Thời gian bắt đầu/kết thúc:
+Tiền mặt đầu ca (Float):
+Tổng doanh thu hệ thống (A):
+Tiền mặt thực tế đếm được (B):
+Chênh lệch (B - A):
+• QĐ-PAY: Hệ thống phải hỗ trợ đa dạng phương thức thanh toán.
+Quy định: Hệ thống phải cho phép khách hàng thanh toán một hóa đơn bằng một hoặc nhiều
+phương thức khác nhau (ví dụ: một phần tiền mặt, một phần quẹt thẻ).
+• QĐ-SPLIT: Hệ thống phải hỗ trợ các quy tắc tách hóa đơn.
+Quy định: Hệ thống phải cung cấp các chức năng tách hóa đơn linh hoạt, bao gồm: chia đều
+tổng số tiền cho số người, hoặc cho phép chọn từng món ăn để tách ra thành các hóa đơn
+riêng biệt.
+• QĐ-DISCOUNT: Việc áp dụng giảm giá tùy chỉnh cần có sự phê duyệt.
+Quy định: Khi nhân viên áp dụng một mức giảm giá không nằm trong các chương trình khuyến
+mãi đã được thiết lập sẵn, hệ thống phải yêu cầu xác thực từ Quản lý.
+Báo cáo đồ án SE104
+
+Trang 18/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• QĐ-SHIFT: Quy trình Mở ca và Đóng ca phải được tuân thủ.
+Quy định: Chức năng ”Mở ca”phải yêu cầu nhân viên nhập số tiền mặt ban đầu. Chức năng
+”Đóng ca”phải yêu cầu nhân viên nhập số tiền mặt thực tế đếm được trước khi hệ thống cho
+phép in báo cáo tổng kết ca.
+2.1.1.5
+
+3. Yêu cầu Quản lý Thực đơn & Công thức
+
+• BM-MENU: Biểu mẫu Món ăn
+Thông tin Món ăn
+Tên món:
+Mã món:
+Danh mục:
+Giá bán:
+Giá vốn (tự động tính):
+Hình ảnh:
+Mô tả:
+Trạng thái:
+• BM-RECIPE: Biểu mẫu Công thức Định lượng
+Công thức cho món:
+Danh sách Nguyên vật liệu
+Tên NVL
+
+Số lượng
+
+Đơn vị tính
+
+• QĐ-COST: Giá vốn món ăn phải được tự động tính toán.
+Quy định: Dựa trên công thức (BM-RECIPE) và giá nhập trung bình của từng NVL trong kho,
+hệ thống phải tự động tính toán và hiển thị giá vốn cho mỗi món ăn.
+• QĐ-LINK: Công thức định lượng phải được liên kết với NVL trong kho.
+Quy định: Khi tạo công thức, người dùng chỉ có thể chọn các NVL đã tồn tại trong danh mục
+kho (BM-INV).
+
+Báo cáo đồ án SE104
+
+Trang 19/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2.1.1.6
+
+4. Yêu cầu Quản lý Tồn kho & Mua hàng
+
+• BM-INV: Biểu mẫu Nguyên vật liệu
+Thông tin Nguyên vật liệu
+Tên NVL:
+Mã NVL:
+Đơn vị tính:
+Nhà cung cấp chính:
+Giá nhập gần nhất:
+Mức tồn kho tối thiểu:
+Số lượng tồn kho hiện tại:
+• BM-PO: Đơn Mua Hàng
+Thông tin Đơn Mua Hàng
+Mã PO:
+Nhà cung cấp:
+Ngày tạo:
+Người tạo:
+Trạng thái:
+Danh sách NVL cần nhập
+Tên NVL
+
+Đơn vị tính
+
+Số
+đặt
+
+lượng
+
+Đơn giá
+
+• QĐ-DEDUCT: NVL phải được tự động trừ kho khi bán hàng.
+Quy định: Khi một hóa đơn chứa món ăn có công thức định lượng được thanh toán, hệ thống
+phải tự động trừ đi số lượng NVL tương ứng từ kho.
+• QĐ-ALERT: Hệ thống phải tự động cảnh báo khi tồn kho NVL xuống dưới mức tối
+thiểu.
+Quy định: Khi số lượng tồn kho của một NVL giảm xuống dưới ngưỡng đã được cài đặt, hệ
+thống sẽ tự động tạo một cảnh báo trên Bảng điều khiển (Dashboard) hoặc gửi email cho
+người có trách nhiệm.
+
+Báo cáo đồ án SE104
+
+Trang 20/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• QĐ-RECEIVE: Quy trình nhập kho phải đối chiếu với Đơn Mua Hàng.
+Quy định: Khi nhận hàng, hệ thống phải cho phép người dùng đối chiếu số lượng thực nhận
+với số lượng đã đặt trên Đơn Mua Hàng (BM-PO) tương ứng.
+2.1.1.7
+
+5. Yêu cầu ”Quản lý Nhân sự & Chấm công
+
+• BM-HR: Hồ sơ Nhân viên
+Thông tin Nhân viên
+Mã nhân viên:
+Họ và tên:
+Số điện thoại:
+Vai trò:
+Trạng thái:
+• BM-TIME: Bảng chấm công điện tử
+Báo cáo Chấm công (theo kỳ)
+Tên nhân viên:
+Tổng số giờ làm việc:
+Số giờ tăng ca (nếu có):
+Chi tiết check-in/check-out hàng ngày
+Ngày
+
+Giờ vào
+
+Giờ ra
+
+• QĐ-ROLE: Mỗi nhân viên có một vai trò và quyền hạn tương ứng.
+Quy định: Hệ thống phải cho phép Quản lý gán một (hoặc nhiều) vai trò đã được định nghĩa
+trước (ví dụ: Phục vụ, Thu ngân, Bếp) cho mỗi tài khoản nhân viên. Quyền truy cập và thao
+tác của nhân viên đó trên hệ thống sẽ bị giới hạn bởi vai trò được gán.
+• QĐ-WORK: Giờ công phải được ghi nhận chính xác.
+Quy định: Hệ thống phải tự động ghi nhận thời gian khi nhân viên thực hiện thao tác ”Checkin”và ”Check-out”trên máy POS. Dữ liệu này là nguồn duy nhất để tính toán tổng giờ công
+trong Báo cáo Chấm công (BM-TIME).
+
+Báo cáo đồ án SE104
+
+Trang 21/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2.1.1.8
+
+6. Yêu cầu ”Quản lý Khách hàng & Đặt bàn
+
+• BM-CUS: Hồ sơ Khách hàng
+Thông tin Khách hàng
+Họ và tên:
+Số điện thoại:
+Hạng thành viên:
+Điểm tích lũy:
+Lịch sử giao dịch:
+• BM-RESV: Phiếu Đặt bàn
+Thông tin Đặt bàn
+Tên khách hàng / SĐT:
+Số lượng khách:
+Thời gian đến:
+Số bàn (nếu có):
+Ghi chú:
+Trạng thái:
+• QĐ-LOYALTY: Quy tắc tích điểm và đổi điểm cho khách hàng thân thiết.
+Quy định: Hệ thống phải cho phép Quản lý thiết lập một quy tắc tích điểm (ví dụ: 10,000đ =
+1 điểm). Khi khách hàng thành viên thanh toán, điểm phải được tự động cộng vào tài khoản.
+Khách hàng có thể sử dụng điểm để trừ vào tổng số tiền phải trả trong các lần thanh toán
+sau.
+• QĐ-BOOK: Bàn đã được đặt trước phải được đánh dấu.
+Quy định: Khi một yêu cầu đặt bàn (BM-RESV) được xác nhận và gán cho một bàn cụ thể,
+bàn đó phải tự động chuyển sang trạng thái ”Đã đặt”trên sơ đồ bàn trực quan và không cho
+phép nhân viên mở bàn cho khách vãng lai trong khung giờ đã đặt.
+2.1.1.9
+
+7. Yêu cầu ”Xem báo cáo & Phân tích
+
+• BM-REPORT: Giao diện Báo cáo
+Mô tả: Đây là một tập hợp các màn hình và chức năng cho phép người dùng xem, lọc và xuất
+dữ liệu kinh doanh đã được tổng hợp. Biểu mẫu cụ thể sẽ thay đổi tùy thuộc vào loại báo cáo,
+ví dụ:
+– Báo cáo Doanh thu cuối ngày (đã được định nghĩa ở BM-SHIFT).
+Báo cáo đồ án SE104
+
+Trang 22/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+– Báo cáo Phân tích Món ăn (liệt kê món theo doanh thu, số lượng bán).
+– Báo cáo Nhập - Xuất - Tồn kho.
+– Bảng điều khiển (Dashboard) trực quan theo thời gian thực.
+• QĐ-ACCESS: Việc truy cập báo cáo phải được phân quyền.
+Quy định: Hệ thống phải kiểm tra vai trò của người dùng trước khi cho phép truy cập vào các
+chức năng báo cáo. Chỉ những vai trò từ ”Quản lý Nhà hàng”trở lên mới có quyền xem các
+báo cáo tổng hợp về tài chính, chi phí. Các vai trò khác (ví dụ: Phục vụ, Bếp) sẽ không thấy
+các mục này trong menu.
+• QĐ-REALTIME: Dữ liệu vận hành phải được cập nhật theo thời gian thực.
+Quy định: Dữ liệu trên các Bảng điều khiển (Dashboard) chính như doanh thu trong ngày phải
+được cập nhật gần như ngay lập tức (với độ trễ không quá 1 phút) sau mỗi giao dịch để phản
+ánh đúng tình hình kinh doanh tại mọi thời điểm.
+2.1.1.10
+
+8. Yêu cầu Quản trị Hệ thống
+
+• BM-USER: Biểu mẫu Quản lý Người dùng
+Thông tin Tài khoản
+Tên đăng nhập:
+Mật khẩu:
+Liên kết với Hồ sơ Nhân viên:
+Gán Vai trò:
+• BM-CONFIG: Giao diện Cấu hình
+Cấu hình Hệ thống
+Tên nhà hàng:
+Địa chỉ:
+Số điện thoại:
+Mức thuế suất (VAT):
+Cấu hình máy in:
+Cấu hình trạm KDS:
+• QĐ-RBAC: Hệ thống phải tuân thủ ma trận Phân quyền Dựa trên Vai trò.
+Quy định: Toàn bộ quyền hạn truy cập và thao tác trên hệ thống của một người dùng phải
+được quyết định bởi (các) vai trò được gán cho người dùng đó. Hệ thống phải thực thi đúng
+các quy tắc đã được định nghĩa trong Ma trận Phân quyền của tài liệu BRD (ví dụ: vai trò
+”Nhân viên Phục vụ”không thể truy cập chức năng ”Chỉnh sửa thực đơn”).
+
+Báo cáo đồ án SE104
+
+Trang 23/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+2.1.2
+
+2.1.3
+
+Yêu cầu tiến hóa
+Stt
+
+Nghiệp vụ
+
+Tham số cần thay đổi
+
+Miền giá trị / Scope
+
+1
+
+Thay đổi giá bán
+
+- Giá bán
+
+- Từng món ăn
+- Toàn bộ một danh
+mục món ăn
+
+2
+
+Thay đổi quy
+khuyến mãi
+
+- Tỷ lệ / Số tiền giảm
+- Điều kiện áp dụng
+(ngày trong tuần, khung
+giờ, giá trị hóa đơn tối
+thiểu)
+
+- Toàn hệ thống
+- Từng chi nhánh
+
+3
+
+Thay đổi mức thuế
+suất
+
+- Tỷ lệ thuế (VAT)
+
+- Toàn hệ thống
+
+4
+
+Thay đổi quy định cảnh
+báo kho
+
+- Mức tồn kho tối thiểu
+
+- Từng nguyên vật
+liệu
+
+5
+
+Thay đổi quy tắc tích
+điểm
+
+- Tỷ lệ quy đổi (Tiền →
+Điểm)
+- Tỷ lệ sử dụng (Điểm →
+Tiền)
+
+- Từng hạng thành
+viên khách hàng
+
+6
+
+Thay đổi phân quyền
+vai trò
+
+Các
+quyền
+hạn
+(Permissions)
+cho
+phép hoặc từ chối trên
+từng chức năng
+
+- Từng vai trò người
+dùng (Role)
+
+định
+
+Yêu cầu hiệu quả
+
+Các yêu cầu hiệu quả sau được đặt ra trong bối cảnh hệ thống được truy cập từ các thiết bị máy tính
+bảng thương mại tiêu chuẩn (ví dụ: iPad, Samsung Galaxy Tab) và kết nối qua một đường truyền
+Internet cáp quang thông thường dành cho doanh nghiệp.
+
+Báo cáo đồ án SE104
+
+Trang 24/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Tốc độ xử lý
+
+Dung lượng lưu trữ
+
+Ghi chú
+
+1
+
+Tiếp nhận & gửi Đơn
+hàng
+
+Phản hồi dưới 1 giây
+sau khi nhân viên
+nhấn ”Gửi”.
+
+-
+
+Tối quan trọng
+trong giờ cao điểm
+để đảm bảo luồng
+order thông suốt.
+
+2
+
+Xử lý Thanh toán
+
+Hoàn tất giao dịch và
+sẵn sàng in hóa đơn
+dưới 3 giây.
+
+-
+
+Áp dụng cho cả
+các giao dịch phức
+tạp như tách hóa
+đơn hoặc sử dụng
+nhiều phương thức
+thanh toán.
+
+3
+
+Xem báo cáo Doanh
+thu (Dashboard)
+
+Tải và hiển thị toàn
+bộ dữ liệu trên
+dashboard dưới 5
+giây.
+
+-
+
+Dữ
+liệu
+trên
+dashboard phải là
+real-time, có độ
+trễ so với giao dịch
+thực tế không quá
+1 phút.
+
+4
+
+Tìm kiếm món ăn /
+NVL
+
+Hiển thị kết quả ngay
+khi người dùng gõ
+(dưới 0.5 giây).
+
+-
+
+Áp dụng cho cả
+màn hình POS
+và các chức năng
+quản lý kho, thực
+đơn.
+
+5
+
+Tự động trừ kho
+
+Thực hiện đồng bộ
+ngay sau khi hóa đơn
+được thanh toán.
+
+Hệ thống phải có khả
+năng xử lý 5,000+
+giao
+dịch/ngày/chi
+nhánh.
+
+Là
+nghiệp
+vụ
+ngầm, không được
+làm ảnh hưởng
+đến tốc độ phản
+hồi của giao diện
+người dùng.
+
+2.1.4
+
+Yêu cầu tiện dụng
+
+Báo cáo đồ án SE104
+
+Trang 25/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Mức độ dễ học
+
+Mức độ dễ sử dụng
+
+Ghi chú
+
+1
+
+Tiếp
+hàng
+
+15 phút hướng dẫn
+
+Thêm 1 món vào order
+trong vòng 3 thao tác
+(chạm).
+
+Là nghiệp vụ thường
+xuyên nhất, yêu cầu
+tốc độ và sự đơn giản
+tối đa.
+
+2
+
+Xử lý Thanh toán
+
+20 phút hướng dẫn
+
+Dễ dàng tách hóa đơn
+theo món hoặc theo
+người.
+
+Phải giảm thiểu thời
+gian chờ đợi của
+khách hàng trong
+khâu thanh toán.
+
+3
+
+Cập nhật trạng thái
+món (KDS)
+
+5 phút hướng dẫn
+
+1 chạm để đổi trạng thái
+món (ví dụ: Đang làm →
+Hoàn thành).
+
+Tương tác phải tối
+giản vì môi trường
+bếp rất bận rộn và
+tay nhân viên có thể
+không sạch.
+
+4
+
+Xem
+báo
+(Dashboard)
+
+Không cần hướng
+dẫn
+
+Nắm được các chỉ số kinh
+doanh chính (doanh thu,
+số khách) trong 30 giây.
+
+Giao diện phải trực
+quan, dễ hiểu ngay
+lập tức cho chủ
+quán/quản lý.
+
+5
+
+Nhập kho
+
+15 phút hướng dẫn
+
+Tỷ lệ nhập sai số lượng
+hoặc đơn vị tính dưới 1%.
+
+Giao diện phải rõ ràng
+để đảm bảo tính chính
+xác của dữ liệu tồn
+kho.
+
+nhận
+
+Báo cáo đồ án SE104
+
+Đơn
+
+cáo
+
+Trang 26/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+2.1.5
+
+Yêu cầu tương thích
+
+Stt
+
+Nghiệp vụ
+
+Đối tượng liên quan
+
+Ghi chú
+
+1
+
+Truy cập hệ thống
+
+- Trình duyệt web (Chrome,
+Firefox, Safari)
+- Máy tính bảng (iPad,
+Samsung Galaxy Tab)
+
+Giao diện phải được thiết kế
+đáp ứng (responsive), hoạt
+động ổn định trên các trình
+duyệt và thiết bị phổ biến.
+
+2
+
+In ấn
+
+- Máy in hóa đơn (in bill)
+- Máy in tem nhãn (in tem
+bếp/bar)
+
+Hệ thống phải tương thích
+với các máy in nhiệt sử dụng
+khổ giấy tiêu chuẩn (ví dụ:
+K80).
+
+3
+
+Thanh toán bằng thẻ
+
+- Máy quẹt thẻ ngân hàng
+(mPOS/POS)
+
+Tích hợp qua cổng thanh
+toán của bên thứ ba để xử
+lý giao dịch.
+
+4
+
+Nhập/Xuất dữ liệu
+
+- Tệp tin Excel (.xlsx, .csv)
+
+Hệ thống phải cho phép
+nhập danh sách thực đơn,
+nguyên vật liệu từ file Excel
+và xuất các báo cáo ra file
+Excel.
+
+5
+
+Tích hợp Kế toán (Outof-Scope cho MVP)
+
+- Các phần mềm kế toán của
+bên thứ ba (ví dụ: MISA)
+
+Việc tích hợp sẽ được thực
+hiện thông qua API trong
+tương lai.
+
+2.1.6
+
+Yêu cầu bảo mật
+
+Bảng dưới đây tóm tắt quyền truy cập của các vai trò người dùng chính vào các nhóm nghiệp vụ,
+dựa trên Ma trận Phân quyền đã được định nghĩa.
+
+Báo cáo đồ án SE104
+
+Trang 27/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Quản trị
+viên HT
+
+Quản lý
+Nhà hàng
+
+Nhân viên
+Phục vụ
+
+Thu
+ngân
+
+Stt
+
+Nghiệp vụ
+
+1
+
+Tiếp nhận & Xử lý
+Đơn hàng
+
+X
+
+X
+
+X
+
+X
+
+2
+
+Xử lý Thanh toán
+
+X
+
+X
+
+X
+
+X
+
+3
+
+Quản lý Kho & Mua
+hàng
+
+X
+
+X
+
+4
+
+Quản lý Thực đơn &
+Công thức
+
+X
+
+X
+
+5
+
+Xem báo cáo
+
+X
+
+X
+
+6
+
+Quản lý Nhân sự
+
+X
+
+X
+
+7
+
+Quản lý Khách hàng
+& Đặt bàn
+
+X
+
+X
+
+8
+
+Thay đổi Cấu hình
+Chi nhánh
+
+X
+
+X
+
+9
+
+Quản lý Vai trò &
+Phân quyền
+
+X
+
+2.1.7
+
+Yêu cầu an toàn
+
+Báo cáo đồ án SE104
+
+Nhân
+viên
+Bếp
+
+Thủ kho
+
+X
+
+X
+
+X
+
+X
+
+X
+
+X
+
+Trang 28/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Đối tượng
+
+Ghi chú
+
+1
+
+Phục hồi
+
+- Hóa đơn đã thanh toán
+- Đơn hàng đã hủy
+
+Hệ thống nên cho phép Quản
+lý mở lại các hóa đơn/đơn hàng
+đã đóng trong một khoảng thời
+gian nhất định (ví dụ: trong
+ngày) để sửa lỗi.
+
+2
+
+Không cho phép xóa
+
+- Món ăn đã có giao dịch
+- Nguyên vật liệu đã được sử dụng
+- Hóa đơn đã thanh toán
+
+Thay vì xóa vĩnh viễn (delete),
+các đối tượng này chỉ nên được
+chuyển sang trạng thái ”Ngừng
+hoạt động”hoặc ”Lưu trữ”để
+đảm bảo tính toàn vẹn của dữ
+liệu báo cáo lịch sử.
+
+3
+
+Kiểm tra ràng buộc
+
+- Hóa đơn khi thanh toán
+
+Không cho phép thanh toán
+một hóa đơn có tổng tiền bằng
+0 hoặc âm.
+
+4
+
+Lưu vết thay đổi
+
+- Các hành động nhạy cảm (hủy món,
+hủy hóa đơn, áp dụng giảm giá tùy
+chỉnh, điều chỉnh kho)
+
+Mọi hành động nhạy cảm phải
+được ghi lại trong nhật ký hệ
+thống (audit log), bao gồm: Ai
+thực hiện, hành động gì, khi
+nào, và ai phê duyệt (nếu có).
+
+2.1.8
+
+Yêu cầu công nghệ
+
+2.2
+
+Bảng trách nhiệm cho các loại yêu cầu phần mềm
+
+2.2.1
+
+Bảng Trách Nhiệm Yêu Cầu Nghiệp Vụ
+
+Báo cáo đồ án SE104
+
+Trang 29/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Người dùng (Làm gì?)
+
+Phần mềm (Làm gì?)
+
+Ghi chú
+
+1
+
+Tiếp nhận & Xử lý
+Đơn hàng
+
+Cung cấp thông tin đơn
+hàng của khách (theo
+BM-POS).
+
+Kiểm tra các quy định
+(QĐ-AVAIL, QĐ-VOID)
+và ghi nhận đơn hàng.
+Tự động gửi đến KDS
+(QĐ-ROUTE).
+
+Cho phép sửa, hủy
+món (cần phê duyệt)
+trong đơn hàng.
+
+2
+
+Xử lý Thanh toán
+
+Cung cấp thông tin
+thanh toán (tiền mặt,
+thẻ...) và xác nhận tiền
+mặt cuối ca.
+
+Xử lý thanh toán theo
+quy
+định
+(QĐ-PAY,
+QĐ-SPLIT), tính toán và
+in hóa đơn. Chốt ca và
+tạo báo cáo (BM-SHIFT).
+
+Hỗ trợ tách hóa đơn,
+áp dụng khuyến mãi
+(QĐ-DISCOUNT), quản
+lý tiền boa.
+
+3
+
+Quản lý Thực đơn &
+Công thức
+
+Cung cấp thông tin
+món ăn (BM-MENU) và
+công thức định lượng
+(BM-RECIPE).
+
+Ghi nhận thông tin. Tự
+động tính toán giá vốn
+(QĐ-COST) và liên kết với
+kho (QĐ-LINK).
+
+Cho phép chỉnh sửa
+giá, bật/tắt trạng thái
+”Đang bán”của món
+ăn.
+
+4
+
+Quản lý Tồn kho &
+Mua hàng
+
+Cung cấp thông tin Đơn
+Mua Hàng (BM-PO) và
+xác nhận số lượng thực
+tế khi nhập kho.
+
+Ghi nhận PO, tự
+động cập nhật tồn
+kho
+(QĐ-RECEIVE),
+trừ
+kho
+khi
+bán
+(QĐ-DEDUCT) và gửi
+cảnh báo (QĐ-ALERT).
+
+Hỗ trợ thực hiện kiểm
+kê, ghi nhận hàng
+hủy/thất thoát.
+
+5
+
+Quản lý Nhân sự &
+Chấm công
+
+Nhân viên thực hiện
+chấm công. Quản lý cung
+cấp hồ sơ nhân viên
+(BM-HR).
+
+Ghi nhận thời gian
+check-in/out. Tự động
+tổng hợp giờ công
+(QĐ-WORK) và xuất báo
+cáo (BM-TIME).
+
+Cho phép tạo và công
+bố lịch làm việc hàng
+tuần.
+
+6
+
+Quản lý Khách hàng
+& Đặt bàn
+
+Cung cấp thông tin
+khách hàng (BM-CUS)
+và yêu cầu đặt bàn
+(BM-RESV).
+
+Ghi nhận thông tin.
+Tự động quản lý điểm
+thưởng (QĐ-LOYALTY)
+và trạng thái bàn
+(QĐ-BOOK).
+
+Cho phép xem lại lịch
+sử giao dịch và các
+món ăn ưa thích của
+khách hàng.
+
+7
+
+Xem báo cáo &
+Phân tích
+
+Cung cấp yêu cầu xem
+báo cáo (chọn loại báo
+cáo, khoảng thời gian).
+
+Kiểm tra quyền truy cập
+(QĐ-ACCESS). Tổng hợp,
+tìm và xuất dữ liệu báo
+cáo theo thời gian thực
+(QĐ-REALTIME).
+
+Hỗ trợ các bộ lọc dữ
+liệu và xuất file ra các
+định dạng phổ biến
+như Excel.
+
+8
+
+Quản trị Hệ thống
+
+Cung cấp thông tin
+tài khoản người dùng
+(BM-USER)
+và
+các
+cấu hình hệ thống
+(BM-CONFIG).
+
+Ghi nhận và áp dụng cấu
+hình. Thực thi và kiểm
+soát phân quyền theo vai
+trò (QĐ-RBAC).
+
+Cho phép quản lý vai
+trò, đặt lại mật khẩu
+cho người dùng.
+
+Báo cáo đồ án SE104
+
+Trang 30/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+2.2.2
+
+Bảng Trách Nhiệm Yêu Cầu Tiến Hóa
+
+Stt
+
+Nghiệp vụ
+
+Người dùng (Làm gì?)
+
+Phần mềm (Làm gì?)
+
+Ghi chú
+
+1
+
+Thay đổi giá bán
+
+Cho biết giá trị mới của giá
+bán cho từng món ăn hoặc
+danh mục.
+
+Ghi nhận giá trị mới và
+áp dụng cho các giao
+dịch trong tương lai.
+
+Cho phép xem lại
+lịch sử thay đổi
+giá.
+
+2
+
+Thay đổi quy định
+khuyến mãi
+
+Cho biết các tham số mới
+của chương trình khuyến
+mãi (tỷ lệ, điều kiện...).
+
+Ghi nhận tham số mới và
+thay đổi cách thức kiểm
+tra, áp dụng khuyến mãi.
+
+Cho phép lên lịch
+và bật/tắt các
+chương trình.
+
+3
+
+Thay đổi mức thuế
+suất
+
+Cho biết giá trị mới của tỷ
+lệ thuế (VAT).
+
+Ghi nhận giá trị mới và
+thay đổi cách thức tính
+thuế trên hóa đơn.
+
+Áp dụng trên toàn
+hệ thống.
+
+4
+
+Thay đổi quy định
+cảnh báo kho
+
+Cho biết giá trị mới của mức
+tồn kho tối thiểu cho từng
+nguyên vật liệu.
+
+Ghi nhận giá trị mới và
+thay đổi ngưỡng kiểm tra
+để gửi cảnh báo.
+
+-
+
+5
+
+Thay đổi quy tắc
+tích điểm
+
+Cho biết các tỷ lệ quy đổi
+mới (tiền ↔ điểm) cho từng
+hạng thành viên.
+
+Ghi nhận tỷ lệ mới và
+thay đổi cách thức tính,
+sử dụng điểm thưởng.
+
+-
+
+6
+
+Thay
+đổi
+phân
+quyền vai trò
+
+Chọn vai trò và gán/gỡ bỏ
+các quyền hạn chi tiết trên
+từng chức năng.
+
+Ghi nhận cấu hình phân
+quyền mới và thay đổi
+cách thức kiểm tra quyền
+truy cập.
+
+Chức năng chỉ
+dành cho vai trò
+Quản trị viên.
+
+2.2.3
+
+Bảng trách nhiệm yêu cầu hiệu quả
+
+Báo cáo đồ án SE104
+
+Trang 31/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Người dùng
+
+Phần mềm
+
+Ghi chú
+
+1
+
+Tiếp nhận & gửi Đơn
+hàng
+
+-
+
+Đảm bảo thực hiện đúng
+tốc độ xử lý đã yêu cầu.
+
+Tốc độ phản hồi là
+yếu tố then chốt,
+không được có độ
+trễ.
+
+2
+
+Xử lý Thanh toán
+
+-
+
+Đảm bảo thực hiện đúng
+tốc độ xử lý đã yêu cầu.
+
+-
+
+3
+
+Xem báo cáo Doanh
+thu (Dashboard)
+
+-
+
+Đảm bảo thực hiện đúng
+tốc độ xử lý đã yêu cầu.
+
+Hiệu quả phụ
+thuộc vào việc tối
+ưu truy vấn trên
+cơ sở dữ liệu lớn.
+
+4
+
+Tìm kiếm món ăn /
+NVL
+
+-
+
+Đảm bảo thực hiện đúng
+tốc độ xử lý đã yêu cầu.
+
+-
+
+5
+
+Tự động trừ kho
+
+Chuẩn bị trước dữ liệu
+công thức định lượng
+chính xác.
+
+Thực hiện đúng và đồng
+bộ ngay sau khi giao dịch
+hoàn tất.
+
+Là nghiệp vụ chạy
+ngầm, không được
+làm ảnh hưởng đến
+hiệu năng các tác
+vụ khác.
+
+2.2.4
+
+Bảng trách nhiệm yêu cầu tiện dụng
+
+Báo cáo đồ án SE104
+
+Trang 32/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Nghiệp vụ
+
+Người dùng
+
+Phần mềm
+
+1
+
+Tiếp nhận Đơn hàng
+
+Tham gia các buổi đào
+tạo và đọc tài liệu hướng
+dẫn sử dụng.
+
+Thiết kế giao diện trực
+quan, tối giản hóa các
+bước thao tác để đáp ứng
+yêu cầu về ”Mức độ dễ
+học”và ”Mức độ dễ sử
+dụng”.
+
+2
+
+Xử lý Thanh toán
+
+Tham gia các buổi đào
+tạo và đọc tài liệu hướng
+dẫn sử dụng.
+
+Đảm bảo luồng thanh
+toán và tách hóa đơn rõ
+ràng, dễ hiểu.
+
+3
+
+Cập nhật trạng thái
+món (KDS)
+
+Tham gia buổi đào tạo
+ngắn.
+
+Cung cấp các nút bấm
+to, rõ ràng, phản hồi
+ngay lập tức.
+
+4
+
+Xem
+báo
+(Dashboard)
+
+-
+
+Thiết kế giao diện thân
+thiện, sử dụng các biểu
+đồ trực quan để người
+dùng có thể hiểu ngay mà
+không cần đào tạo.
+
+5
+
+Nhập kho
+
+Tham gia các buổi đào
+tạo và đọc tài liệu hướng
+dẫn sử dụng.
+
+Cung cấp giao diện nhập
+liệu rõ ràng, có các cơ chế
+kiểm tra và xác nhận để
+giảm thiểu lỗi.
+
+2.2.5
+
+cáo
+
+Ghi chú
+
+Bảng trách nhiệm yêu cầu bảo mật
+
+Báo cáo đồ án SE104
+
+Trang 33/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Stt
+
+Vai trò (Nghiệp
+vụ)
+
+Người dùng (Làm gì?)
+
+Phần mềm (Làm gì?)
+
+Ghi chú
+
+1
+
+Quản trị viên Hệ
+thống
+
+Cung cấp thông tin người
+dùng mới và phân quyền
+chi tiết cho từng vai trò.
+
+Ghi nhận và thực thi đúng
+cấu hình phân quyền trên
+toàn hệ thống.
+
+Có toàn quyền cao
+nhất, chịu trách
+nhiệm thiết lập
+nền tảng bảo mật
+ban đầu.
+
+2
+
+Quản
+hàng
+
+Nhà
+
+Cung cấp thông tin đăng
+nhập (tên, mật khẩu)
+cho nhân viên trong chi
+nhánh.
+
+Ghi nhận và thực thi đúng
+thông tin đăng nhập. Giới
+hạn quyền truy cập của
+người dùng trong phạm vi
+chi nhánh được phép.
+
+Chịu trách nhiệm
+quản lý người dùng
+trong phạm vi chi
+nhánh của mình.
+
+3
+
+Nhân viên (Phục
+vụ, Thu ngân,
+Bếp, Kho)
+
+Cung cấp tên đăng nhập
+và mật khẩu cá nhân để
+xác thực khi truy cập hệ
+thống.
+
+Kiểm tra thông tin đăng
+nhập. Ghi nhận và thực thi
+đúng các quyền hạn đã được
+gán cho vai trò tương ứng.
+
+Quyền hạn được
+giới hạn nghiêm
+ngặt theo vai trò
+công việc để đảm
+bảo mỗi người chỉ
+thấy thông tin cần
+thiết.
+
+lý
+
+2.2.6
+
+Bảng trách nhiệm yêu cầu an toàn
+
+Stt
+
+Nghiệp vụ
+
+Người dùng
+
+Phần mềm
+
+Ghi chú
+
+1
+
+Phục hồi
+
+Cho biết hóa đơn hoặc
+đơn hàng cần được phục
+hồi (mở lại).
+
+Thực hiện thao tác phục
+hồi, chuyển đối tượng về
+trạng thái trước đó.
+
+Chức
+năng
+này
+thường chỉ dành cho
+vai trò Quản lý.
+
+2
+
+Không cho phép
+xóa
+
+(Thực hiện thao tác
+xóa một đối tượng quan
+trọng)
+
+Thực hiện đúng theo yêu
+cầu: Ngăn chặn thao tác
+xóa và hiển thị thông báo
+giải thích.
+
+Thay vì xóa, hệ thống
+chỉ cho phép chuyển
+đối tượng sang trạng
+thái ”Ngừng hoạt
+động”.
+
+3
+
+Kiểm
+buộc
+
+ràng
+
+(Thực hiện một hành
+động, ví dụ: nhấn nút
+”Thanh toán”)
+
+Tự động kiểm tra các
+điều kiện ràng buộc trước
+khi xử lý (ví dụ: tổng tiền
+phải lớn hơn 0).
+
+Ngăn chặn các giao
+dịch hoặc dữ liệu
+không hợp lệ được lưu
+vào hệ thống.
+
+4
+
+Lưu vết thay đổi
+
+Thực hiện các hành động
+nhạy cảm (hủy món, điều
+chỉnh kho, áp dụng giảm
+giá...).
+
+Tự động ghi lại nhật ký
+chi tiết về hành động đó
+(ai, làm gì, khi nào...).
+
+Đây là nghiệp vụ
+chạy ngầm, không cần
+người dùng tương tác
+trực tiếp.
+
+tra
+
+Báo cáo đồ án SE104
+
+Trang 34/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2.3
+
+Sơ đồ mô hình hoá yêu cầu phần mềm
+
+2.3.1
+
+Sơ đồ Usecase (Usecase Diagram)
+
+• Sơ đồ tổng quan
+Hệ thống Quản lý Nhà hàng
+
+Nhân viên phục vụ
+
+1, Bán hàng (POS)
+
+Thu ngân
+
+2, Phân hệ Bếp (KDS)
+Hệ thống thanh toán
+Nhân viên bếp
+
+3, Phân hệ Kho & Công thức
+Thủ kho
+
+Quản lý Nhà hàng
+
+Nhà cung cấp
+
+4, Phân hệ Báo cáo & Quản lý
+
+Chủ sở hữu
+
+Báo cáo đồ án SE104
+
+Trang 35/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Phân hệ Bán hàng (POS)
+Phân hệ bán hàng (POS)
+
+Ghi nhận đơn hàng
+«include»
+Thêm tùy chọn/ghi
+chú
+
+«extend»
+Nhân viên Phục vụ
+
+Xem sơ đồ bàn
+Phê duyệt hủy món
+
+«system»
+Hệ thống thanh toán
+
+Quản lý đặt bàn
+Quản lý Nhà hàng
+
+Quản lý két tiền
+(Mở/Đóng ca)
+
+Xử lý thanh toán
+Thu ngân
+
+• Phân hệ Bếp (KDS)
+Phân hệ Bếp (KDS)
+
+Xem yêu cầu chế
+biến
+
+Nhân viên bếp
+Cập nhật trạng thái
+món
+
+Báo cáo đồ án SE104
+
+Trang 36/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Phân hệ Quản lý & Công Thức
+Phân hệ Kho & Công thức
+
+Tạo/Theo dõi đơn mua hàng
+(PO)
+
+Thủ kho
+Ghi nhận nhập kho
+
+Nhà cung cấp
+
+Tạo công thức định lượng
+
+Quản lý Nhà hàng
+Nhận cảnh báo tồn kho
+
+• Phân hệ Báo cáo & Quản lý
+
+Nhân viên Phục vụ
+
+Phân hệ Báo cáo & Quản lý
+
+Chấm công
+
+Nhân viên Bếp
+
+Xem báo cáo bán hàng
+Thu ngân
+Nhân viên
+Quản lý hồ sơ nhân viên
+Thủ kho
+
+Xem dashboard doanh thu
+
+Quản lý Nhà hàng
+
+Chủ sở hữu
+
+Báo cáo đồ án SE104
+
+Trang 37/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+2.3.2
+
+Sơ đồ trạng thái (State Diagram)
+
+• Sơ đồ trạng thái của đơn hàng (Order)
+
+Khách order
+
+Tạo đơn hàng
+
+Thêm món ăn
+
+Chưa gửi Bếp
+
+Hủy đơn hàng (trước khi gửi)
+
+Gửi Order đến Bếp
+- Phục vụ đang thêm/sửa
+món ăn
+- Có thể sửa/xóa món
+tự do
+- Có thể hủy toàn bộ
+đơn hàng
+
+Đang chờ Bếp / Đang phục vụ
+Hủy đơn hàng (QL phê duyệt)
+
+Thêm món mới
+Yêu cầu thanh toán
+
+- Đơn hàng đã được gửi
+tới KDS
+- Món ăn đang được chế
+biến
+- Hủy/sửa món cần Quản
+lý phê duyệt
+- Có thể thêm món mới
+vào đơn
+
+Quay lại order (thêm món)
+
+Chờ thanh toán
+Đã hủy
+
+Mở lại hóa đơn (QL phê duyệt)
+Xử lý thanh toán thành công
+
+- Hóa đơn tạm tính đã
+được tạo
+- Có thể áp dụng giảm giá,
+khuyến mãi
+- Có thể tách hóa đơn
+- Thu ngân thực hiện các
+nghiệp vụ thanh toán
+
+Đã thanh toán
+
+Thực hiện hoàn tiền (QL phê duyệt)
+
+- Giao dịch đã đóng
+- Hóa đơn đã được in/
+gửi email
+- Cập nhật báo cáo doanh
+thu
+
+Đã hoàn tiền
+
+• Sơ đồ trạng thái của bàn ăn (Table)
+
+Báo cáo đồ án SE104
+
+Trang 38/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Bàn được thiết lập
+Trống
+Tạo đặt bàn
+
+Hủy đặt bàn
+
+Khách không đến
+
+Đã đặt
+
+Khách ngồi vào bàn (tạo Order)
+
+Khách đặt đã đến
+
+Kháchđã
+đãdùng
+dùngbữa
+bữaxong
+xong
+- -Khách
+- Đangchờ
+chờxửxửlýlýhóa
+hóađơn
+đơn
+- Đang
+
+Có khách
+
+Yêu cầu tính tiền
+
+- Đang có một Order hoạt
+- động
+Đang có một Order hoạt động
+- -Đang
+Đangtrong
+trongquá
+quátrình
+trìnhphục
+phụcvụ
+vụ
+
+Nhân viên dọn dẹp xong
+
+Chờ thanh toán
+
+Thanh toán hoàn tất
+
+Cần dọn dẹp
+
+• Sơ đồ trạng thái của món ăn (Dish)
+
+Báo cáo đồ án SE104
+
+Trang 39/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Order được gửi từ POS
+Chờ chế biến
+
+Phục vụ/Quản lý hủy món
+
+Bếp bắt đầu chế biến
+- Hiển thị trên KDS
+- Có thể mã hóa màu sắc
+theo thời gian chờ
+
+Đang chế biến
+
+Chế biến xong
+
+- Nhân viên bếp cập nhật
+trạng thái
+
+Quản lý hủy món
+
+Sẵn sàng phục vụ
+
+Đã hủy
+
+Phục vụ mang món cho khách
+
+- Hệ thống thông báo cho
+Phục vụ
+
+Đã phục vụ
+
+• Sơ đồ trạng thái của đơn mua hàng (Puschase Order)
+
+Báo cáo đồ án SE104
+
+Trang 40/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Thủ kho/Quản lý tạo PO
+
+Bản nháp
+
+Hủy
+
+Gửi cho Nhà cung cấp
+
+Đã gửi
+
+Hủy PO (trước khi nhận)
+
+Nhận một phần hàng
+
+Chờ xác nhận và giao hàng
+từ nhà cung cấp
+
+Đã nhận một phần
+
+Đã hủy
+Nhận đủ hàng
+
+Nhận đủ phần còn lại
+
+- Tồn kho được cập nhật
+một phần
+- Chờ nhận phần còn lại
+
+QL đóng và thanh toán (Chấp nhận thiếu)
+
+Đã nhận đủ
+
+Hoàn tất đối soát, thanh toán
+
+Toàn bộ hàng đã được
+nhập kho
+
+2.3.3
+
+Đã đóng
+
+Sơ đồ hoạt động (Activity Diagram)
+
+• Luồng nghiệp vụ Bán hàng và Thanh toán (Order-to-Payment)
+
+Báo cáo đồ án SE104
+
+Trang 41/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Activity Diagram: Nghiệp vụ Bán hàng và Thanh toán (Order-to-Payment)
+
+Nhân viên Phục vụ
+
+Hệ thống POS
+
+Kitchen Display System (KDS)
+
+Nhân viên Bếp
+
+Thu ngân
+
+Quản lý
+
+Kiểm tra thông tin đặt bàn (nếu có)
+và dẫn khách đến bàn phù hợp
+
+Đón khách và sắp xếp bàn
+
+Chọn bàn trên sơ đồ POS
+
+Cập nhật trạng thái bàn: "Có khách"
+
+Hiển thị giao diện ghi order
+
+Tạo order tạm (Ticket ID)
+
+Lắng nghe yêu cầu khách hàng
+
+Chọn món ăn từ thực đơn
+
+Thêm modifier/ghi chú (nếu có)
+
+V í d ụ : S i z e L , Í t c a y,
+Không hành, v.v.
+
+Kiểm tra món còn hàng (QĐ-AVAIL)
+
+Có
+
+Món còn hàng?
+
+Thêm món vào order tạm
+
+Không
+
+Hiển thị thông báo "Món đã hết"
+
+Tư vấn món thay thế
+
+Còn món khác?
+
+Có
+
+Không
+
+Xác nhận order với khách
+Có
+
+Khách đồng ý?
+
+Không
+
+Nhấn nút "Gửi order"
+
+Sửa đổi order
+
+Lưu order với trạng thái "Đã gửi"
+
+Định tuyến order đến KDS (QĐ-ROUTE)
+
+Món nóng → KDS Bếp Nóng
+Salad → KDS Bếp Lạnh
+Đồ uống → KDS Quầy Bar
+
+Nhận order và hiển thị
+
+Phân loại theo thời gian (FIFO)
+
+Xem order trên KDS
+
+Cập nhật trạng thái: "Đang làm"
+
+Đánh dấu màu theo thời gian chờ
+
+Chế biến món ăn theo công thức
+
+Cập nhật trạng thái: "Hoàn thành"
+
+Gửi thông báo đến POS
+
+Hiển thị thông báo "Món sẵn sàng"
+
+Nhận thông báo
+
+Đến bếp lấy món
+
+Mang món ra phục vụ khách
+
+Chờ khách yêu cầu thanh toán
+Có
+
+Khách yêu cầu thanh toán?
+
+Không
+
+Tạo hóa đơn từ order
+
+Tiếp tục phục vụ
+
+Mở giao diện thanh toán
+
+Tính tổng tiền hàng
+
+Có khuyến mãi tự động?
+
+Không
+
+Có
+
+Áp dụng khuyến mãi (QĐ-DISCOUNT)
+
+Khách yêu cầu giảm giá tùy chỉnh?
+
+Không
+
+Có
+
+Nhập mức giảm giá
+
+Yêu cầu xác thực Quản lý (QĐ-DISCOUNT)
+
+Nhập mã PIN/quét thẻ
+
+Có
+
+Áp dụng giảm giá
+
+Xác thực thành công?
+
+Không
+
+Từ chối giảm giá
+
+Ghi audit log
+
+Thông báo khách hàng
+
+Tính thuế VAT
+
+Tính tổng tiền thanh toán
+Có
+
+Chọn phương thức thanh toán (QĐ-PAY)
+
+Tạo các hóa đơn riêng
+Phương thức = Tiền mặt?
+Có
+
+Phương thức = Thẻ/QR?
+
+Chọn cách tách (QĐ-SPLIT)
+
+Khách yêu cầu tách bill?
+
+Không
+
+- Chia đều theo số người
+- Tách theo từng món
+
+Điểm tích lũy
+
+Có
+
+Nhập số tiền nhận
+
+Kết nối Payment Gateway
+
+Tính tiền thừa trả lại
+
+Hiển thị QR/Yêu cầu quẹt thẻ
+
+Kiểm tra số điểm khả dụng
+
+Chọn phương thức thanh toán (QĐ-PAY)
+Trừ điểm từ tài khoản
+
+- Tiền mặt
+- Thẻ tín dụng/ATM
+- QR Code
+- Điểm tích lũy
+
+Chờ xác nhận giao dịch
+
+Phương thức = Tiền mặt?
+Có
+
+Kết nối Payment Gateway
+
+Tính tiền thừa trả lại
+
+Phương thức = Thẻ/QR?
+
+Điểm tích lũy
+
+Có
+
+Nhập số tiền nhận
+Kiểm tra số điểm khả dụng
+
+Xử lý thanh toán thành công
+
+Trừ điểm từ tài khoản
+
+Cập nhật doanh thu ca làm việc
+
+Hiển thị QR/Yêu cầu quẹt thẻ
+
+Chờ xác nhận giao dịch
+
+Xử lý thanh toán thành công
+
+Cập nhật doanh thu ca làm việc
+
+Còn bill khác?
+
+Có
+Không
+
+In/Gửi email hóa đơn
+
+Tự động trừ kho (QĐ-DEDUCT)
+
+Dựa trên công thức món ăn (QĐ-LINK)
+trừ nguyên vật liệu tương ứng
+
+Kiểm tra ngưỡng tồn kho (QĐ-ALERT)
+
+Cập nhật trạng thái bàn: "Trống"
+Tồn kho < Mức tối thiểu?
+
+Không
+
+Có
+
+Gửi cảnh báo đến Quản lý
+
+Cảm ơn và tiễn khách
+
+• Luồng nghiệp vụ Quản lý Kho và Mua hàng (Procure-to-Pay)
+
+Báo cáo đồ án SE104
+
+Trang 42/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Activity Diagram: Nghiệp vụ Quản lý Kho và Mua hàng (Procure-to-Pay)
+
+Thủ kho / Bếp trưởng
+
+Hệ thống Inventory
+
+Kiểm tra tồn kho định kỳ hàng ngày
+
+Quản lý
+
+Nhà cung cấp
+
+Hệ thống POS
+
+Recipe Database
+
+Kiểm tra thực tế các
+nguên vật liệu trong kho
+
+Ghi chép tồn kho vào sổ/Excel
+
+Dựa trên dữ liệu bán hàng lịch sử
+và mức tiêu thụ trung bình
+
+Tính toán dự báo nhu cầu
+
+Kiểm tra ngưỡng tồn kho tối thiểu (QĐ-ALERT)
+Có
+
+Lập danh sách NVL cần nhập thủ công
+
+Tồn kho < Mức tối thiểu?
+
+Không
+
+Tạo cảnh báo tự động
+
+Gửi thông báo đến Dashboard
+
+Nhận cảnh báo tồn kho thấp
+
+Xác định danh sách NVL cần nhập
+
+Ghi danh sách vào sổ/Excel
+
+Tạo Đơn Mua hàng (Purchase Order - PO)
+
+Điền thông tin:
+- Nhà cung cấp
+- Danh sách NVL
+- Số lượng, đơn giá
+
+Lưu PO với trạng thái "Mới tạo"
+
+Gán mã PO duy nhất (BM-PO)
+
+Trình PO lên Quản lý
+
+Xem xét Đơn Mua hàng
+Có
+
+Cập nhật trạng thái PO: "Đã phê duyệt"
+
+Qua điện thoại hoặc Zalo
+
+Gửi PO cho Nhà cung cấp
+
+Phê duyệt PO?
+
+Không
+
+Cập nhật trạng thái PO: "Từ chối"
+
+Ghi lý do từ chối
+
+Điều chỉnh PO hoặc hủy
+
+Nhận PO và chuẩn bị hàng
+
+Giao hàng đến quán
+
+Nhận hàng từ NCC
+
+Lấy PO từ hệ thống để đối chiếu
+
+Kiểm tra số lượng thực tế
+
+Kiểm tra chất lượng hàng hóa
+
+Đối chiếu với PO (QĐ-RECEIVE)
+Có
+
+Số lượng & Chất lượng khớp?
+
+Không khớp
+
+Có
+
+Xác nhận nhận hàng đầy đủ
+
+Ghi nhận chênh lệch
+
+Từ chối nhận hàng
+
+Nhập số lượng thực nhận
+
+Yêu cầu NCC giao lại
+
+Thiếu hàng hoặc hàng kém chất lượng?
+
+Hàng hỏng
+
+Tạo Phiếu Nhập Kho
+
+Cập nhật tồn kho tăng lên (BM-INV)
+
+Cập nhật tồn kho theo số lượng thực tế
+Cập nhật trạng thái PO: "Hoàn thành"
+
+Đánh dấu PO có chênh lệch
+Ghi nhận giá nhập gần nhất
+
+Tạo báo cáo chênh lệch
+
+Liên hệ NCC để xử lý
+
+Xem báo cáo chênh lệch
+
+Quyết định xử lý (trả hàng/giảm giá)
+
+Sắp xếp hàng vào kho
+
+Áp dụng nguyên tắc:
+- FIFO (First In First Out)
+- FEFO (First Expired First Out)
+
+Ghi nhận vị trí lưu trữ
+
+Ghi nhận ngày hết hạn (nếu có)
+
+Lưu thông tin vị trí & ngày HH
+
+Xuất kho Tự động khi Bán hàng
+
+Xuất kho Tự động khi Bán hàng
+
+Xuất kho Tự động khi Bán hàng
+
+Xuất kho Tự động khi Bán hàng
+
+Nhận xác nhận thanh toán thành công
+
+Truy vấn công thức món ăn (QĐ-LINK)
+
+Trả về danh sách NVL & số lượng
+
+Ví dụ: 1 Bò bít tết cần:
+- 0.2 kg Thăn bò
+- 0.05 kg Khoai tây
+- 0.02 lít Dầu ăn
+
+Gửi yêu cầu trừ kho đến Inventory
+
+Trừ tồn kho tự động (QĐ-DEDUCT)
+
+Cập nhật số lượng tồn kho
+
+Kiểm tra lại ngưỡng tối thiểu (QĐ-ALERT)
+Không
+
+Tồn kho < Mức tối thiểu?
+Có
+
+Tạo cảnh báo mới
+
+Gửi thông báo đến Dashboard
+
+Gửi email đến Quản lý
+
+Nhận cảnh báo tồn kho thấp
+
+Kiểm kê Định kỳ
+
+Kiểm kê Định kỳ
+Đến thời điểm kiểm kê
+
+Quản lý có thể chủ động
+lập PO mới hoặc chờ
+báo cáo định kỳ
+
+Kiểm kê Định kỳ
+
+Hàng ngày/tuần/tháng
+tùy theo quy định
+
+Tạo phiếu kiểm kê
+
+Hiển thị danh sách NVL và tồn kho sổ sách
+
+Đếm số lượng thực tế trong kho
+
+Nhập số liệu thực tế vào hệ thống
+
+So sánh tồn kho sổ sách vs thực tế
+
+Tính chênh lệch (Variance)
+Có
+
+Xác nhận tồn kho chính xác
+Tạo báo cáo chênh lệch kiểm kê
+
+Có chênh lệch?
+
+Không
+
+Báo cáo gồm:
+- Tên NVL
+- Số sổ sách
+- Số thực tế
+- Chênh lệch (+ hoặc -)
+- Giá trị chênh lệch
+
+Ghi nhận kiểm kê thành công
+
+Xem báo cáo chênh lệch
+
+Phân tích nguyên nhân
+
+Có
+
+Yêu cầu kiểm tra lại
+
+Cập nhật tồn kho = Số thực tế
+
+Thực hiện kiểm kê lại
+
+Chênh lệch trong mức chấp nhận được?
+
+Nguyên nhân có thể:
+- Lãng phí khi chế biến
+- Định lượng sai công thức
+- Gian lận, thất thoát
+- Hàng hỏng chưa ghi nhận
+Không - Chênh lệch lớn
+
+Chấp nhận điều chỉnh tồn kho
+
+Điều tra nguyên nhân
+
+Ghi nhận hàng hỏng/thất thoát
+
+Báo cáo chi tiết
+
+Đối soát và Báo cáo
+Xem các báo cáo kho định kỳ
+
+Báo cáo Nhập-Xuất-Tồn
+
+Theo dõi biến động kho
+trong kỳ
+
+Báo cáo Giá vốn hàng bán (COGS)
+
+Tính toán chi phí NVL
+đã sử dụng
+
+Báo cáo Hàng hỏng/Thất thoát
+
+Báo cáo Hiệu suất Nhà cung cấp
+
+Phân tích và đánh giá
+
+Đưa ra quyết định tối ưu hóa
+
+- Điều chỉnh công thức
+- Thay đổi NCC
+- Tối ưu lượng nhập
+- Giảm lãng phí
+
+• Luồng nghiệp vụ Quản lý Nhân sự
+
+Báo cáo đồ án SE104
+
+Trang 43/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Activity Diagram: Nghiệp vụ Quản lý Nhân sự
+
+Nhân viên
+
+Hệ thống HR
+
+Quản lý
+
+Nhân viên nhận yêu cầu
+
+Đến quán vào đầu ca làm việc
+
+Hiển thị giao diện chấm công
+
+Nhập mã nhân viên hoặc quét thẻ
+
+Có thể sử dụng:
+- Mã số nhân viên
+- Quét QR code
+- Nhận diện khuôn mặt (tùy chọn)
+
+Nhấn nút "Check-in"
+
+Xác thực mã nhân viên
+Có
+
+Mã hợp lệ?
+
+Không
+
+Lưu thông tin:
+- ID nhân viên
+- Thời gian check-in
+- Vị trí (nếu có GPS)
+
+Ghi nhận thời gian vào ca (QĐ-WORK)
+
+Hiển thị thông báo lỗi
+
+Yêu cầu nhập lại
+Hiển thị thông báo "Check-in thành công"
+
+Hiển thị giờ vào trên màn hình
+
+Làm việc trong ca
+
+Làm việc trong ca
+
+Thực hiện công việc theo vai trò
+
+Không
+
+- Nhân viên Phục vụ: Ghi order, phục vụ
+- Thu ngân: Thanh toán
+- Bếp: Chế biến món ăn
+- Thủ kho: Quản lý kho
+
+Có nghỉ giữa ca?
+Có
+
+Nhấn nút "Break" (Nghỉ giải lao)
+
+Ghi nhận thời gian bắt đầu nghỉ
+
+Nghỉ ngơi
+
+Nhấn nút "Resume" (Tiếp tục làm)
+
+Ghi nhận thời gian kết thúc nghỉ
+
+Tính tổng thời gian nghỉ
+
+Kết thúc ca làm việc
+
+Nhập mã nhân viên hoặc quét thẻ
+
+Nhấn nút "Check-out"
+
+Xác thực mã nhân viên
+Có
+
+Mã hợp lệ?
+
+Không
+
+Ghi nhận thời gian ra ca (QĐ-WORK)
+
+Hiển thị thông báo lỗi
+
+Công thức:
+Tổng giờ = (Giờ ra - Giờ vào) - Tổng giờ nghỉ
+
+Tính tổng giờ làm việc
+
+Yêu cầu nhập lại
+
+Hiển thị thông báo "Check-out thành công"
+
+Hiển thị tổng giờ làm trong ca
+
+Cập nhật bảng chấm công (BM-TIME)
+
+Gửi thông báo cho Quản lý
+
+Lập lịch làm việc hàng tuần
+
+Lập lịch làm việc hàng tuần
+Vào đầu tuần, mở giao diện lập lịch
+
+Hiển thị template lịch tuần
+
+Hiển thị danh sách nhân viên
+
+Chọn nhân viên
+
+Chọn ngày và ca làm việc
+
+Các ca thường có:
+- Ca sáng (8h-14h)
+- Ca chiều (14h-20h)
+- Ca tối (18h-23h)
+
+Kiểm tra xung đột lịch
+
+Có
+
+Không
+
+Nhân viên đã có ca khác cùng thời gian?
+
+Hiển thị cảnh báo xung đột
+
+Gán ca cho nhân viên
+
+Điều chỉnh lịch
+
+Có
+
+Còn ca cần xếp?
+Không
+
+Xem lại toàn bộ lịch tuần
+Có
+
+Tiếp tục điều chỉnh
+
+Lịch hợp lý?
+
+Không
+
+Xác nhận và công bố lịch
+
+Lưu lịch làm việc
+
+Gửi thông báo đến tất cả nhân viên
+
+Xem và Yêu cầu đổi ca
+
+Thông báo qua:
+- Email
+- SMS
+- Thông báo trong app
+
+Xem và Yêu cầu đổi ca
+
+Xem và Yêu cầu đổi ca
+
+Xem và Yêu cầu đổi ca
+
+Đăng nhập vào hệ thống
+
+Xem lịch làm việc của mình
+
+Hiển thị lịch cá nhân theo tuần/tháng
+Có
+
+Cần đổi ca?
+
+Không
+
+Chọn ca muốn đổi
+
+Làm theo lịch đã được gán
+
+Tìm nhân viên khác cùng vị trí
+
+Hiển thị danh sách nhân viên khả dụng
+
+Chỉ hiển thị nhân viên:
+- Cùng vai trò/vị trí
+- Rảnh trong khung giờ đó
+
+Chọn người muốn đổi ca
+
+Gửi yêu cầu đổi ca
+
+Ghi nhận yêu cầu
+
+Gửi thông báo đến nhân viên được chọn
+
+Nhận thông báo đổi ca
+
+Xem chi tiết yêu cầu
+Có
+
+Gửi thông báo từ chối đến người yêu cầu
+
+Đồng ý đổi ca?
+
+Từ chối
+
+Xác nhận đồng ý
+
+Gửi yêu cầu phê duyệt đến Quản lý
+
+Nhận yêu cầu đổi ca
+
+Xem xét yêu cầu
+Có
+
+Cập nhật lịch làm việc mới
+
+Nhận thông báo từ chối
+
+Phê duyệt?
+
+Từ chối
+
+Gửi thông báo từ chối kèm lý do
+
+Hoán đổi ca giữa 2 nhân viên
+
+Gửi thông báo xác nhận cho cả 2 nhân viên
+
+Nhận thông báo đổi ca thành công
+
+Báo cáo Chấm công cuối tháng
+
+Báo cáo Chấm công cuối tháng
+Cuối tháng, mở chức năng Báo cáo
+
+Chọn "Báo cáo Chấm công" (BM-TIME)
+
+Chọn tháng cần xem
+
+Tổng hợp dữ liệu chấm công
+
+Tính toán cho từng nhân viên:
+- Tổng số ngày làm việc
+- Tổng số giờ làm việc
+- Tổng giờ tăng ca (nếu có)
+- Số ngày nghỉ
+- Số lần đi trễ/về sớm
+
+Tạo bảng tổng hợp
+
+Hiển thị báo cáo trên dashboard
+
+Xem chi tiết từng nhân viên
+
+Có dị thường?
+
+Không
+
+Có
+
+Kiểm tra chi tiết check-in/check-out
+
+Cần điều chỉnh?
+
+Không
+
+Có
+
+Nhập lý do điều chỉnh
+
+Điều chỉnh giờ công (QĐ-WORK)
+
+Ghi nhận điều chỉnh vào audit log
+
+Cập nhật báo cáo
+
+Xuất báo cáo ra file Excel
+
+Tạo file Excel với định dạng chuẩn
+
+Cho phép tải về
+
+Tải file báo cáo
+
+Gửi cho bộ phận kế toán tính lương
+
+Tính lương dự kiến
+
+Tính lương dự kiến
+Truy cập chức năng "Tính lương"
+
+Lấy dữ liệu chấm công tháng hiện tại
+
+Lấy mức lương cơ bản từ hồ sơ nhân viên
+
+Với từng nhân viên
+
+Tính lương cơ bản = Tổng giờ × Lương giờ
+
+Tính lương tăng ca (nếu có)
+
+Tính phụ cấp (nếu có)
+
+Tính khấu trừ (nghỉ không phép, đi trễ)
+
+Tổng lương = Lương CB + Tăng ca + Phụ cấp - Khấu trừ
+
+Còn nhân viên?
+
+Công thức có thể tùy chỉnh
+theo chính sách của quán
+
+Có
+
+Không
+
+Hiển thị bảng lương dự kiến
+
+Xem xét bảng lương
+
+Cần điều chỉnh?
+
+Không
+
+Có
+
+Điều chỉnh thủ công
+
+Ghi nhận lý do điều chỉnh
+
+Phê duyệt bảng lương
+
+Lưu bảng lương đã phê duyệt
+
+Xuất file để chuyển kế toán
+
+Gửi thông báo lương cho nhân viên (tùy chọn)
+
+Báo cáo đồ án SE104
+
+Trang 44/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Luồng nghiệp vụ Báo cáo và Đối soát cuối ngày
+Activity Diagram: Nghiệp vụ Báo cáo và Đối soát cuối ngày
+
+Thu ngân
+
+Hệ thống POS
+
+Quản lý
+
+Bắt đầu ca làm việc
+
+Đăng nhập vào hệ thống POS
+
+Hiển thị giao diện Quản lý ca
+
+Chọn chức năng "Mở ca" (Shift Open)
+
+Yêu cầu nhập số tiền mặt đầu ca (Float)
+
+Float = Số tiền mặt dự phòng
+để trả tiền thừa cho khách
+
+Ghi nhận thông tin mở ca (QĐ-SHIFT)
+
+Lưu thông tin:
+- ID Thu ngân
+- Thời gian mở ca
+- Số tiền đầu ca
+- Trạng thái: "Đang hoạt động"
+
+Đếm tiền mặt trong két
+
+Nhập số tiền đầu ca vào hệ thống
+
+Ví dụ: 2,000,000 VNĐ
+
+Tạo báo cáo ca làm việc tạm (BM-SHIFT)
+
+Kích hoạt chức năng bán hàng
+
+Xử lý giao dịch trong ca
+
+Xử lý giao dịch trong ca
+
+Nhận yêu cầu thanh toán từ khách
+
+Xử lý thanh toán (QĐ-PAY)
+
+Ghi nhận giao dịch
+
+- Tiền mặt
+- Thẻ tín dụng/ATM
+- QR Code
+- Điểm tích lũy
+
+Phân loại theo phương thức thanh toán
+
+Cập nhật doanh thu ca (real-time)
+
+Tự động trừ kho (QĐ-DEDUCT)
+
+Cập nhật báo cáo Z-report tạm
+
+Còn giao dịch trong ca?
+
+Cập nhật Dashboard real-time (QĐ-REALTIME)
+
+Có
+
+Không
+
+Kết thúc ca làm việc
+
+Chọn chức năng "Đóng ca" (Shift Close)
+
+Tạm khóa chức năng bán hàng mới
+
+Tổng hợp dữ liệu giao dịch trong ca
+
+Tính tổng doanh thu lý thuyết
+
+Tổng theo từng phương thức:
+- Tổng tiền mặt lý thuyết
+- Tổng thẻ
+- Tổng QR
+- Tổng điểm
+
+Tính tổng số hóa đơn
+
+Tính giá trị hóa đơn trung bình
+
+Tính tổng giảm giá/khuyến mãi
+
+Hiển thị tổng hợp lên màn hình
+
+Đếm số tiền mặt thực tế trong két
+
+Đếm tất cả tiền mặt:
+Float + Doanh thu tiền mặt trong ca
+
+Nhập số tiền mặt thực tế vào hệ thống
+
+Tiền mặt lý thuyết =
+Float + Doanh thu tiền mặt
+
+Tính tiền mặt lý thuyết
+
+So sánh tiền thực tế vs lý thuyết
+
+Tính chênh lệch (Variance)
+Có
+
+Xem chi tiết chênh lệch
+Có - Vượt ngưỡng
+
+Chênh lệch lớn?
+
+Có chênh lệch tiền mặt?
+
+Không
+
+Xác nhận đối soát chính xác 100%
+
+Không - Trong mức chấp nhận
+
+Báo cáo Quản lý ngay
+
+Ghi nhận lý do chênh lệch nhỏ
+
+Chênh lệch nhỏ (< 50,000 VNĐ)
+có thể do làm tròn, lỗi nhỏ
+
+Nhận báo cáo chênh lệch
+
+Kiểm tra lại cùng Thu ngân
+Có
+
+Ghi nhận lý do
+
+Tìm ra nguyên nhân?
+
+Không
+
+Nguyên nhân có thể:
+- Quên không ghi giao dịch
+- Trả tiền thừa sai
+- Nhầm mệnh giá
+- Gian lận
+
+Yêu cầu kiểm tra kỹ hơn
+
+Lên kế hoạch điều tra
+
+Ghi nhận lý do vào báo cáo
+
+Ghi audit log
+
+Tạo Báo cáo Z-Report
+Báo cáo Z-report bao gồm:
+1. Thông tin ca làm việc
+- ID Ca
+- Thu ngân
+- Thời gian mở/đóng ca
+- Tổng thời gian
+2. Doanh thu theo phương thức
+- Tiền mặt: Lý thuyết vs Thực tế
+- Thẻ tín dụng/ATM
+- QR Code
+- Điểm tích lũy
+- Tổng doanh thu
+Tạo Báo cáo Z-report chính thức (BM-SHIFT)
+
+3. Thống kê giao dịch
+- Tổng số hóa đơn
+- Giá trị hóa đơn trung bình
+- Hóa đơn cao nhất/thấp nhất
+4. Giảm giá & Khuyến mãi
+- Tổng giảm giá
+- Số lượng hóa đơn được giảm
+5. Hóa đơn hủy (nếu có)
+- Số lượng món hủy
+- Giá trị món hủy
+- Người phê duyệt
+6. Chênh lệch
+- Chênh lệch tiền mặt
+- Lý do (nếu có)
+
+Lưu báo cáo vào Database
+
+Đóng ca hoàn toàn
+
+Cập nhật trạng thái ca: "Đã đóng"
+
+Xem báo cáo Z-report
+
+In báo cáo Z-report
+
+Nộp tiền mặt vào két sắt
+
+Ký xác nhận báo cáo
+
+Nhận báo cáo Z-report
+
+Ký xác nhận
+
+Lưu trữ báo cáo
+
+Xem Dashboard Real-time trong ngày
+
+Xem Dashboard Real-time trong ngày
+Đăng nhập vào hệ thống
+
+Truy cập Dashboard (QĐ-REALTIME)
+
+Tổng hợp dữ liệu real-time
+
+Dữ liệu được cập nhật
+mỗi 30-60 giây
+
+Hiển thị Dashboard
+
+Dashboard hiển thị:
+- Doanh thu hiện tại
+- Số lượng khách
+- Số hóa đơn
+- Giá trị TB/hóa đơn
+- Doanh thu theo giờ (biểu đồ)
+- Top món bán chạy
+- Tình trạng bàn
+- Cảnh báo tồn kho thấp
+
+Theo dõi tình hình kinh doanh
+Có
+
+Không
+
+Phát hiện bất thường?
+
+Ki ể m tr a c h i ti ế t
+
+Tiếp tục theo dõi
+
+Can thiệp xử lý kịp thời
+
+Báo cáo tổng hợp cuối ngày
+
+Báo cáo tổng hợp cuối ngày
+Cuối ngày, tổng hợp tất cả các ca
+
+Truy cập chức năng "Báo cáo cuối ngày"
+
+Tổng hợp dữ liệu từ tất cả các ca
+
+Tạo báo cáo Doanh thu tổng hợp
+
+Tổng doanh thu cả ngày
+từ tất cả các ca
+
+Tạo báo cáo Món ăn
+
+- Top 10 món bán chạy
+- Top 10 món bán chậm
+- Món nào bị hủy nhiều
+
+Tạo báo cáo Tồn kho
+
+- Nguyên vật liệu đã xuất
+- Tồn kho hiện tại
+- Cảnh báo sắp hết
+
+Tạo báo cáo Giá vốn (COGS)
+
+Tính giá vốn hàng bán
+dựa trên công thức món
+và giá nhập NVL
+
+Hiển thị các báo cáo
+
+Xem các báo cáo tổng hợp
+
+Phân tích dữ liệu
+
+Cần xuất báo cáo?
+
+Không
+
+Có
+
+Chọn xuất file Excel
+
+Tạo file Excel
+
+Cho phép tải về
+
+Tải file báo cáo
+
+Gửi cho kế toán/chủ quán
+
+Phân tích và Ra quyết định
+Phân tích các chỉ số kinh doanh
+
+So sánh doanh thu với các ngày trước
+
+Đánh giá hiệu quả nhân viên
+
+Phân tích món ăn best-seller/worst-seller
+
+Kiểm tra tình trạng tồn kho
+
+Nhận diện vấn đề và cơ hội
+
+Ví dụ phát hiện:
+- Món nào bán chạy → Tăng stock
+- Món nào bán chậm → Giảm giá/loại bỏ
+- Giờ nào đông khách → Tăng nhân sự
+- NVL nào sắp hết → Đặt hàng gấp
+
+Đưa ra quyết định điều chỉnh
+
+Các quyết định có thể:
+- Điều chỉnh thực đơn
+- Thay đổi giá món
+- Tối ưu lịch nhân viên
+- Đặt hàng NVL khẩn cấp
+- Chạy chương trình khuyến mãi
+
+Ghi nhận quyết định vào hệ thống
+
+Thông báo cho nhân viên liên quan
+
+Báo cáo định kỳ (Tuần/Tháng)
+
+Báo cáo định kỳ (Tuần/Tháng)
+Định kỳ cuối tuần/tháng
+
+Truy cập "Báo cáo định kỳ"
+
+Tổng hợp dữ liệu cả kỳ
+
+Báo cáo Doanh thu theo tuần/tháng
+
+- Xu hướng tăng/giảm
+- So sánh với kỳ trước
+- Biểu đồ doanh thu theo ngày
+
+Báo cáo Lợi nhuận
+
+Doanh thu - Chi phí NVL - Chi phí nhân công
+
+Báo cáo Nhập-Xuất-Tồn kho
+
+Báo cáo Hiệu suất Nhân viên
+
+Báo cáo Khách hàng thân thiết
+
+Tạo Dashboard tổng hợp
+
+Xem báo cáo định kỳ
+
+Đánh giá tổng thể hoạt động kinh doanh
+
+Lên kế hoạch cho kỳ tiếp theo
+
+2.3.4
+
+Sơ đồ tuần tự (Sequence Diagram)
+
+• Ghi nhận và Gửi Order đến KDS
+Actors: Nhân viên Phục vụ, POS System, KDS, Database
+Quy định nghiệp vụ: QĐ-AVAIL, QĐ-ROUTE
+
+Báo cáo đồ án SE104
+
+Trang 45/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Sequence Diagram: Ghi nhận và Gửi Order đến KDS
+
+Nhân viên
+Phục vụ
+
+POS System
+
+Inventory
+System
+
+Database
+
+KDS
+(Kitchen Display)
+
+Nhân viên
+Bếp
+
+Chọn bàn và Bắt đầu Order
+Đăng nhập vào POS
+Xác thực thông tin đăng nhập
+Xác thực thành công
+Hiển thị giao diện chính
+Chọn bàn từ sơ đồ bàn
+Lấy thông tin bàn và trạng thái
+Trả về thông tin bàn
+alt
+
+[Bàn đang trống]
+
+Cập nhật trạng thái bàn = "Có khách"
+Cập nhật thành công
+Hiển thị menu và tạo Order tạm (Ticket ID)
+[Bàn đã có khách]
+
+Lấy Order hiện tại của bàn
+Trả về Order hiện tại
+Hiển thị Order đang có
+Thêm món vào Order
+loop
+
+[Cho mỗi món khách gọi]
+
+Chọn món từ menu
+Nhân viên có thể:
+- Tìm món theo tên
+- Chọn từ danh mục
+- Thêm modifier (size, độ cay...)
+- Ghi chú đặc biệt
+Kiểm tra món còn hàng (QĐ-AVAIL)
+Inventory System xử lý logic:
+1. Lấy công thức món (QĐ-LINK)
+2. Kiểm tra tồn kho NVL
+3. Tính toán đủ/thiếu
+Lấy công thức món ăn (QĐ-LINK)
+Trả về danh sách NVL cần thiết
+Kiểm tra tồn kho các NVL
+Trả về số lượng tồn kho
+Tính toán món có khả dụng không
+alt
+
+[Món còn hàng (đủ NVL)]
+
+Món khả dụng
+Thêm món vào Order tạm
+Lưu thông tin:
+- Tên món
+- Số lượng
+- Modifier/Ghi chú
+- Giá
+Lưu thành công
+Hiển thị món đã thêm vào Order
+[Món hết hàng (thiếu NVL)]
+
+Món không khả dụng
+Thông báo "Món đã hết"
+Nhân viên tư vấn
+món thay thế
+
+Xác nhận và Gửi Order
+Xác nhận với khách và nhấn "Gửi Order"
+Lấy danh sách món trong Order
+Trả về chi tiết Order
+Phân loại món theo danh mục
+Áp dụng QĐ-ROUTE:
+- Món nóng → KDS Bếp Nóng
+- Salad → KDS Bếp Lạnh
+- Đồ uống → KDS Quầy Bar
+Cập nhật trạng thái Order = "Đã gửi"
+Lưu thời gian gửi Order
+Cập nhật thành công
+Gửi Order đến KDS (QĐ-ROUTE)
+Gửi danh sách món (Bếp Nóng/Lạnh/Bar)
+Dữ liệu gửi gồm:
+- Ticke t I D
+- Số bàn
+- Danh sách món
+- Modifier/Ghi chú
+- Thời gian gửi
+Lưu Order nhận được
+Lưu thành công
+Xếp Order theo FIFO
+Order cũ hiển thị trước
+Màu sắc thay đổi theo
+thời gian chờ
+Xác nhận đã nhận Order
+Thông báo "Order đã gửi thành công"
+Bếp Nhận và Xử lý Order
+Xem Order mới trên màn hình
+Hiển thị Order theo thứ tự FIFO
+Màn hình hiển thị:
+- Ticke t I D
+- Số bàn
+- Thời gian đợi (màu sắc cảnh báo)
+- Danh sách món chi tiết
+- Modifier/Ghi chú nổi bật
+Chạm vào món → Cập nhật "Đang làm"
+Cập nhật trạng thái món
+Cập nhật thành công
+Gửi thông báo trạng thái
+Cập nhật trạng thái trên Order
+Cập nhật thành công
+Hiển thị "Đang làm" (đổi màu)
+Nhân viên bếp
+chế biến món ăn
+Chạm vào món → Cập nhật "Hoàn thành"
+Cập nhật trạng thái món
+Cập nhật thành công
+Gửi thông báo "Món sẵn sàng"
+POS hiển thị notification
+cho Nhân viên Phục vụ
+Cập nhật trạng thái món = "Sẵn sàng"
+Cập nhật thành công
+Thông báo "Món sẵn sàng - Bàn X"
+Hiển thị "Hoàn thành" (đổi màu)
+Nhân viên đến bếp
+lấy món và phục vụ khách
+
+Nhân viên
+Phục vụ
+
+POS System
+
+Database
+
+Inventory
+System
+
+KDS
+(Kitchen Display)
+
+Nhân viên
+Bếp
+
+• Thanh toán Hóa đơn với Nhiều Phương thức
+Actors: Thu ngân, POS System, Payment Gateway, Database
+Báo cáo đồ án SE104
+
+Trang 46/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Quy định nghiệp vụ: QĐ-PAY, QĐ-SPLIT, QĐ-DISCOUNT
+
+Sequence Diagram: Thanh toán Hóa đơn với Nhiều Phương thức
+
+Thu ngân
+
+POS System
+
+Quản lý
+
+Database
+
+Payment Gateway
+
+Inventory System
+
+Lấy Order và Tính tiền
+Yêu cầu thanh toán Order/Bàn X
+Lấy chi tiết Order
+Trả về Order
+Tính tổng tiền hàng
+
+Khuyến mãi tự động
+Kiểm tra khuyến mãi tự động
+Kết quả áp dụng khuyến mãi
+alt
+
+[Có khuyến mãi]
+
+Áp dụng giảm giá tự động
+Hiển thị giảm giá
+[Không có khuyến mãi]
+
+Giảm giá tùy chỉnh (QĐ-DISCOUNT)
+Yêu cầu giảm giá đặc biệt
+Hiển thị form nhập mức giảm
+Nhập % hoặc số tiền giảm
+Yêu cầu phê duyệt giảm giá
+Nhập PIN / Quét thẻ
+Xác thực Quản lý
+Kết quả xác thực
+alt
+
+[Phê duyệt thành công]
+
+Lưu thông tin giảm giá + audit log
+Lưu thành công
+Hiển thị giảm giá đã áp dụng
+[Phê duyệt thất bại]
+
+Thông báo từ chối giảm giá
+Tính thuế và Tổng phải trả
+Lấy thuế suất VAT
+Thuế suất
+Tính thuế và tổng tiền phải trả
+Hiển thị tổng tiền cuối cùng
+Tách Bill (QĐ-SPLIT)
+alt
+
+[Khách yêu cầu tách Bill]
+
+Chọn cách tách Bill
+Tạo các hóa đơn con
+Lưu hóa đơn đã tách
+Lưu thành công
+Hiển thị danh sách hóa đơn con
+[Không tách Bill]
+
+Chọn Phương thức Thanh toán (QĐ-PAY)
+Chọn phương thức thanh toán
+alt
+
+[Tiền mặt]
+
+Nhập số tiền khách đưa
+Tính tiền thừa
+Hiển thị tiền thừa
+[Thẻ/QR Code]
+
+Gửi yêu cầu thanh toán
+Kết quả giao dịch
+alt
+
+[Thành công]
+
+Hiển thị "Thanh toán thành công"
+[Thất bại]
+
+Thông báo lỗi, yêu cầu chọn phương thức khác
+[Điểm tích lũy]
+
+Lấy số điểm khách hàng
+Trả về điểm
+Kiểm tra điểm đủ hay không
+alt
+
+[Điểm đủ]
+
+Trừ điểm
+Cập nhật thành công
+Hiển thị "Đã trừ điểm"
+[Điểm không đủ]
+
+Thông báo "Điểm không đủ"
+
+Lưu giao dịch
+Ghi nhận thanh toán + phương thức
+Lưu thành công
+Cập nhật Order = "Đã thanh toán"
+Cập nhật thành công
+Cập nhật doanh thu ca làm việc
+Cập nhật thành công
+Tự động Trừ Kho (QĐ-DEDUCT / QĐ-ALERT)
+Lấy công thức nguyên vật liệu món ăn
+Danh sách NVL
+Yêu cầu trừ kho
+Cập nhật tồn kho
+Cập nhật thành công
+Kiểm tra ngưỡng tồn kho
+alt
+
+[Tồn kho thấp]
+
+Gửi cảnh báo thiếu hàng
+[Tồn kho bình thường]
+
+Hoàn tất trừ kho
+In hoặc Gửi Hóa đơn
+alt
+
+[In bill]
+
+Gửi lệnh in
+[Gửi email]
+
+Nhập email khách
+Gửi email hóa đơn
+
+Giải phóng bàn
+Cập nhật trạng thái bàn = "Trống"
+Hoàn tất
+Thanh toán hoàn tất
+
+Thu ngân
+
+Quản lý
+
+POS System
+
+Database
+
+Payment Gateway
+
+Inventory System
+
+• Hủy Món với Phê duyệt Quản lý
+Actors: Nhân viên Phục vụ, Quản lý, POS System, KDS, Audit Log
+Quy định nghiệp vụ: QĐ-VOID
+
+Báo cáo đồ án SE104
+
+Trang 47/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Sequence Diagram: Hủy Món với Phê duyệt Quản lý
+
+Nhân viên
+Phục vụ
+
+POS System
+
+KDS
+(Kitchen Display)
+
+Database
+
+Audit Log
+
+Quản lý
+
+Yêu cầu Hủy Món
+Chọn Order/Bàn cần hủy món
+Lấy thông tin Order
+Trả về chi tiết Order và danh sách món
+Hiển thị danh sách món trong Order
+Chọn món cần hủy
+Nhân viên có thể:
+- Hủy 1 món cụ thể
+- Hủy nhiều món cùng lúc
+Hiển thị xác nhận "Bạn có chắc muốn hủy?"
+Xác nhận hủy món
+Kiểm tra Trạng thái Món
+Kiểm tra trạng thái món
+alt
+
+[Món chưa gửi đến KDS]
+
+Trạng thái = "Chưa gửi"
+Món chưa gửi bếp
+có thể hủy trực tiếp
+không cần phê duyệt
+Xóa món khỏi Order
+Xóa thành công
+Thông báo "Món đã được xóa"
+[Món đã gửi đến KDS (Yêu cầu phê duyệt - QĐ-VOID)]
+
+Trạng thái = "Đã gửi bếp" hoặc "Đang làm"
+Món đã gửi bếp
+phải có phê duyệt Quản lý
+để tránh gian lận
+Yêu cầu Xác thực Quản lý (QĐ-VOID)
+Yêu cầu phê duyệt hủy món
+Thông báo hiển thị:
+- Tên món cần hủy
+- Số bàn
+- Lý do hủy (nếu có)
+- Nhân viên yêu cầu
+Nhập mã PIN hoặc quét thẻ
+Xác thực thông tin Quản lý
+alt
+
+[Xác thực thành công]
+
+Xác thực hợp lệ
+Yêu cầu nhập lý do hủy
+Nhập lý do hủy món
+Các lý do thường gặp:
+- Khách đổi ý
+- Món không còn NVL
+- Ghi sai order
+- Món lỗi không đạt chất lượng
+Ghi Audit Log
+Ghi nhận hành động hủy món
+Audit Log lưu:
+- Thời gian hủy
+- Món bị hủy (tên, giá)
+- Nhân viên yêu cầu
+- Quản lý phê duyệt
+- Lý do hủy
+- Trạng thái món trước khi hủy
+Ghi log thành công
+Cập nhật Database
+Cập nhật trạng thái món = "Đã hủy"
+Cập nhật thành công
+Gửi Lệnh Hủy đến KDS
+Gửi lệnh hủy món
+Lệnh hủy gồm:
+- Ticke t I D
+- Món cần hủy
+- Lý do hủy
+Cập nhật trạng thái món trên KDS
+Cập nhật thành công
+alt
+
+[Món chưa bắt đầu làm]
+
+Xóa món khỏi hàng đợi
+Món sẽ biến mất
+khỏi màn hình KDS
+[Món đang làm hoặc đã hoàn thành]
+
+Đánh dấu món "Đã hủy" (màu đỏ)
+Món vẫn hiển thị
+với trạng thái "Cancelled"
+để bếp biết dừng làm
+Xác nhận đã nhận lệnh hủy
+Thông báo Kết quả
+Thông báo "Món đã được hủy thành công"
+
+Thông báo "Món đã được hủy"
+Order được cập nhật
+Món bị hủy không còn
+trong danh sách
+[Xác thực thất bại]
+
+Xác thực không hợp lệ
+Thông báo "Mã PIN không đúng"
+
+Ghi nhận thất bại xác thực
+Ghi log cảnh báo:
+- Thời gian
+- Người cố gắng xác thực
+- Lý do thất bại
+Ghi log thành công
+Thông báo "Hủy món thất bại"
+Nhân viên phải
+yêu cầu lại
+
+Nhân viên
+Phục vụ
+
+POS System
+
+Database
+
+KDS
+(Kitchen Display)
+
+Audit Log
+
+Quản lý
+
+• Tạo Đơn Mua hàng và Nhận hàng
+Actors: Thủ kho, Quản lý, Inventory System, Supplier, Database
+Quy định nghiệp vụ: QĐ-RECEIVE
+Báo cáo đồ án SE104
+
+Trang 48/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Sequence Diagram: Tạo Đơn Mua hàng và Nhận hàng
+
+Inventory
+System
+
+Thủ kho /
+Bếp trưởng
+
+Database
+
+Quản lý
+
+Nhà cung cấp
+
+Kiểm tra Tồn kho và Cảnh báo
+Đăng nhập và truy cập chức năng Kho
+Lấy danh sách NVL và tồn kho hiện tại
+Trả về thông tin tồn kho
+Hiển thị danh sách NVL với số lượng tồn
+alt
+
+[Hệ thống có cảnh báo tự động (QĐ-ALERT)]
+
+Kích hoạt kiểm tra cảnh báo tự động
+Kiểm tra ngưỡng tồn kho tối thiểu
+loop
+
+[Cho mỗi NVL]
+
+So sánh tồn kho vs mức tối thiểu
+alt
+
+[Tồn kho < Mức tối thiểu]
+
+Tạo cảnh báo
+Lưu cảnh báo
+Trả về danh sách NVL cần nhập
+Gửi email cảnh báo
+
+Hiển thị cảnh báo "Tồn kho thấp"
+[Không có cảnh báo tự động]
+
+Kiểm tra thủ công từng NVL
+Hiển t hị chi tiết tồn kh o
+Xác định danh sách NVL cần nhập
+
+Tạo Đơn Mua hàng (PO)
+Chọn "Tạo Đơn Mua Hàng mới"
+Lấy danh sách Nhà cung cấp
+Trả về danh sách NCC
+Hiển thị form tạo PO
+Chọn Nhà cung cấp
+Hiển thị danh sách NVL của NCC
+loop
+
+[Thêm NVL vào PO]
+
+Chọn NVL và nhập số lượng, đơn giá
+Tính thành tiền cho từng NVL
+Thành tiền = Số lượng × Đơn giá
+Hiển thị NVL đã thêm
+Xem lại tổng PO
+Tính tổng giá trị PO
+Tổng PO = Σ (Thành tiền các NVL)
+Hiển thị tổng giá trị PO
+Xác nhận và gửi PO để phê duyệt
+Lưu PO với trạng thái "Mới tạo"
+Lưu thông tin:
+- Mã PO (tự sinh)
+- Nhà cung cấp
+- Danh sách NVL
+- Người tạo
+- Thời gian tạo
+- Trạng thái: "Mới tạo"
+Lưu thành công, trả về Mã PO
+Gửi thông báo "PO mới cần phê duyệt"
+Thông báo "PO đã được gửi phê duyệt"
+Phê duyệt PO
+Đăng nhập và xem danh sách PO chờ duyệt
+Lấy danh sách PO với trạng thái "Mới tạo"
+Trả về danh sách PO
+Hiển thị danh sách PO chờ duyệt
+Chọn PO để xem chi tiết
+Lấy chi tiết PO
+Trả về chi tiết PO
+Hiển thị chi tiết PO
+Xem xét:
+- Danh sách NVL
+- Số lượng hợp lý không
+- Đơn giá có chênh lệch lớn
+- Tổng giá trị PO
+alt
+
+[Quản lý phê duyệt PO]
+
+Nhấn "Phê duyệt"
+Cập nhật trạng thái PO = "Đã phê duyệt"
+Ghi nhận người phê duyệt và thời gian
+Cập nhật thành công
+Thông báo "PO đã được phê duyệt"
+Thông báo "PO đã được phê duyệt"
+[Quản lý từ chối PO]
+
+Nhấn "Từ chối" và nhập lý do
+Cập nhật trạng thái PO = "Từ chối"
+Lưu lý do từ chối
+Cập nhật thành công
+Thông báo "PO đã bị từ chối"
+Thông báo "PO bị từ chối" kèm lý do
+Thủ kho cần điều chỉnh
+hoặc tạo PO mới
+Gửi PO cho Nhà cung cấp
+Gọi điện/Gửi Zalo với chi tiết PO
+Cách liên hệ:
+- Điện thoại
+- Zalo
+- Email (nếu có)
+Nhận PO và chuẩn bị hàng
+
+Nhận hàng từ NCC (QĐ-RECEIVE)
+Giao hàng đến quán
+NCC mang theo:
+- Hàng hóa thực tế
+- Hóa đơn/Phiếu giao
+Mở PO tương ứng để đối chiếu
+Lấy chi tiết PO đã phê duyệt
+Trả về chi tiết PO
+Hiển thị danh sách NVL trong PO
+Kiểm tra hàng hóa thực tế
+loop
+
+[Đối chiếu từng NVL (QĐ-RECEIVE)]
+
+Đếm số lượng thực tế
+Kiểm tra chất lượng
+Nhập số lượng thực nhận
+So sánh số lượng thực tế vs PO
+alt
+
+[Số lượng khớp với PO]
+
+Hiển thị "Khớp" (màu xanh)
+[Số lượng khác với PO]
+
+Hiển thị "Chênh lệch" (màu vàng/đỏ)
+Ghi nhận lý do:
+- Thiếu hàng
+- NCC giao dư
+Xác nhận hoàn tất nhận hàng
+alt
+
+[Tất cả NVL đạt yêu cầu]
+
+Tạo Phiếu Nhập Kho
+Phiếu Nhập Kho gồm:
+- Mã phiếu (tự sinh)
+- Liên kết PO
+- Danh sách NVL thực nhận
+- Người nhận hàng
+- Thời gian nhập
+Lưu phiếu thành công
+Cập nhật tồn kho (tăng số lượng)
+loop
+
+[Cho từng NVL]
+
+Tăng tồn kho = Tồn cũ + Số lượng nhập
+Cập nhật giá nhập gần nhất
+Cập nhật thành công
+Cập nhật trạng thái PO = "Hoàn thành"
+Cập nhật thành công
+Thông báo "Nhập kho thành công"
+[Có NVL không đạt (thiếu/hỏng)]
+
+Tạo Phiếu Nhập Kho (với ghi chú chênh lệch)
+Lưu phiếu thành công
+Cập nhật tồn kho theo số lượng thực tế
+Cập nhật thành công
+Đánh dấu PO "Hoàn thành có chênh lệch"
+Tạo báo cáo chênh lệch
+Lưu báo cáo
+Thông báo "Nhập kho có chênh lệch"
+Gửi báo cáo chênh lệch
+Thủ kho liên hệ NCC
+để xử lý (giao bù/giảm giá)
+Sắp xếp hàng vào kho
+Sắp xếp hàng theo nguyên tắc FIFO/FEFO
+- FIFO: First In First Out
+- FEFO: First Expired First Out
+- Ghi nhận vị trí lưu trữ
+- Ghi nhận ngày hết hạn (nếu có)
+Cập nhật vị trí và ngày HH
+Lưu thông tin vị trí và ngày HH
+Lưu thành công
+Thông báo "Hoàn tất nhập kho"
+
+Thủ kho /
+Bếp trưởng
+
+Báo cáo đồ án SE104
+
+Inventory
+System
+
+Database
+
+Quản lý
+
+Nhà cung cấp
+
+Trang 49/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+• Tự động Trừ Kho khi Bán hàng
+Actors: POS System, Recipe Database, Inventory System, Database
+Quy định nghiệp vụ: QĐ-LINK, QĐ-DEDUCT, QĐ-ALERT
+
+Sequence Diagram: Tự động Trừ Kho và Tính Giá Vốn
+
+POS System
+
+Inventory
+System (INV)
+
+Order/Recipe
+Database
+
+Quản lý
+
+1. Kích hoạt và Gửi Yêu cầu Trừ Kho
+Nhận xác nhận thanh toán thành công
+
+POS đảm bảo Order đã được lưu
+và trạng thái = "Đã thanh toán"
+Gửi yêu cầu trừ kho (Order ID)
+Kích hoạt luồng Back-Office:
+- Trừ kho (QĐ-DEDUCT)
+- Cảnh báo (QĐ-ALERT)
+- Tính giá vốn (QĐ-COST)
+Lấy chi tiết Order đã thanh toán
+Trả về danh sách món ăn và số lượng
+2. Xử lý Công thức và Trừ Kho (QĐ-LINK & QĐ-DEDUCT)
+loop
+
+[Cho từng món trong Order]
+
+Truy vấn Công thức món ăn (QĐ-LINK)
+Trả về danh sách NVL định lượng
+Tính tổng số lượng NVL cần trừ (Nhân số lượng món)
+alt
+
+[NVL có định lượng]
+
+Cập nhật tồn kho (Trừ lùi số lượng NVL)
+Ghi nhận lịch sử Xuất kho (QĐ-DEDUCT)
+
+3. Kiểm tra Cảnh báo Tồn kho (QĐ-ALERT)
+Lấy ngưỡng tồn kho tối thiểu
+Trả về ngưỡng
+loop
+
+[Cho từng NVL đã trừ]
+
+So sánh Tồn kho mới vs Ngưỡng tối thiểu
+alt
+
+[Tồn kho < Ngưỡng tối thiểu hoặc < 0]
+
+Lưu cảnh báo tồn kho thấp/âm
+Lưu thành công
+Gửi thông báo/email cảnh báo
+
+4. Tính và Lưu Giá vốn (QĐ-COST)
+Lấy giá nhập gần nhất của các NVL
+Trả về giá nhập
+Tính Giá vốn (COGS) cho từng món ăn
+Giá vốn = Σ (Số lượng NVL x Giá nhập)
+Lưu Giá vốn (COGS) vào chi tiết Order
+Lưu thành công
+Xác nhận trừ kho và tính COGS hoàn tất
+Quản lý xem các cảnh báo và báo cáo
+Giá vốn/Lợi nhuận được cập nhật real-time
+
+POS System
+
+Inventory
+System (INV)
+
+Order/Recipe
+Database
+
+Quản lý
+
+• Quản lý Ca làm việc (Mở ca - Đóng ca - Z-report)
+Actors: Thu ngân, POS System, Shift Management, Database
+Quy định nghiệp vụ: QĐ-SHIFT
+
+Báo cáo đồ án SE104
+
+Trang 50/52
+
+Trường Đại Học Công nghệ Thông tin
+Đại Học Quốc Gia TP. Hồ Chí Minh
+
+Sequence Diagram: Quản lý Ca làm việc (Mở ca - Đóng ca - Z-report)
+
+Shift
+Management
+
+POS System
+
+Thu ngân
+
+Database
+
+Quản lý
+
+Mở Ca (Shift Open)
+Đăng nhập vào hệ thống
+Xác thực thông tin đăng nhập
+Xác thực thành công
+Hiển thị giao diện chính
+Chọn chức năng "Mở Ca"
+Kiểm tra trạng thái ca hiện tại
+Kiểm tra ca đang mở của Thu ngân
+alt
+
+[Thu ngân chưa có ca mở]
+
+Không có ca đang hoạt động
+Cho phép mở ca mới
+Hiển thị form "Nhập tiền đầu ca"
+Float = Số tiền mặt dự phòng
+để trả tiền thừa cho khách
+(VD: 2,000,000 VNĐ)
+Đếm tiền trong két
+Nhập số tiền đầu ca (Float)
+Tạo ca làm việc mới (QĐ-SHIFT)
+Lưu thông tin ca mới
+Thông tin ca gồm:
+- ID Ca (tự sinh)
+- Thu ngân
+- Thời gian mở ca
+- Số tiền đầu ca (Float)
+- Trạng thái: "Đang hoạt động"
+Lưu thành công, trả về ID Ca
+Ca được tạo thành công
+Thông báo "Mở ca thành công"
+Hiển thị thông tin ca hiện tại
+[Thu ngân đã có ca mở]
+
+Ca đang hoạt động
+Thu ngân đã có ca đang mở
+Thông báo "Bạn đã mở ca từ trước"
+Hiển thị thông tin ca hiện tại
+Xử lý Giao dịch Trong Ca
+loop
+
+[Xử lý nhiều giao dịch]
+
+Xử lý thanh toán cho khách
+Thu ngân thực hiện:
+- Tính tiền
+- Nhận thanh toán
+- Trả tiền thừa
+- In hóa đơn
+Ghi nhận giao dịch vào ca
+Cập nhật doanh thu ca (real-time)
+Cập nhật:
+- Tổng doanh thu ca
+- Số lượng hóa đơn
+- Doanh thu theo phương thức
+(Tiền mặt, Thẻ, QR, Điểm)
+Cập nhật thành công
+Ghi nhận giao dịch thành công
+Hoàn tất giao dịch
+Đóng Ca (Shift Close)
+Chọn chức năng "Đóng Ca"
+Yêu cầu đóng ca hiện tại
+Kiểm tra ca đang mở
+Trả về thông tin ca
+alt
+
+[Ca đang hoạt động]
+
+Tạm khóa chức năng bán hàng mới
+Ngăn không cho tạo
+order mới trong lúc đóng ca
+Tổng hợp dữ liệu ca làm việc
+loop
+
+[Tính toán từng phương thức thanh toán]
+
+Tính tổng doanh thu theo phương thức
+Trả về số liệu
+Tính toán tổng hợp
+Tính toán:
+- Tổng doanh thu tất cả phương thức
+- Tổng số hóa đơn
+- Giá trị hóa đơn trung bình
+- Tổng giảm giá/khuyến mãi
+- Tiền mặt lý thuyết =
+Float + Doanh thu tiền mặt
+Trả về tổng hợp dữ liệu
+Hiển thị tổng hợp doanh thu
+Thu ngân xem:
+- Tổng doanh thu lý thuyết
+- Doanh thu từng phương thức
+- Số lượng hóa đơn
+Đối Soát Tiền Mặt
+Đếm tiền mặt thực tế trong két
+Đếm tất cả tiền mặt:
+Float + Doanh thu tiền mặt
+Nhập số tiền mặt thực tế
+Gửi số tiền thực tế để đối soát
+Tính tiền mặt lý thuyết
+Tiền mặt lý thuyết =
+Float + Doanh thu tiền mặt trong ca
+Tính chênh lệch (Variance)
+Chênh lệch =
+Tiền thực tế - Tiền lý thuyết
+alt
+
+[Không có chênh lệch (Khớp 100%)]
+
+Đối soát chính xác
+Hiển thị "Đối soát chính xác"
+Màu xanh, biểu tượng ✓
+[Có chênh lệch nhỏ (< 50,000 VNĐ)]
+
+Có chênh lệch nhỏ
+Hiển thị chênh lệch
+Chênh lệch: +20,000 VNĐ (dư)
+hoặc -15,000 VNĐ (thiếu)
+Nhập lý do chênh lệch (tùy chọn)
+Lý do có thể:
+- Làm tròn tiền thừa
+- Nhầm mệnh giá
+- Quên ghi 1 giao dịch
+Lưu lý do chênh lệch
+Ghi nhận chênh lệch
+Lưu thành công
+[Có chênh lệch lớn (>= 50,000 VNĐ)]
+
+Cảnh báo chênh lệch lớn
+Hiển thị cảnh báo nghiêm trọng
+Cảnh báo màu đỏ:
+Chênh lệch: -150,000 VNĐ
+Vượt ngưỡng cho phép!
+Gửi thông báo chênh lệch lớn
+Nhận thông báo và kiểm tra
+Lấy chi tiết ca làm việc
+Lấy chi tiết giao dịch
+Tr ả v ề c h i t i ế t
+Trả về dữ liệu
+Hiển thị chi tiết giao dịch
+Kiểm tra lại cùng Thu ngân
+alt
+
+[Tìm ra nguyên nhân]
+
+Nhập lý do chênh lệch
+Nguyên nhân có thể:
+- Quên không ghi giao dịch
+- Trả tiền thừa sai
+- Nhầm mệnh giá tiền
+- Gian lận
+Lưu lý do và người phê duyệt
+Ghi nhận lý do và audit log
+Lưu thành công
+[Không tìm ra nguyên nhân]
+
+Yêu cầu kiểm tra kỹ hơn
+- Xem lại camera
+- Điều tra thêm
+- Lên kế hoạch xử lý
+
+Tạo Báo Cáo Z-Report
+Yêu cầu tạo Z-report chính thức
+Lấy toàn bộ dữ liệu ca
+Trả về dữ liệu đầy đủ
+Tạo báo cáo Z-report (BM-SHIFT)
+Báo cáo Z-report bao gồm:
+1. Thông tin ca
+- ID Ca
+- Thu ngân
+- Thời gian mở/đóng ca
+- Tổng thời gian làm việc
+2. Doanh thu theo phương thức
+- Tiền mặt: Lý thuyết vs Thực tế
+- Thẻ tín dụng/ATM
+- QR Code
+- Điểm tích lũy
+- Tổng doanh thu
+3. Thống kê giao dịch
+- Tổng số hóa đơn
+- Giá trị hóa đơn trung bình
+- Hóa đơn cao nhất/thấp nhất
+4. Giảm giá & Khuyến mãi
+- Tổng giảm giá
+- Số lượng hóa đơn được giảm
+5. Hóa đơn hủy (nếu có)
+- Số lượng món hủy
+- Giá trị món hủy
+- Người phê duyệt
+6. Chênh lệch tiền mặt
+- Chênh lệch (+ hoặc -)
+- Lý do (nếu có)
+Lưu báo cáo Z-report
+Lưu thành công
+Đóng ca hoàn toàn
+Cập nhật:
+- Trạng thái ca = "Đã đóng"
+- Thời gian đóng ca
+Cập nhật thành công
+Z-report đã được tạo
+Hiển thị Z-report trên màn hình
+Nhấn "In Z-report"
+Gửi lệnh in đến máy in
+Thông báo "Đang in..."
+Nhận bản in Z-report
+Ký xác nhận vào báo cáo
+Nộp tiền mặt vào két sắt
+Bàn giao báo cáo và tiền
+Kiểm tra báo cáo
+Ký xác nhận
+Lưu trữ báo cáo
+Báo cáo được lưu trữ
+để đối soát cuối ngày/tháng
+[Ca không tồn tại]
+
+Không tìm thấy ca đang mở
+Thông báo "Bạn chưa mở ca"
+
+Thu ngân
+
+Báo cáo đồ án SE104
+
+POS System
+
+Shift
+Management
+
+Database
+
+Quản lý
+
+Trang 51/52
+
+
