@@ -1,14 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  listOrders,
-  createOrder,
-  sendOrder,
-  createVoidRequest,
-  listVoidRequests,
-  approveVoidRequest,
-  rejectVoidRequest,
-} from '../api/orders.api';
+import { listOrders, createOrder, sendOrder, voidOrderItem } from '../api/orders.api';
 
 // Hook to subscribe to POS notifications (SSE) when items are done from kitchen
 export const usePosNotifications = (onItemDone) => {
@@ -112,46 +104,11 @@ export const useSendOrder = () => {
   });
 };
 
-// ==================== VOID REQUEST HOOKS ====================
-
-export const useCreateVoidRequest = () => {
+export const useVoidOrderItem = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderId, orderItemId, lyDo }) =>
-      createVoidRequest(orderId, { orderItemId, lyDo }),
-    onSuccess: () => {
-      qc.invalidateQueries(['orders']);
-      qc.invalidateQueries(['voidRequests']);
-    },
-  });
-};
-
-export const useVoidRequests = (params, options = {}) =>
-  useQuery({
-    queryKey: ['voidRequests', params],
-    queryFn: () => listVoidRequests(params),
-    staleTime: 5000,
-    ...options,
-  });
-
-export const useApproveVoidRequest = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (requestId) => approveVoidRequest(requestId),
-    onSuccess: () => {
-      qc.invalidateQueries(['voidRequests']);
-      qc.invalidateQueries(['orders']);
-      qc.invalidateQueries(['kds']);
-    },
-  });
-};
-
-export const useRejectVoidRequest = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ requestId, lyDoTuChoi }) => rejectVoidRequest(requestId, { lyDoTuChoi }),
-    onSuccess: () => {
-      qc.invalidateQueries(['voidRequests']);
-    },
+    mutationFn: ({ orderId, orderItemId, reason, managerPin, managerUsername }) =>
+      voidOrderItem(orderId, { orderItemId, reason, managerPin, managerUsername }),
+    onSuccess: () => qc.invalidateQueries(['orders']),
   });
 };

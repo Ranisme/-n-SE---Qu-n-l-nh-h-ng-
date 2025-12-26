@@ -49,17 +49,16 @@ const createVoidRequestSchema = Joi.object({
   query: Joi.object({}).unknown(true),
   body: Joi.object({
     orderItemId: Joi.string().uuid().required(),
-    lyDo: Joi.string().min(5).required(), // Reason is required, minimum 5 characters
+    reason: Joi.string().allow('', null),
   }).required(),
 });
 
 const voidRequestActionSchema = Joi.object({
-  params: Joi.object({ requestId: Joi.string().uuid().required() }).required(),
+  params: Joi.object({ id: Joi.string().uuid().required() }).required(),
   query: Joi.object({}).unknown(true),
   body: Joi.object({
-    lyDoTuChoi: Joi.string().allow('', null), // Optional rejection reason
-  }).unknown(true),
+    approverNote: Joi.string().allow('', null),
+  }).required(),
 });
 
-module.exports = { createOrderSchema, updateOrderSchema, sendOrderSchema, createVoidRequestSchema, voidRequestActionSchema };
-
+module.exports = { createOrderSchema, updateOrderSchema, sendOrderSchema, voidItemSchema, createVoidRequestSchema, voidRequestActionSchema };

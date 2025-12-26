@@ -8,43 +8,27 @@ const {
   updateOrder,
   listOrders,
   sendToKitchen,
-  createVoidRequest,
-  listVoidRequests,
-  approveVoidRequest,
-  rejectVoidRequest,
+  voidItem,
   streamNotifications,
 } = require('../controllers/orders.controller');
 const {
   createOrderSchema,
   updateOrderSchema,
   sendOrderSchema,
-  createVoidRequestSchema,
-  voidRequestActionSchema,
+  voidItemSchema,
 } = require('../validation/orders.validation');
 
 router.use(authMiddleware);
 
 // List orders: ORDER_VIEW
 router.get('/', requirePermissions([PERMISSIONS.ORDER_VIEW]), listOrders);
-
 // Create/Update orders: ORDER_CREATE, ORDER_UPDATE
 router.post('/', validate(createOrderSchema), requirePermissions([PERMISSIONS.ORDER_CREATE]), createOrder);
 router.patch('/:id', validate(updateOrderSchema), requirePermissions([PERMISSIONS.ORDER_UPDATE]), updateOrder);
 router.post('/:id/send', validate(sendOrderSchema), requirePermissions([PERMISSIONS.ORDER_CREATE, PERMISSIONS.ORDER_UPDATE]), sendToKitchen);
-
-// Void request workflow
-// Waiter creates void request: ORDER_VOID permission
-router.post('/:id/void-request', validate(createVoidRequestSchema), requirePermissions([PERMISSIONS.ORDER_VOID]), createVoidRequest);
-
-// Manager lists void requests: ORDER_VOID_APPROVE permission
-router.get('/void-requests', requirePermissions([PERMISSIONS.ORDER_VOID_APPROVE]), listVoidRequests);
-
-// Manager approves/rejects void request: ORDER_VOID_APPROVE permission
-router.post('/void-requests/:requestId/approve', requirePermissions([PERMISSIONS.ORDER_VOID_APPROVE]), approveVoidRequest);
-router.post('/void-requests/:requestId/reject', validate(voidRequestActionSchema), requirePermissions([PERMISSIONS.ORDER_VOID_APPROVE]), rejectVoidRequest);
-
+// Void item: ORDER_VOID hoặc ORDER_VOID_APPROVE
+router.post('/:id/void-item', validate(voidItemSchema), requirePermissions([PERMISSIONS.ORDER_VOID, PERMISSIONS.ORDER_VOID_APPROVE]), voidItem);
 // Notifications stream: ORDER_VIEW
 router.get('/notifications/stream', requirePermissions([PERMISSIONS.ORDER_VIEW]), streamNotifications);
 
 module.exports = router;
-

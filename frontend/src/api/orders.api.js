@@ -21,7 +21,7 @@ export const voidOrderItem = async (orderId, payload) => {
 };
 
 export const createVoidRequest = async (orderId, payload) => {
-  const { data } = await api.post(`/orders/${orderId}/void-request`, payload);
+  const { data } = await api.post(`/orders/${orderId}/void-requests`, payload);
   return data;
 };
 

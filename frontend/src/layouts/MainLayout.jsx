@@ -83,14 +83,12 @@ const menuItems = [
       { title: 'Sơ đồ bàn', icon: <TableBar />, path: '/pos/tables', permission: PERMISSIONS.TABLE_VIEW },
       { title: 'Đặt bàn', icon: <EventSeat />, path: '/reservations', permission: PERMISSIONS.RESERVATION_MANAGE },
       { title: 'Thanh toán', icon: <Receipt />, path: '/billing', permission: PERMISSIONS.PAYMENT_EXECUTE },
-      { title: 'Quản lý ca', icon: <Schedule />, path: '/billing/shifts', permission: PERMISSIONS.PAYMENT_EXECUTE },
       { title: 'Chấm công', icon: <History />, path: '/hr/attendance' },
     ],
   },
   {
     title: 'Quản lý',
     items: [
-      { title: 'Yêu cầu hủy món', icon: <Cancel />, path: '/void-requests', permission: PERMISSIONS.ORDER_VOID_APPROVE },
       {
         title: 'Thực đơn',
         icon: <LocalDining />,

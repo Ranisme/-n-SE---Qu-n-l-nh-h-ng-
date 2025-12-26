@@ -65,8 +65,6 @@ model NhanVien {
   caThuNgan  CaThuNgan[]
   phieuNhap  PhieuNhapKho[]
   lichPhanCa LichPhanCa[]
-  yeuCauHuyDaGui   YeuCauHuyMon[] @relation("VoidRequester")
-  yeuCauHuyDaDuyet YeuCauHuyMon[] @relation("VoidApprover")
 }
 
 model VaiTro {
@@ -182,7 +180,6 @@ model DonHang {
   nhanVien     NhanVien?   @relation(fields: [nhanVienId], references: [id])
   chiTiet      ChiTietDonHang[]
   hoaDon       HoaDon[]
-  yeuCauHuy    YeuCauHuyMon[]
 }
 
 model ChiTietDonHang {
@@ -196,7 +193,6 @@ model ChiTietDonHang {
   donHang     DonHang         @relation(fields: [donHangId], references: [id])
   monAn       MonAn           @relation(fields: [monAnId], references: [id])
   tuyChon     ChiTietTuyChonMon[]
-  yeuCauHuy   YeuCauHuyMon[]
 }
 
 model TuyChonMon {
@@ -214,24 +210,6 @@ model ChiTietTuyChonMon {
   chiTietDonHang  ChiTietDonHang  @relation(fields: [chiTietDonHangId], references: [id])
   tuyChonMon      TuyChonMon      @relation(fields: [tuyChonMonId], references: [id])
   monAn           MonAn?          @relation(fields: [monAnId], references: [id])
-}
-
-// ==================== VOID REQUEST ====================
-model YeuCauHuyMon {
-  id              String   @id @default(uuid())
-  donHangId       String
-  orderItemId     String
-  lyDo            String
-  nguoiYeuCauId   String?
-  nguoiDuyetId    String?
-  trangThai       String   @default("CHO_DUYET") // CHO_DUYET, DA_DUYET, TU_CHOI
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  donHang         DonHang         @relation(fields: [donHangId], references: [id])
-  orderItem       ChiTietDonHang  @relation(fields: [orderItemId], references: [id])
-  nguoiYeuCau     NhanVien?       @relation("VoidRequester", fields: [nguoiYeuCauId], references: [id])
-  nguoiDuyet      NhanVien?       @relation("VoidApprover", fields: [nguoiDuyetId], references: [id])
 }
 
 model HoaDon {

@@ -36,7 +36,6 @@ import Users from '../pages/admin/Users';
 import Roles from '../pages/admin/Roles';
 import AuditLogs from '../pages/admin/AuditLogs';
 import Config from '../pages/admin/Config';
-import VoidRequestsPage from '../pages/admin/VoidRequestsPage';
 
 const routes = [
   { path: '/login', element: <Login /> },
@@ -86,14 +85,6 @@ const routes = [
           { path: '/billing', element: <OpenBills /> },
           { path: '/billing/shifts', element: <CashierShift /> },
           { path: '/shifts', element: <CashierShifts /> },
-        ],
-      },
-
-      // Void Requests - requires ORDER_VOID_APPROVE permission (Manager, Admin)
-      {
-        element: <RequirePermission permissions={[PERMISSIONS.ORDER_VOID_APPROVE]} />,
-        children: [
-          { path: '/void-requests', element: <VoidRequestsPage /> },
         ],
       },
 
