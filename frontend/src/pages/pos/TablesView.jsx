@@ -97,6 +97,7 @@ const POS_COLORS = {
   },
   danger: '#EF4444',
   success: '#22C55E',
+  warning: '#F59E0B',
 };
 
 // ============================================

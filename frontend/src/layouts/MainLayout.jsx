@@ -57,6 +57,7 @@ import {
   AdminPanelSettings,
   Security,
   History,
+  Cancel,
 } from '@mui/icons-material';
 import { useThemeMode } from '../theme/ThemeContext';
 import { useAuth } from '../auth/authContext';
@@ -125,6 +126,7 @@ const menuItems = [
           { title: 'Lịch làm việc', path: '/hr/schedules', permission: PERMISSIONS.HR_VIEW },
         ],
       },
+      { title: 'Yêu cầu hủy món', icon: <Cancel />, path: '/manager/void-requests', permission: PERMISSIONS.ORDER_VOID_APPROVE },
     ],
   },
   {
