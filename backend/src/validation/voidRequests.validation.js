@@ -1,19 +1,25 @@
 const Joi = require('joi');
 
 const createVoidRequestSchema = Joi.object({
-    orderId: Joi.string().required(),
-    orderItemId: Joi.string().required(),
-    reason: Joi.string().min(5).max(500).required(),
+    body: Joi.object({
+        orderId: Joi.string().required(),
+        orderItemId: Joi.string().required(),
+        reason: Joi.string().min(5).max(500).required(),
+    }),
 });
 
 const approveVoidRequestSchema = Joi.object({
-    managerPin: Joi.string().required(),
-    managerUsername: Joi.string().optional(),
-    note: Joi.string().max(500).optional(),
+    body: Joi.object({
+        managerPin: Joi.string().required(),
+        managerUsername: Joi.string().optional(),
+        note: Joi.string().max(500).optional(),
+    }),
 });
 
 const rejectVoidRequestSchema = Joi.object({
-    reason: Joi.string().max(500).optional(),
+    body: Joi.object({
+        reason: Joi.string().max(500).optional(),
+    }),
 });
 
 module.exports = {
