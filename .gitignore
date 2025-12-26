@@ -44,3 +44,16 @@ coverage/
 
 # Zip files
 *.zip
+
+# Python virtual environment
+Ran/
+venv/
+env/
+ENV/
+
+# Documentation files (large PDFs and extracted text)
+*.pdf
+*_extracted.txt
+*_full.txt
+SE104_extracted.txt
+SE104_full.txt
