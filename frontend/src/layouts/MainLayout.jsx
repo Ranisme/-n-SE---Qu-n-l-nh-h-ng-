@@ -83,12 +83,14 @@ const menuItems = [
       { title: 'Sơ đồ bàn', icon: <TableBar />, path: '/pos/tables', permission: PERMISSIONS.TABLE_VIEW },
       { title: 'Đặt bàn', icon: <EventSeat />, path: '/reservations', permission: PERMISSIONS.RESERVATION_MANAGE },
       { title: 'Thanh toán', icon: <Receipt />, path: '/billing', permission: PERMISSIONS.PAYMENT_EXECUTE },
+      { title: 'Quản lý ca', icon: <Schedule />, path: '/billing/shifts', permission: PERMISSIONS.PAYMENT_EXECUTE },
       { title: 'Chấm công', icon: <History />, path: '/hr/attendance' },
     ],
   },
   {
     title: 'Quản lý',
     items: [
+      { title: 'Yêu cầu hủy món', icon: <Cancel />, path: '/void-requests', permission: PERMISSIONS.ORDER_VOID_APPROVE },
       {
         title: 'Thực đơn',
         icon: <LocalDining />,
@@ -219,18 +221,18 @@ const NavItem = ({ item, collapsed, depth = 0 }) => {
   if (item.adminOnly && !isAdmin()) {
     return null;
   }
-  
+
   if (item.permission && !hasPermission(item.permission)) {
     return null;
   }
 
   // Filter children based on permissions
-  const visibleChildren = hasChildren 
+  const visibleChildren = hasChildren
     ? item.children.filter(child => {
-        if (child.adminOnly && !isAdmin()) return false;
-        if (child.permission && !hasPermission(child.permission)) return false;
-        return true;
-      })
+      if (child.adminOnly && !isAdmin()) return false;
+      if (child.permission && !hasPermission(child.permission)) return false;
+      return true;
+    })
     : [];
 
   // Don't show parent if no children are visible
@@ -320,7 +322,7 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
     refetchInterval: 30000,
   });
   const lowStockCount = stockAlerts.length;
-  
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -354,7 +356,7 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Logo collapsed={collapsed && !isMobile} />
       <Divider sx={{ mx: 2 }} />
-      
+
       {/* Menu sections - for chefs we prepend a Kitchen section */}
       {(() => {
         const menuSections = isChef ? [
