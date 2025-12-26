@@ -2,9 +2,16 @@ const voidRequestsService = require('../services/voidRequests.service');
 
 const createVoidRequest = async (req, res, next) => {
     try {
+        console.log('=== CREATE VOID REQUEST ===');
+        console.log('User:', req.user);
+        console.log('Body:', req.body);
+        console.log('========================');
+
         const data = await voidRequestsService.createVoidRequest(req.user, req.body);
         res.status(201).json(data);
     } catch (err) {
+        console.error('❌ Error creating void request:', err.message);
+        console.error('Stack:', err.stack);
         next(err);
     }
 };
