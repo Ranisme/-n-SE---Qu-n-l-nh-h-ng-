@@ -2,7 +2,7 @@ const reportsService = require('../services/reports.service');
 
 const dashboard = async (req, res, next) => {
   try {
-    const data = await reportsService.dashboard();
+    const data = await reportsService.dashboard(req.query);
     res.json(data);
   } catch (err) {
     next(err);

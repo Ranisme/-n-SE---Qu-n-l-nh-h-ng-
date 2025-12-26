@@ -202,6 +202,18 @@ const MaterialRow = ({ material, onEdit, onDelete, alerts }) => {
           )}
         </Stack>
       </TableCell>
+
+      <TableCell>
+        <Chip
+          size="small"
+          label={isLow ? 'Thấp' : 'Đủ'}
+          sx={{
+            background: isLow ? COLORS.errorLight : COLORS.successLight,
+            color: isLow ? COLORS.error : COLORS.success,
+            fontWeight: 700,
+          }}
+        />
+      </TableCell>
       <TableCell>
         <Typography color={COLORS.textSecondary}>
           {Number(material.mucToiThieu || 0).toLocaleString('vi-VN')} {material.donViTinh}
@@ -338,8 +350,7 @@ const InventoryView = () => {
     const totalItems = materials.length;
     const totalValue = materials.reduce((sum, m) => sum + (Number(m.soLuongTon) * Number(m.giaNhap) || 0), 0);
     const lowStock = materials.filter(m => Number(m.soLuongTon) <= Number(m.mucToiThieu)).length;
-    const alertCount = alerts.length;
-    return { totalItems, totalValue, lowStock, alertCount };
+    return { totalItems, totalValue, lowStock };
   }, [materials, alerts]);
 
   // Handlers
@@ -438,15 +449,6 @@ const InventoryView = () => {
               value={stats.lowStock}
               color={COLORS.warning}
               subValue="Dưới mức tối thiểu"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatsCard
-              icon={<ErrorOutline sx={{ color: '#fff', fontSize: 24 }} />}
-              label="Cảnh báo"
-              value={stats.alertCount}
-              color={COLORS.error}
-              subValue="Cần xử lý"
             />
           </Grid>
         </Grid>
@@ -554,6 +556,9 @@ const InventoryView = () => {
                       <span>Tồn kho</span>
                       {sortBy === 'stock' && (sortOrder === 'asc' ? <KeyboardArrowUp sx={{ fontSize: 18 }} /> : <KeyboardArrowDown sx={{ fontSize: 18 }} />)}
                     </Stack>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>
+                    Phân loại
                   </TableCell>
                   <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>
                     Mức tối thiểu

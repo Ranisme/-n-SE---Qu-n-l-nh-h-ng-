@@ -182,7 +182,7 @@ const PosLayout = ({ children }) => {
             icon={<Schedule sx={{ fontSize: 16 }} />}
             label={currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
             size="small"
-            sx={{ 
+            sx={{
               fontWeight: 600,
               fontSize: '0.8rem',
               bgcolor: alpha(NAV_COLORS.primary, 0.08),
@@ -274,8 +274,8 @@ const PosLayout = ({ children }) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         PaperProps={{
-          sx: { 
-            width: 200, 
+          sx: {
+            width: 200,
             mt: 1,
             borderRadius: '12px',
             boxShadow: `0 10px 40px ${alpha('#000', 0.12)}`,

@@ -221,6 +221,27 @@ const pay = async (invoiceId, payload, user) => {
     let changeDue = 0;
     let totalPaid = pointsDiscount;
 
+    // QĐ-LOYALTY: Persist points redemption as a payment record so reporting can count it
+    if (pointsDiscount > 0) {
+      await tx.thanhToan.create({
+        data: {
+          hoaDonId: invoiceId,
+          phuongThuc: 'Diem',
+          soTien: pointsDiscount,
+          ghiChu: JSON.stringify({
+            note: 'Redeem loyalty points',
+            appliedAmount: pointsDiscount,
+            changeReturned: 0,
+            shiftId: shift?.id || null,
+            cashierId: user?.id || null,
+            userId: user?.id || null,
+            khachHangId,
+            pointsUsed: usePoints || 0,
+          }),
+        },
+      });
+    }
+
     for (const p of payments) {
       const amount = Number(p.amount);
       if (p.method !== 'TienMat' && amount > remaining) {
@@ -274,6 +295,22 @@ const pay = async (invoiceId, payload, user) => {
       where: { id: invoiceId },
       data: { trangThai: 'PAID' },
     });
+
+    await tx.nhatKyHeThong.create({
+      data: {
+        hanhDong: 'PAY_INVOICE',
+        thongTinBoSung: JSON.stringify({
+          invoiceId,
+          orderId: invoice.donHangId,
+          tongThanhToan: Number(invoice.tongThanhToan || 0),
+          payments: payments || [],
+          pointsUsed: usePoints || 0,
+          pointsDiscount: pointsDiscount || 0,
+          cashierId: user?.id || null,
+          userId: user?.id || null,
+        }),
+      },
+    }).catch(() => {});
 
     // QĐ-ALERT: Schedule low stock alert check after transaction
     setImmediate(() => checkAndSendLowStockAlert().catch(() => {}));
@@ -397,6 +434,34 @@ const getCurrentShift = async (user) => {
   });
   const summary = summarizeShiftPayments(payments, shift.id);
   return { shift, summary };
+};
+
+// Retrieve persisted Z-report for a closed shift
+const getZReport = async (shiftId) => {
+  const report = await prisma.zReport.findUnique({ where: { shiftId } });
+  if (!report) throw Object.assign(new Error('Z-Report không tồn tại'), { status: 404 });
+  return report;
+};
+
+// Export Z-report as CSV (simple implementation)
+const exportZReportCSV = async (shiftId, format = 'csv') => {
+  const report = await getZReport(shiftId);
+  // report.summary is a JSON object with payment summary by method
+  const rows = [];
+  rows.push(['Shift ID', shiftId]);
+  rows.push(['Closed At', report.closedAt]);
+  rows.push(['Expected Cash', report.expectedCash]);
+  rows.push(['Actual Cash', report.actualCash]);
+  rows.push(['Variance', report.variance]);
+  rows.push([]);
+  rows.push(['Payment Method', 'Total', 'Count']);
+  const summary = report.summary || {};
+  for (const [method, v] of Object.entries(summary)) {
+    rows.push([method, v.total || 0, v.count || 0]);
+  }
+  // Convert to CSV
+  const csv = rows.map(r => r.map(c => String(c ?? '')).map(s => `"${s.replace(/"/g, '""')}"`).join(',')).join('\n');
+  return csv;
 };
 
 /**
@@ -576,6 +641,92 @@ const splitBillByPeople = async (invoiceId, numPeople) => {
       newInvoices,
       originalInvoiceId: invoiceId,
     };
+  });
+};
+
+/**
+ * Merge multiple open invoices into a single invoice (same table)
+ * @param {Array} invoiceIds - array of invoice IDs to merge
+ */
+const mergeInvoices = async (invoiceIds, user) => {
+  if (!Array.isArray(invoiceIds) || invoiceIds.length < 2) throw Object.assign(new Error('Cần ít nhất 2 hóa đơn để gộp'), { status: 400 });
+  return prisma.$transaction(async (tx) => {
+    const invoices = await tx.hoaDon.findMany({
+      where: { id: { in: invoiceIds } },
+      include: { donHang: { include: { ban: true, nhanVien: true } }, thanhToan: true },
+    });
+    if (invoices.length !== invoiceIds.length) throw Object.assign(new Error('Một hoặc nhiều hóa đơn không tồn tại'), { status: 404 });
+    // same table check
+    const tableId = invoices[0].donHang?.banId;
+    for (const inv of invoices) {
+      if (inv.trangThai === 'PAID') throw Object.assign(new Error('Không thể gộp hóa đơn đã thanh toán'), { status: 400 });
+      if (inv.donHang?.banId !== tableId) throw Object.assign(new Error('Chỉ có thể gộp các hóa đơn cùng 1 bàn'), { status: 400 });
+    }
+
+    // create new order
+    const newOrder = await tx.donHang.create({
+      data: {
+        banId: tableId,
+        nhanVienId: user?.id || invoices[0].donHang?.nhanVienId || null,
+        trangThai: 'open',
+        ghiChu: `Gộp từ hóa đơn: ${invoiceIds.join(',')}`,
+      },
+    });
+
+    let tongTien = 0;
+    // move items
+    for (const inv of invoices) {
+      const items = await tx.chiTietDonHang.findMany({ where: { donHangId: inv.donHangId } });
+      for (const item of items) {
+        const newItem = await tx.chiTietDonHang.create({
+          data: {
+            donHangId: newOrder.id,
+            monAnId: item.monAnId,
+            soLuong: item.soLuong,
+            donGia: item.donGia,
+            trangThai: item.trangThai,
+            ghiChu: item.ghiChu,
+          },
+        });
+        // copy options
+        const opts = await tx.chiTietTuyChonMon.findMany({ where: { chiTietDonHangId: item.id } });
+        for (const o of opts) {
+          await tx.chiTietTuyChonMon.create({
+            data: {
+              chiTietDonHangId: newItem.id,
+              tuyChonMonId: o.tuyChonMonId,
+              monAnId: o.monAnId,
+            },
+          });
+        }
+        tongTien += Number(item.donGia) * item.soLuong;
+        await tx.chiTietDonHang.delete({ where: { id: item.id } });
+      }
+      // delete invoice
+      await tx.hoaDon.delete({ where: { id: inv.id } });
+      // delete order if empty
+      const remaining = await tx.chiTietDonHang.count({ where: { donHangId: inv.donHangId } });
+      if (remaining === 0) {
+        await tx.donHang.delete({ where: { id: inv.donHangId } }).catch(() => {});
+      }
+    }
+
+    const vatConfig = await tx.cauHinhHeThong.findUnique({ where: { key: 'VAT' } });
+    const vatRate = vatConfig ? Number(vatConfig.value) : 0;
+    const thueVAT = (tongTien * vatRate) / 100;
+
+    const newInvoice = await tx.hoaDon.create({
+      data: {
+        donHangId: newOrder.id,
+        tongTienHang: tongTien,
+        giamGia: 0,
+        thueVAT,
+        tongThanhToan: tongTien + thueVAT,
+        trangThai: 'OPEN',
+      },
+    });
+
+    return { message: 'Gộp hóa đơn thành công', invoice: newInvoice };
   });
 };
 
@@ -842,4 +993,7 @@ module.exports = {
   getInvoicePrintData,
   exportInvoices,
   getDailySalesReport,
+  mergeInvoices,
+  getZReport,
+  exportZReportCSV,
 };

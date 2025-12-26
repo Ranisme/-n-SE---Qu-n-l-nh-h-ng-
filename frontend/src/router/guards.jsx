@@ -18,12 +18,12 @@ export const RequireRole = ({ allowed }) => {
   return <Outlet />;
 };
 
-export const RequirePermission = ({ permissions = [] }) => {
+export const RequirePermission = ({ permissions = [], fallback = null }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
   const userPerms = user?.permissions || [];
   const hasAll = permissions.every((p) => userPerms.includes(p));
-  if (!hasAll) return <Navigate to="/" replace />;
+  if (!hasAll) return fallback ? fallback : <Navigate to="/" replace />;
   return <Outlet />;
 };

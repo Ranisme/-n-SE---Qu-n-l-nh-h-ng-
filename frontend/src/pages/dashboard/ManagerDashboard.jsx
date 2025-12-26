@@ -449,11 +449,11 @@ const BestSellerItem = ({ item, index, dishName, dishImage, price, profit, soldC
             textOverflow: 'ellipsis',
           }}
         >
-          {dishName || `Món #${item?.monAnId?.slice(0, 8)}`}
+          {dishName || item?.ten || `Món #${item?.monAnId?.slice(0, 8)}`}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
           <Typography variant="caption" sx={{ color: DASHBOARD_COLORS.secondary.main, fontWeight: 600 }}>
-            {price || '---'}₫
+            {(price ?? item?.giaBan ?? '---')}₫
           </Typography>
           <FiberManualRecord sx={{ fontSize: 4, color: DASHBOARD_COLORS.text.muted }} />
           <Typography variant="caption" sx={{ color: DASHBOARD_COLORS.text.muted }}>
@@ -589,7 +589,21 @@ const StockAlertItem = ({ item, index }) => {
 // ============================================
 // 👨‍🍳 ACTIVITY FEED ITEM
 // ============================================
-const ActivityItem = ({ type, title, time, user, icon: Icon, color }) => (
+const ActivityItem = ({ type, title, time, user, icon: Icon, color }) => {
+  const typeMap = {
+    order: { Icon: ShoppingCart, color: DASHBOARD_COLORS.primary.main },
+    payment: { Icon: AttachMoney, color: DASHBOARD_COLORS.secondary.main },
+    cancel: { Icon: Warning, color: DASHBOARD_COLORS.warning.main },
+    checkin: { Icon: Person, color: DASHBOARD_COLORS.accent.main },
+    checkout: { Icon: Person, color: DASHBOARD_COLORS.accent.main },
+    inventory: { Icon: Inventory, color: DASHBOARD_COLORS.warning.main },
+    system: { Icon: Timeline, color: DASHBOARD_COLORS.text.muted },
+  };
+  const resolved = Icon && color ? { Icon, color } : (typeMap[type] || typeMap.system);
+  const ResolvedIcon = resolved.Icon;
+  const resolvedColor = resolved.color;
+
+  return (
   <Box
     component={motion.div}
     initial={{ opacity: 0, x: -10 }}
@@ -609,14 +623,14 @@ const ActivityItem = ({ type, title, time, user, icon: Icon, color }) => (
         width: 36,
         height: 36,
         borderRadius: '10px',
-        bgcolor: alpha(color, 0.1),
+        bgcolor: alpha(resolvedColor, 0.1),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
       }}
     >
-      <Icon sx={{ fontSize: 18, color }} />
+      <ResolvedIcon sx={{ fontSize: 18, color: resolvedColor }} />
     </Box>
     <Box sx={{ flex: 1, minWidth: 0 }}>
       <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem', color: DASHBOARD_COLORS.text.primary }}>
@@ -637,7 +651,8 @@ const ActivityItem = ({ type, title, time, user, icon: Icon, color }) => (
       </Box>
     </Box>
   </Box>
-);
+  );
+};
 
 // ============================================
 // 👥 SHIFT EMPLOYEE ITEM
@@ -778,10 +793,12 @@ const TimeRangeSelector = ({ value, onChange }) => (
 // 🏠 MAIN DASHBOARD COMPONENT
 // ============================================
 const ManagerDashboard = () => {
-  const { data, isLoading, refetch } = useDashboard();
+  const [timeRange, setTimeRange] = useState(0);
+  const rangeParam = useMemo(() => ['week', 'month', 'year'][timeRange] || 'week', [timeRange]);
+  const dashboardParams = useMemo(() => ({ range: rangeParam }), [rangeParam]);
+  const { data, isLoading, refetch } = useDashboard(dashboardParams);
   const navigate = useNavigate();
   const theme = useTheme();
-  const [timeRange, setTimeRange] = useState(0);
 
   // Current greeting based on time
   const getGreeting = () => {
@@ -803,6 +820,20 @@ const ManagerDashboard = () => {
     minute: '2-digit',
   });
 
+  const formatTimeAgo = (dateInput) => {
+    const d = dateInput ? new Date(dateInput) : null;
+    if (!d || Number.isNaN(d.getTime())) return '';
+    const diffMs = Date.now() - d.getTime();
+    const sec = Math.floor(diffMs / 1000);
+    if (sec < 60) return 'vừa xong';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min} phút trước`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} giờ trước`;
+    const day = Math.floor(hr / 24);
+    return `${day} ngày trước`;
+  };
+
   // KPI Cards Data với permissions
   const kpiCards = [
     {
@@ -813,7 +844,7 @@ const ManagerDashboard = () => {
       gradient: DASHBOARD_COLORS.primary.gradient,
       trend: 'up',
       trendValue: 12.5,
-      onClick: () => navigate('/reports/sales'),
+      onClick: () => navigate('/reports/sales?period=today'),
       permission: PERMISSIONS.REPORT_VIEW,
     },
     {
@@ -847,6 +878,17 @@ const ManagerDashboard = () => {
       trendValue: 15.3,
       onClick: () => navigate('/customers'),
       permission: PERMISSIONS.CUSTOMER_VIEW,
+    },
+  ];
+
+  const revenueChartTitle = ['Doanh thu theo tuần', 'Doanh thu theo tháng', 'Doanh thu theo năm'][timeRange] || 'Doanh thu';
+  const revenueChartSubtitle = ['Biểu đồ doanh thu 7 ngày qua', 'Biểu đồ doanh thu trong tháng', 'Biểu đồ doanh thu trong năm'][timeRange] || '';
+
+  const revenueChartCategories = data?.revenueChart?.categories || ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  const revenueChartSeries = data?.revenueChart?.series || [
+    {
+      name: 'Doanh thu',
+      data: [0, 0, 0, 0, 0, 0, 0],
     },
   ];
 
@@ -902,7 +944,7 @@ const ManagerDashboard = () => {
       offsetY: -8,
     },
     xaxis: {
-      categories: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+      categories: revenueChartCategories,
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: {
@@ -944,13 +986,6 @@ const ManagerDashboard = () => {
       hover: { size: 8 },
     },
   };
-
-  const revenueChartSeries = [
-    {
-      name: 'Doanh thu',
-      data: [3200000, 4500000, 3800000, 5200000, 3800000, 5200000, 4800000],
-    },
-  ];
 
   // Category Donut Chart Config
   const categoryChartOptions = {
@@ -1014,20 +1049,12 @@ const ManagerDashboard = () => {
 
   const categoryChartSeries = [44, 25, 15, 10, 6];
 
-  // Mock Activity Data
-  const activities = [
-    { type: 'order', title: 'Đơn mới #1234 - Bàn A05', time: '2 phút trước', user: 'Nhân viên Hùng', icon: ShoppingCart, color: DASHBOARD_COLORS.primary.main },
-    { type: 'payment', title: 'Thanh toán #1233 - 450,000₫', time: '5 phút trước', user: 'Thu ngân Mai', icon: AttachMoney, color: DASHBOARD_COLORS.secondary.main },
-    { type: 'cancel', title: 'Huỷ món: Bò lúc lắc x1', time: '12 phút trước', user: 'Bếp trưởng', icon: Warning, color: DASHBOARD_COLORS.warning.main },
-    { type: 'checkin', title: 'Check-in ca tối', time: '30 phút trước', user: 'Phục vụ Lan', icon: Person, color: DASHBOARD_COLORS.accent.main },
-  ];
+  const activities = (data?.recentActivities || []).map((a) => ({
+    ...a,
+    time: formatTimeAgo(a.createdAt),
+  }));
 
-  // Mock Shift Data
-  const shiftEmployees = [
-    { name: 'Nguyễn Văn A', role: 'Phục vụ', status: 'active', time: '14:00 - 22:00' },
-    { name: 'Trần Thị B', role: 'Thu ngân', status: 'active', time: '14:00 - 22:00' },
-    { name: 'Lê Văn C', role: 'Bếp trưởng', status: 'upcoming', time: '18:00 - 02:00' },
-  ];
+  const shiftEmployees = data?.todayShifts || [];
 
   return (
     <MainLayout title="Dashboard">
@@ -1139,8 +1166,8 @@ const ManagerDashboard = () => {
           <PermissionGate permission={PERMISSIONS.REPORT_VIEW}>
             <Grid item xs={12} lg={8}>
               <ChartCard 
-                title="Doanh thu theo tuần"
-                subtitle="Biểu đồ doanh thu 7 ngày qua"
+                title={revenueChartTitle}
+                subtitle={revenueChartSubtitle}
                 icon={BarChart}
                 action={<TimeRangeSelector value={timeRange} onChange={setTimeRange} />}
               >
@@ -1341,11 +1368,19 @@ const ManagerDashboard = () => {
                   subtitle="Cập nhật real-time"
                   icon={Timeline}
                 >
-                  <Box>
-                    {activities.map((activity, index) => (
-                      <ActivityItem key={index} {...activity} />
-                    ))}
-                  </Box>
+                  {activities.length > 0 ? (
+                    <Box>
+                      {activities.map((activity) => (
+                        <ActivityItem key={activity.id} {...activity} />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Box sx={{ py: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Chưa có hoạt động gần đây.
+                      </Typography>
+                    </Box>
+                  )}
                 </ChartCard>
 
                 {/* Shift Schedule */}
@@ -1354,11 +1389,19 @@ const ManagerDashboard = () => {
                   subtitle="Nhân viên đang làm việc"
                   icon={Schedule}
                 >
-                  <Box>
-                    {shiftEmployees.map((emp, index) => (
-                      <ShiftEmployee key={index} {...emp} />
-                    ))}
-                  </Box>
+                  {shiftEmployees.length > 0 ? (
+                    <Box>
+                      {shiftEmployees.map((emp) => (
+                        <ShiftEmployee key={emp.id} {...emp} />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Box sx={{ py: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Chưa có lịch phân ca cho hôm nay.
+                      </Typography>
+                    </Box>
+                  )}
                 </ChartCard>
               </Stack>
             </Grid>

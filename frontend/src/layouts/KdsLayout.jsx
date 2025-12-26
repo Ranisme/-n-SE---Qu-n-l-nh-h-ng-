@@ -24,23 +24,25 @@ import {
   AccessTime as ClockIcon,
 } from '@mui/icons-material';
 
-// ==================== COLORS ====================
-const COLORS = {
-  bgPrimary: '#0a0e14',
-  bgSecondary: '#131920',
-  bgHeader: 'linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%)',
-  primary: '#6366F1',
-  primaryLight: '#818CF8',
-  accent: '#22D3EE',
-  textPrimary: '#F8FAFC',
-  textSecondary: '#94A3B8',
-  border: '#2D3748',
-  success: '#10B981',
-};
-
 const KdsLayout = ({ children }) => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
+
+  // Use app theme colors to keep KDS layout consistent with the rest of the app
+  const COLORS = {
+    bgPrimary: theme.palette.background.default,
+    bgSecondary: theme.palette.background.paper,
+    bgHeader: theme.palette.mode === 'light'
+      ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`
+      : `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
+    primary: theme.palette.primary.main,
+    primaryLight: theme.palette.primary.light || theme.palette.primary.main,
+    accent: theme.palette.secondary.main,
+    textPrimary: theme.palette.text.primary,
+    textSecondary: theme.palette.text.secondary,
+    border: theme.palette.divider,
+    success: theme.palette.success?.main || '#10B981',
+  };
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());

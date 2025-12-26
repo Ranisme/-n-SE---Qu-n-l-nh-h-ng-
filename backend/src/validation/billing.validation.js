@@ -50,6 +50,14 @@ const closeShiftSchema = Joi.object({
   }).required(),
 });
 
+const mergeInvoicesSchema = Joi.object({
+  params: Joi.object({}).unknown(true),
+  query: Joi.object({}).unknown(true),
+  body: Joi.object({
+    invoiceIds: Joi.array().items(Joi.string().uuid()).min(2).required(),
+  }).required(),
+});
+
 const splitByItemsSchema = Joi.object({
   params: Joi.object({ id: Joi.string().uuid().required() }).required(),
   query: Joi.object({}).unknown(true),

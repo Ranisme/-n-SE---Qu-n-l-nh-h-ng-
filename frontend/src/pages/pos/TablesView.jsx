@@ -60,7 +60,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PosLayout from '../../layouts/PosLayout';
 import { useTables } from '../../hooks/useTables';
 import { useMenuDishes, useMenuCategories, useMenuOptions } from '../../hooks/useMenu';
-import { useCreateOrder, useVoidOrderItem, usePosNotifications } from '../../hooks/useOrders';
+import { useCreateOrder, useVoidOrderItem, usePosNotifications, useOrders } from '../../hooks/useOrders';
 
 // ============================================
 // 🎨 PREMIUM POS COLOR SYSTEM
@@ -919,12 +919,23 @@ const VoidPinDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
 // ============================================
 const TablesView = () => {
   // Data Hooks
-  const { data: tablesData } = useTables();
+  const { data: tablesData, isLoading: tablesLoading, isError: tablesError, error: tablesErrorObj, refetch: refetchTables } = useTables();
   const { data: dishesData } = useMenuDishes();
   const { data: categoriesData } = useMenuCategories();
   const { data: optionsData } = useMenuOptions();
   const createOrder = useCreateOrder();
   const voidOrderItem = useVoidOrderItem();
+
+  // If tables API failed, show a helpful message instead of blank screen
+  if (tablesError) {
+    return (
+      <Box sx={{ py: 10, textAlign: 'center' }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>❌ Không thể tải dữ liệu bàn</Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>{tablesErrorObj?.message || 'Lỗi kết nối hoặc server không trả lời'}</Typography>
+        <Button variant="contained" onClick={() => refetchTables()}>Thử lại</Button>
+      </Box>
+    );
+  }
 
   // POS Notifications from Kitchen (SSE)
   const { notifications: kitchenNotifications, connected: sseConnected, removeNotification } = usePosNotifications();
@@ -939,6 +950,20 @@ const TablesView = () => {
   // Dialog states
   const [addItemDialog, setAddItemDialog] = useState({ open: false, dish: null });
   const [voidDialog, setVoidDialog] = useState({ open: false, item: null });
+
+  // Orders for selected table (sent orders)
+  const { data: sentOrders = [], isLoading: sentOrdersLoading } = useOrders(selectedTable ? { tableId: selectedTable.id } : {}, { enabled: !!selectedTable });
+
+  // Flatten sent items for current table
+  const sentItems = (sentOrders || []).flatMap(o => (o.chiTiet || []).map(i => ({
+    ...i,
+    ten: i.monAn?.ten,
+    quantity: i.soLuong,
+    giaBan: i.donGia,
+    note: i.ghiChu,
+    orderId: o.id,
+    orderItemId: i.id,
+  })));
 
   // Derived Data
   const tables = tablesData?.items || [];
@@ -1209,7 +1234,34 @@ const TablesView = () => {
             </Box>
 
             <Box sx={{ flex: 1, overflowY: 'auto', p: 1.25 }}>
-              {cart.length === 0 ? (
+              {/* Sent items from kitchen (orders already created and sent) */}
+            {sentItems.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>Đã gửi đến bếp</Typography>
+                <Stack spacing={1}>
+                  {sentItems.map(si => (
+                    <Paper key={si.orderItemId} sx={{ p: 1, borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid', borderColor: alpha('#000', 0.04) }}>
+                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', minWidth: 0 }}>
+                        <Avatar src={si.monAn?.hinhAnh || getDishImage(si)} variant="rounded" sx={{ width: 44, height: 44, borderRadius: '8px' }} />
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="body2" fontWeight={700} noWrap sx={{ color: POS_COLORS.text.primary }}>{si.ten}</Typography>
+                          <Typography variant="caption" sx={{ color: POS_COLORS.text.muted }}>{si.quantity} × {Number(si.giaBan || 0).toLocaleString()}₫</Typography>
+                        </Box>
+                      </Box>
+
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <Chip label={si.trangThai || 'CHOCHEBIEN'} size="small" sx={{ fontWeight: 700 }} />
+                        <IconButton size="small" onClick={() => handleOpenVoidDialog(si)} sx={{ color: POS_COLORS.danger }}>
+                          <Cancel />
+                        </IconButton>
+                      </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+
+            {cart.length === 0 ? (
                 <Box sx={{ textAlign: 'center', mt: 5, opacity: 0.5 }}>
                   <Box sx={{ width: 64, height: 64, borderRadius: '50%', bgcolor: POS_COLORS.background.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5 }}>
                     <Restaurant sx={{ fontSize: 28, color: POS_COLORS.text.muted }} />

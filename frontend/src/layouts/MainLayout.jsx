@@ -25,7 +25,9 @@ import {
   Collapse,
   Stack,
   Chip,
+  Button,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   Menu as MenuIcon,
   Dashboard,
@@ -61,6 +63,7 @@ import { useAuth } from '../auth/authContext';
 import { PERMISSIONS } from '../utils/permissions';
 import { usePermissions } from '../hooks/usePermissions';
 import PermissionGate from '../components/PermissionGate';
+import { useInventoryAlerts } from '../hooks/useInventory';
 
 const DRAWER_WIDTH = 280;
 const DRAWER_WIDTH_COLLAPSED = 80;
@@ -80,6 +83,7 @@ const menuItems = [
       { title: 'Sơ đồ bàn', icon: <TableBar />, path: '/pos/tables', permission: PERMISSIONS.TABLE_VIEW },
       { title: 'Đặt bàn', icon: <EventSeat />, path: '/reservations', permission: PERMISSIONS.RESERVATION_MANAGE },
       { title: 'Thanh toán', icon: <Receipt />, path: '/billing', permission: PERMISSIONS.PAYMENT_EXECUTE },
+      { title: 'Chấm công', icon: <History />, path: '/hr/attendance' },
     ],
   },
   {
@@ -119,7 +123,6 @@ const menuItems = [
         children: [
           { title: 'Nhân viên', path: '/hr/employees', permission: PERMISSIONS.HR_VIEW },
           { title: 'Lịch làm việc', path: '/hr/schedules', permission: PERMISSIONS.HR_VIEW },
-          { title: 'Ca làm việc', path: '/shifts', permission: PERMISSIONS.HR_VIEW },
         ],
       },
     ],
@@ -308,6 +311,15 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+
+  const { hasPermission } = usePermissions();
+  const isChef = (user?.roles || []).includes('Bep');
+  const canViewStock = hasPermission(PERMISSIONS.STOCK_VIEW);
+  const { data: stockAlerts = [] } = useInventoryAlerts({
+    enabled: canViewStock,
+    refetchInterval: 30000,
+  });
+  const lowStockCount = stockAlerts.length;
   
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -343,31 +355,41 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
       <Logo collapsed={collapsed && !isMobile} />
       <Divider sx={{ mx: 2 }} />
       
-      <Box sx={{ flex: 1, overflow: 'auto', py: 2 }}>
-        {menuItems.map((section, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            {!collapsed && (
-              <Typography
-                variant="overline"
-                sx={{
-                  px: 3,
-                  py: 1,
-                  display: 'block',
-                  color: 'text.secondary',
-                  fontSize: '0.6875rem',
-                }}
-              >
-                {section.title}
-              </Typography>
-            )}
-            <List disablePadding>
-              {section.items.map((item, idx) => (
-                <NavItem key={idx} item={item} collapsed={collapsed && !isMobile} />
-              ))}
-            </List>
+      {/* Menu sections - for chefs we prepend a Kitchen section */}
+      {(() => {
+        const menuSections = isChef ? [
+          { title: 'Bếp', items: [{ title: 'Bếp', icon: <LocalDining />, path: '/kds', permission: PERMISSIONS.KDS_VIEW }] },
+          ...menuItems,
+        ] : menuItems;
+
+        return (
+          <Box sx={{ flex: 1, overflow: 'auto', py: 2 }}>
+            {menuSections.map((section, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                {!collapsed && (
+                  <Typography
+                    variant="overline"
+                    sx={{
+                      px: 3,
+                      py: 1,
+                      display: 'block',
+                      color: 'text.secondary',
+                      fontSize: '0.6875rem',
+                    }}
+                  >
+                    {section.title}
+                  </Typography>
+                )}
+                <List disablePadding>
+                  {section.items.map((item, idx) => (
+                    <NavItem key={idx} item={item} collapsed={collapsed && !isMobile} />
+                  ))}
+                </List>
+              </Box>
+            ))}
           </Box>
-        ))}
-      </Box>
+        );
+      })()}
 
       {/* User info at bottom */}
       <Box sx={{ p: 2, borderTop: (theme) => `1px dashed ${alpha(theme.palette.divider, 0.5)}` }}>
@@ -509,7 +531,7 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
             {/* Notifications */}
             <Tooltip title="Thông báo">
               <IconButton color="inherit" onClick={(e) => setNotifAnchor(e.currentTarget)}>
-                <Badge badgeContent={3} color="error">
+                <Badge badgeContent={lowStockCount} color="error" showZero={false}>
                   <Notifications />
                 </Badge>
               </IconButton>
@@ -604,36 +626,30 @@ const MainLayout = ({ title = 'Dashboard', children }) => {
           <Typography variant="subtitle1" fontWeight={600}>
             Thông báo
           </Typography>
-          <Chip label="3 mới" size="small" color="error" />
+          <Chip
+            label={`${lowStockCount} sắp hết hàng`}
+            size="small"
+            color={lowStockCount > 0 ? 'error' : 'default'}
+          />
         </Box>
         <Divider />
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            setNotifAnchor(null);
+            navigate('/inventory');
+          }}
+          disabled={!canViewStock}
+        >
           <Box>
             <Typography variant="body2" fontWeight={500}>
-              Tồn kho thấp
+              Sắp hết hàng
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Thịt bò còn 2kg - dưới mức tối thiểu
-            </Typography>
-          </Box>
-        </MenuItem>
-        <MenuItem>
-          <Box>
-            <Typography variant="body2" fontWeight={500}>
-              Đơn hàng mới
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Bàn 5 vừa gọi thêm món
-            </Typography>
-          </Box>
-        </MenuItem>
-        <MenuItem>
-          <Box>
-            <Typography variant="body2" fontWeight={500}>
-              Ca mới bắt đầu
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Ca chiều đã bắt đầu lúc 14:00
+              {canViewStock
+                ? lowStockCount > 0
+                  ? `Có ${lowStockCount} nguyên liệu dưới mức tối thiểu`
+                  : 'Không có nguyên liệu sắp hết hàng'
+                : 'Bạn không có quyền xem kho hàng'}
             </Typography>
           </Box>
         </MenuItem>

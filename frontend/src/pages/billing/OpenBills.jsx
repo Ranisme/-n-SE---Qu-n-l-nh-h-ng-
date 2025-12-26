@@ -75,6 +75,7 @@ import {
   useSplitBillByItems,
   useSplitBillByPeople,
   useExportInvoices,
+  useMergeInvoices,
 } from '../../hooks/useBilling';
 import { useCustomers, useCustomerPoints } from '../../hooks/useCustomers';
 
@@ -136,7 +137,7 @@ const getTimeSince = (date) => {
 };
 
 // ==================== INVOICE CARD COMPONENT ====================
-const InvoiceCard = ({ invoice, isSelected, onClick, isOverdue }) => {
+const InvoiceCard = ({ invoice, isSelected, onClick, isOverdue, selectable = false, isChecked = false, onSelect = () => {} }) => {
   const tableName = invoice.donHang?.ban?.ten || `Bàn ${invoice.donHang?.banId?.slice(0, 4) || '?'}`;
   const itemCount = invoice.donHang?.chiTiet?.length || 0;
   const timeSince = getTimeSince(invoice.createdAt);
@@ -222,20 +223,25 @@ const InvoiceCard = ({ invoice, isSelected, onClick, isOverdue }) => {
                 </Typography>
               </Box>
             </Box>
-            <Chip
-              size="small"
-              label={
-                isOverdue ? 'Quá hạn' :
-                invoice.trangThai === 'paid' || invoice.trangThai === 'DaThanhToan' ? 'Đã TT' :
-                invoice.trangThai === 'processing' ? 'Đang xử lý' : 'Chờ TT'
-              }
-              sx={{
-                background: statusConfig.light,
-                color: statusConfig.text,
-                fontWeight: 600,
-                fontSize: '0.7rem',
-              }}
-            />
+            <Stack direction="row" alignItems="center" spacing={1}>
+              {selectable && (
+                <Checkbox size="small" checked={isChecked} onClick={(e) => { e.stopPropagation(); onSelect(); }} />
+              )}
+              <Chip
+                size="small"
+                label={
+                  isOverdue ? 'Quá hạn' :
+                  invoice.trangThai === 'paid' || invoice.trangThai === 'DaThanhToan' ? 'Đã TT' :
+                  invoice.trangThai === 'processing' ? 'Đang xử lý' : 'Chờ TT'
+                }
+                sx={{
+                  background: statusConfig.light,
+                  color: statusConfig.text,
+                  fontWeight: 600,
+                  fontSize: '0.7rem',
+                }}
+              />
+            </Stack>
           </Stack>
           
           {/* Amount */}
@@ -467,6 +473,12 @@ const OpenBills = () => {
   const splitByItems = useSplitBillByItems();
   const splitByPeople = useSplitBillByPeople();
   const exportInvoices = useExportInvoices();
+  const mergeInvoices = useMergeInvoices();
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
+  // Derived: selected invoices and validation
+  const selectedInvoicesList = selectedIds.map((id) => invoices.find((i) => i.id === id) || {});
+  const tableMismatch = new Set(selectedInvoicesList.map((inv) => inv.donHang?.banId || inv.donHang?.ban?.id || '')).size > 1;
   
   // Snackbar
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -580,7 +592,7 @@ const OpenBills = () => {
   // Handle quick checkout from pending order
   const handleQuickCheckout = (orderId) => {
     checkoutOrder
-      .mutateAsync({ orderId, payload: {} })
+      .mutateAsync({ orderId, payload: { discount: 0 } })
       .then((invoice) => {
         setSnackbar({ open: true, message: '✅ Tạo hóa đơn thành công!', severity: 'success' });
         setSelectedId(invoice.id);
@@ -590,9 +602,11 @@ const OpenBills = () => {
         refetchPending();
       })
       .catch((err) => {
+        const apiMsg = err?.response?.data?.message;
+        const detailMsg = err?.response?.data?.details?.[0]?.message;
         setSnackbar({ 
           open: true, 
-          message: `❌ ${err?.response?.data?.message || 'Không thể tạo hóa đơn'}`,
+          message: `❌ ${detailMsg || apiMsg || 'Không thể tạo hóa đơn'}`,
           severity: 'error'
         });
       });
@@ -638,9 +652,11 @@ const OpenBills = () => {
         refetch();
       })
       .catch((err) => {
+        const apiMsg = err?.response?.data?.message;
+        const detailMsg = err?.response?.data?.details?.[0]?.message;
         setSnackbar({ 
           open: true, 
-          message: `❌ ${err?.response?.data?.message || 'Thanh toán thất bại'}`,
+          message: `❌ ${detailMsg || apiMsg || 'Thanh toán thất bại'}`,
           severity: 'error'
         });
       });
@@ -685,9 +701,11 @@ const OpenBills = () => {
         setDiscountApprovalDialog({ open: false, pendingDiscount: 0 });
       })
       .catch((err) => {
+        const apiMsg = err?.response?.data?.message;
+        const detailMsg = err?.response?.data?.details?.[0]?.message;
         setSnackbar({ 
           open: true, 
-          message: `❌ ${err?.response?.data?.message || 'Không thể tạo hóa đơn'}`,
+          message: `❌ ${detailMsg || apiMsg || 'Không thể tạo hóa đơn'}`,
           severity: 'error'
         });
       });
@@ -932,11 +950,16 @@ const OpenBills = () => {
                   </IconButton>
                   <Box sx={{ flex: 1 }} />
                   {viewTab === 0 && (
-                    <Tooltip title="Xuất CSV">
-                      <IconButton size="small" onClick={handleExportCSV}>
-                        <Download sx={{ fontSize: 18 }} />
-                      </IconButton>
-                    </Tooltip>
+                    <>
+                      <Button variant="contained" size="small" disabled={selectedIds.length < 2} onClick={() => setMergeDialogOpen(true)} sx={{ mr: 1 }}>
+                        Gộp ({selectedIds.length})
+                      </Button>
+                      <Tooltip title="Xuất CSV">
+                        <IconButton size="small" onClick={handleExportCSV}>
+                          <Download sx={{ fontSize: 18 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </>
                   )}
                 </Stack>
               </Stack>
@@ -957,6 +980,9 @@ const OpenBills = () => {
                           isSelected={inv.id === selectedId && selectedType === 'invoice'}
                           isOverdue={getTimeSince(inv.createdAt) > 60}
                           onClick={() => { setSelectedId(inv.id); setSelectedType('invoice'); }}
+                          selectable={!['paid', 'DaThanhToan'].includes(String(inv.trangThai))}
+                          isChecked={selectedIds.includes(inv.id)}
+                          onSelect={() => setSelectedIds(prev => prev.includes(inv.id) ? prev.filter(x => x !== inv.id) : [...prev, inv.id])}
                         />
                       ))}
                     </AnimatePresence>
@@ -1990,6 +2016,65 @@ const OpenBills = () => {
                 Chia cho {numPeople} người
               </Button>
             )}
+          </DialogActions>
+        </Dialog>
+
+        {/* ==================== MERGE INVOICES DIALOG ==================== */}
+        <Dialog open={mergeDialogOpen} onClose={() => setMergeDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 4 } }}>
+          <DialogTitle sx={{ pb: 1 }}>Gộp hóa đơn</DialogTitle>
+          <DialogContent>
+            {(() => {
+              const selectedInvoices = selectedIds.map((id) => invoices.find((i) => i.id === id) || {});
+              const tableIds = new Set(selectedInvoices.map((inv) => inv.donHang?.banId || inv.donHang?.ban?.id || ''));
+              const tableMismatch = tableIds.size > 1;
+              return (
+                <>
+                  <Typography>Bạn sắp gộp <strong>{selectedIds.length}</strong> hóa đơn:</Typography>
+
+                  {tableMismatch && (
+                    <Alert severity="warning" sx={{ my: 2 }}>Các hóa đơn phải thuộc cùng một bàn để có thể gộp.</Alert>
+                  )}
+
+                  <Stack spacing={1} sx={{ mt: 2 }}>
+                    {selectedInvoices.map((inv) => (
+                      <Paper key={inv.id || Math.random()} sx={{ p: 1 }}>
+                        <Stack direction="row" justifyContent="space-between">
+                          <Typography>{inv.donHang?.ban?.ten || `#${inv.id?.slice(0,6) || '---'}`}</Typography>
+                          <Typography>{formatCurrency(Number(inv.tongThanhToan || 0))}</Typography>
+                        </Stack>
+                      </Paper>
+                    ))}
+                    <Divider />
+                    <Stack direction="row" justifyContent="space-between">
+                      <Typography fontWeight={700}>Tổng</Typography>
+                      <Typography fontWeight={700}>{formatCurrency(selectedIds.reduce((s, id) => s + Number(invoices.find(i => i.id === id)?.tongThanhToan || 0), 0))}</Typography>
+                    </Stack>
+                  </Stack>
+                </>
+              );
+            })()}
+          </DialogContent>
+          <DialogActions sx={{ p: 3 }}>
+            <Button onClick={() => setMergeDialogOpen(false)}>Hủy</Button>
+            <Button variant="contained"
+              disabled={mergeInvoices.isLoading || selectedIds.length < 2 || tableMismatch}
+              onClick={async () => {
+                try {
+                  await mergeInvoices.mutateAsync({ invoiceIds: selectedIds });
+                  setSnackbar({ open: true, message: '✅ Gộp thành công', severity: 'success' });
+                  setSelectedIds([]);
+                  setMergeDialogOpen(false);
+                  refetch();
+                } catch (err) {
+                  // Show server message if available
+                  const msg = err?.response?.data?.message || err?.message || 'Gộp thất bại';
+                  setSnackbar({ open: true, message: msg, severity: 'error' });
+                }
+              }}
+              sx={{ borderRadius: 2, background: `linear-gradient(135deg, ${COLORS.info}, ${COLORS.primary})` }}
+            >
+              Xác nhận gộp
+            </Button>
           </DialogActions>
         </Dialog>
 

@@ -5,7 +5,7 @@ const { prisma } = require('../src/config/db');
 const permissions = [
   'VOID_ITEM',           // Hủy món
   'DISCOUNT',            // Giảm giá
-  'PAYMENT_PROCESS',     // Thanh toán
+  'PAYMENT_EXECUTE',     // Thanh toán
   'INVENTORY_ADJUST',    // Điều chỉnh kho
   'PURCHASE_APPROVE',    // Duyệt đơn mua hàng
   'REPORT_VIEW',         // Xem báo cáo
@@ -14,19 +14,19 @@ const permissions = [
   'TABLE_MANAGE',        // Quản lý bàn/khu vực  
   'HR_MANAGE',           // Quản lý nhân sự
   'ORDER_CREATE',        // Tạo/sửa order (Phục vụ)
-  'KDS_ACCESS',          // Truy cập bếp (KDS)
+  'KDS_VIEW',            // Truy cập bếp (KDS)
 ];
 
 const roles = {
   Admin: permissions,  // Admin có tất cả quyền
   Manager: [
-    'VOID_ITEM', 'DISCOUNT', 'PAYMENT_PROCESS', 'REPORT_VIEW', 
+    'VOID_ITEM', 'DISCOUNT', 'PAYMENT_EXECUTE', 'REPORT_VIEW', 
     'PURCHASE_APPROVE', 'MENU_MANAGE', 'TABLE_MANAGE', 'HR_MANAGE',
-    'ORDER_CREATE', 'KDS_ACCESS', 'INVENTORY_ADJUST'
+    'ORDER_CREATE', 'KDS_VIEW', 'INVENTORY_ADJUST'
   ],
-  ThuNgan: ['PAYMENT_PROCESS'],  // Thu ngân chỉ thanh toán
+  ThuNgan: ['PAYMENT_EXECUTE'],  // Thu ngân chỉ thanh toán
   PhucVu: ['ORDER_CREATE'],      // Phục vụ chỉ gọi món
-  Bep: ['KDS_ACCESS'],           // Bếp chỉ xem KDS
+  Bep: ['KDS_VIEW'],           // Bếp chỉ xem KDS
   ThuKho: ['INVENTORY_ADJUST', 'PURCHASE_APPROVE'],  // Thủ kho quản lý kho + mua hàng
 };
 

@@ -11,6 +11,9 @@ import {
   getInvoicePrintData,
   splitBillByItems,
   splitBillByPeople,
+  mergeInvoices,
+  getZReport,
+  exportZReport,
   exportInvoices,
   getDailySalesReport,
 } from '../api/billing.api';
@@ -68,6 +71,7 @@ export const usePayInvoice = () => {
     onSuccess: () => {
       qc.invalidateQueries(['openInvoices']);
       qc.invalidateQueries(['currentShift']);
+      qc.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 };
@@ -85,6 +89,27 @@ export const useSplitBillByPeople = () => {
   return useMutation({
     mutationFn: ({ invoiceId, numPeople }) => splitBillByPeople(invoiceId, numPeople),
     onSuccess: () => qc.invalidateQueries(['openInvoices']),
+  });
+};
+
+export const useMergeInvoices = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ invoiceIds }) => mergeInvoices(invoiceIds),
+    onSuccess: () => qc.invalidateQueries(['openInvoices']),
+  });
+};
+
+export const useGetZReport = (shiftId) =>
+  useQuery({
+    queryKey: ['zreport', shiftId],
+    queryFn: () => getZReport(shiftId),
+    enabled: !!shiftId,
+  });
+
+export const useExportZReport = () => {
+  return useMutation({
+    mutationFn: ({ shiftId, format }) => exportZReport(shiftId, format),
   });
 };
 

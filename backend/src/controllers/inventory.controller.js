@@ -110,6 +110,15 @@ const createBulkAdjustment = async (req, res, next) => {
   }
 };
 
+const getAdjustmentOrder = async (req, res, next) => {
+  try {
+    const data = await inventoryService.getAdjustmentOrder(req.params.id);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ==================== RECIPES ====================
 
 const upsertRecipe = async (req, res, next) => {
@@ -142,6 +151,7 @@ module.exports = {
   listAdjustments,
   createAdjustment,
   createBulkAdjustment,
+  getAdjustmentOrder,
   upsertRecipe, 
   getRecipe,
 };

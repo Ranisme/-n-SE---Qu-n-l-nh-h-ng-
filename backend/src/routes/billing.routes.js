@@ -17,8 +17,11 @@ const {
   getInvoicePrintData,
   exportInvoices,
   getDailySalesReport,
+  mergeInvoices,
+  getZReport,
+  exportZReport,
 } = require('../controllers/billing.controller');
-const { checkoutSchema, paySchema, openShiftSchema, closeShiftSchema, splitByItemsSchema, splitByPeopleSchema } = require('../validation/billing.validation');
+const { checkoutSchema, paySchema, openShiftSchema, closeShiftSchema, splitByItemsSchema, splitByPeopleSchema, mergeInvoicesSchema } = require('../validation/billing.validation');
 
 router.use(authMiddleware);
 
@@ -47,6 +50,14 @@ router.post(
   requirePermissions([PERMISSIONS.PAYMENT_EXECUTE]),
   splitBillByPeople,
 );
+
+// Merge multiple open invoices into one (same table)
+router.post('/invoices/merge', validate(mergeInvoicesSchema), requirePermissions([PERMISSIONS.PAYMENT_EXECUTE]), mergeInvoices);
+
+// Z-Report endpoints
+router.get('/shifts/:id/zreport', requirePermissions([PERMISSIONS.SHIFT_MANAGE, PERMISSIONS.REPORT_VIEW]), getZReport);
+router.get('/shifts/:id/zreport/export', requirePermissions([PERMISSIONS.SHIFT_MANAGE, PERMISSIONS.REPORT_VIEW]), exportZReport);
+
 router.post('/shifts/open', validate(openShiftSchema), requirePermissions([PERMISSIONS.SHIFT_OPEN]), openShift);
 router.get('/shifts/current', requirePermissions([PERMISSIONS.SHIFT_MANAGE]), currentShift);
 router.post('/shifts/:id/close', validate(closeShiftSchema), requirePermissions([PERMISSIONS.SHIFT_CLOSE]), closeShift);

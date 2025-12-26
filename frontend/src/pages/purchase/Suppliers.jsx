@@ -52,6 +52,28 @@ import {
   useUpdateSupplier,
   useDeleteSupplier,
 } from '../../hooks/usePurchase';
+import { usePOs, useUpdatePOStatus } from '../../hooks/usePurchase';
+
+const shortId = (id) => (id ? String(id).slice(0, 8) : '');
+
+const formatMoney = (v) => {
+  const n = Number(v || 0);
+  return n.toLocaleString('vi-VN');
+};
+
+const formatDateTime = (d) => {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleString('vi-VN');
+  } catch {
+    return '';
+  }
+};
+
+const calcPOTotal = (po) => {
+  const lines = po?.chiTiet || [];
+  return lines.reduce((sum, l) => sum + Number(l.soLuong || 0) * Number(l.donGia || 0), 0);
+};
 
 // ==================== PREMIUM COLORS ====================
 const COLORS = {
@@ -244,12 +266,15 @@ const Suppliers = () => {
   const createSupplier = useCreateSupplier();
   const updateSupplier = useUpdateSupplier();
   const deleteSupplier = useDeleteSupplier();
+  const { data: pos = [], refetch: refetchPOs } = usePOs();
+  const updatePOStatus = useUpdatePOStatus();
 
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [selectedPO, setSelectedPO] = useState(null);
   const [formData, setFormData] = useState({
     ten: '',
     maNCC: '',
@@ -281,6 +306,21 @@ const Suppliers = () => {
     const active = suppliers.filter(s => s.trangThai === 'active' || !s.trangThai).length;
     return { total, active };
   }, [suppliers]);
+
+  const monthlyPOs = useMemo(() => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const allowed = new Set(['DAGUI', 'DANHANDU', 'DANHANMOTPHAN']);
+
+    return (pos || []).filter((po) => {
+      if (!allowed.has(po.trangThai)) return false;
+      const d = new Date(po.createdAt);
+      return d.getMonth() === month && d.getFullYear() === year;
+    });
+  }, [pos]);
+
+  const monthlyPOTotal = useMemo(() => monthlyPOs.reduce((sum, po) => sum + calcPOTotal(po), 0), [monthlyPOs]);
 
   // Handlers
   const handleOpenDialog = (supplier = null) => {
@@ -351,6 +391,22 @@ const Suppliers = () => {
     }
   };
 
+  const toggleReceived = async (po) => {
+    const isReceived = po.trangThai === 'DANHANDU' || po.trangThai === 'DANHANMOTPHAN';
+    const nextStatus = isReceived ? 'DAGUI' : 'DANHANDU';
+    try {
+      await updatePOStatus.mutateAsync({ id: po.id, status: nextStatus });
+      setSnackbar({ open: true, message: '✅ Cập nhật trạng thái nhận hàng thành công!', severity: 'success' });
+      refetchPOs();
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: `❌ ${err?.response?.data?.message || 'Không thể cập nhật trạng thái'}`,
+        severity: 'error',
+      });
+    }
+  };
+
   return (
     <MainLayout title="Quản lý Nhà cung cấp">
       <Box sx={{ background: COLORS.background, minHeight: '100vh', mx: -3, mt: -2, px: 3, py: 2 }}>
@@ -376,12 +432,105 @@ const Suppliers = () => {
             <StatsCard
               icon={<TrendingUp sx={{ color: '#fff', fontSize: 24 }} />}
               label="Đơn hàng tháng này"
-              value="--"
+              value={monthlyPOs.length}
               color={COLORS.info}
-              subValue="Chưa có dữ liệu"
+              subValue={`Tổng: ${formatMoney(monthlyPOTotal)} đ`}
             />
           </Grid>
         </Grid>
+
+        {/* ==================== MONTHLY PO LIST ==================== */}
+        <Paper
+          sx={{
+            borderRadius: 4,
+            overflow: 'hidden',
+            border: `1px solid ${COLORS.border}`,
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              p: 2,
+              background: `linear-gradient(135deg, ${COLORS.info}08, ${COLORS.infoLight}40)`,
+              borderBottom: `1px solid ${COLORS.border}`,
+            }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography fontWeight={700} color={COLORS.textPrimary}>
+                Đơn hàng tháng này
+              </Typography>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => refetchPOs()}
+                sx={{ borderRadius: 2, textTransform: 'none' }}
+              >
+                Làm mới
+              </Button>
+            </Stack>
+          </Box>
+          <TableContainer sx={{ maxHeight: 420 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>PO</TableCell>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>Nhà cung cấp</TableCell>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>Ngày</TableCell>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }}>Trạng thái</TableCell>
+                  <TableCell sx={{ fontWeight: 700, background: COLORS.surfaceHover }} align="right">
+                    Nhận hàng
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {monthlyPOs.map((po) => {
+                  const isReceived = po.trangThai === 'DANHANDU' || po.trangThai === 'DANHANMOTPHAN';
+                  return (
+                    <TableRow
+                      key={po.id}
+                      hover
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => setSelectedPO(po)}
+                    >
+                      <TableCell>{`PO ${shortId(po.id)}`}</TableCell>
+                      <TableCell>{po.nhaCungCap?.ten || ''}</TableCell>
+                      <TableCell>{formatDateTime(po.createdAt)}</TableCell>
+                      <TableCell>{po.trangThai}</TableCell>
+                      <TableCell align="right">
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleReceived(po);
+                          }}
+                          sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            background: isReceived
+                              ? `linear-gradient(135deg, ${COLORS.success}, ${COLORS.success}CC)`
+                              : `linear-gradient(135deg, ${COLORS.warning}, ${COLORS.warning}CC)`,
+                          }}
+                        >
+                          {isReceived ? 'Đã nhận' : 'Chưa nhận'}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+                {monthlyPOs.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <Typography color={COLORS.textSecondary} sx={{ py: 2 }}>
+                        Chưa có PO đã gửi trong tháng này.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
 
         {/* ==================== MAIN CONTENT ==================== */}
         <Paper
@@ -625,6 +774,67 @@ const Suppliers = () => {
               }}
             >
               {editingSupplier ? 'Cập nhật' : 'Thêm mới'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* ==================== PO DETAIL DIALOG ==================== */}
+        <Dialog
+          open={!!selectedPO}
+          onClose={() => setSelectedPO(null)}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{ sx: { borderRadius: 4 } }}
+        >
+          <DialogTitle sx={{ pb: 1 }}>
+            {selectedPO
+              ? `Chi tiết PO ${shortId(selectedPO.id)} - ${selectedPO.nhaCungCap?.ten || ''}`
+              : 'Chi tiết PO'}
+          </DialogTitle>
+          <DialogContent dividers>
+            {selectedPO && (
+              <Stack spacing={2}>
+                <Typography variant="body2" color={COLORS.textSecondary}>
+                  Ngày tạo: {formatDateTime(selectedPO.createdAt)} | Trạng thái: {selectedPO.trangThai}
+                </Typography>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 700 }}>Nguyên liệu</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Số lượng</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>Đơn giá</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }} align="right">Thành tiền</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(selectedPO.chiTiet || []).map((l) => (
+                      <TableRow key={l.id}>
+                        <TableCell>{l.nguyenVatLieu?.ten || l.nguyenVatLieuId}</TableCell>
+                        <TableCell>{Number(l.soLuong || 0)}</TableCell>
+                        <TableCell>{formatMoney(l.donGia)} đ</TableCell>
+                        <TableCell align="right">
+                          {formatMoney(Number(l.soLuong || 0) * Number(l.donGia || 0))} đ
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {(!selectedPO.chiTiet || selectedPO.chiTiet.length === 0) && (
+                      <TableRow>
+                        <TableCell colSpan={4}>
+                          <Typography color={COLORS.textSecondary}>PO chưa có dòng nguyên liệu.</Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                <Typography fontWeight={700} color={COLORS.textPrimary}>
+                  Tổng PO: {formatMoney(calcPOTotal(selectedPO))} đ
+                </Typography>
+              </Stack>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
+            <Button onClick={() => setSelectedPO(null)} sx={{ borderRadius: 2 }}>
+              Đóng
             </Button>
           </DialogActions>
         </Dialog>

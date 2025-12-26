@@ -51,6 +51,11 @@ export const createBulkAdjustment = async (payload) => {
   return data;
 };
 
+export const getAdjustmentOrder = async (adjustmentId) => {
+  const { data } = await api.get(`/inventory/adjustments/${adjustmentId}/order`);
+  return data;
+};
+
 // ==================== RECIPES ====================
 
 export const upsertRecipe = async (payload) => {

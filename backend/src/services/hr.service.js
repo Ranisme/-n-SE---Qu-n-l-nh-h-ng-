@@ -1,5 +1,17 @@
 const { prisma } = require('../config/db');
 
+const mapRoleToUiCode = (roleName) => {
+  if (!roleName) return null;
+  const s = String(roleName).toLowerCase();
+  if (s === 'admin') return 'QUANLY';
+  if (s.includes('manager') || s.includes('quanly') || s.includes('quản lý')) return 'QUANLY';
+  if (s.includes('thungan') || s.includes('thu ngan')) return 'THUNGAN';
+  if (s.includes('phucvu') || s.includes('phục vụ') || s.includes('phuc vu')) return 'PHUCVU';
+  if (s.includes('thukho') || s.includes('thủ kho') || s.includes('thu kho')) return 'THUKHO';
+  if (s.includes('bep')) return 'BEPCHINH';
+  return roleName;
+};
+
 // ==================== SHIFTS (Ca làm việc) ====================
 
 const listShifts = async () => {
@@ -55,51 +67,83 @@ const deleteShift = async (id) => {
 
 const listEmployees = async () => {
   const items = await prisma.nhanVien.findMany({
+    include: { vaiTro: true },
     orderBy: { hoTen: 'asc' },
   });
   return {
     items: items.map((e) => ({
       id: e.id,
       hoTen: e.hoTen,
-      email: e.email,
       soDienThoai: e.soDienThoai,
-      chucVu: e.chucVu,
-      trangThai: e.trangThai,
+      vaiTroId: e.vaiTroId || null,
+      chucVu: mapRoleToUiCode(e.vaiTro?.ten),
+      trangThai: 'HOATDONG',
     })),
   };
 };
 
 const createEmployee = async (payload) => {
-  const { hoTen, email, soDienThoai, chucVu, trangThai } = payload;
-  if (!hoTen) {
-    throw Object.assign(new Error('Họ tên không được để trống'), { status: 400 });
+  const { hoTen, soDienThoai, vaiTroId, vaiTro } = payload;
+  if (!hoTen) throw Object.assign(new Error('Họ tên không được để trống'), { status: 400 });
+  if (!soDienThoai) throw Object.assign(new Error('Số điện thoại không được để trống'), { status: 400 });
+
+  let resolvedRoleId = vaiTroId || null;
+  if (!resolvedRoleId && vaiTro) {
+    const found = await prisma.vaiTro.findFirst({ where: { ten: String(vaiTro) } });
+    resolvedRoleId = found?.id || null;
   }
+
   const employee = await prisma.nhanVien.create({
     data: {
       hoTen,
-      email: email || null,
-      soDienThoai: soDienThoai || null,
-      chucVu: chucVu || 'Nhân viên',
-      trangThai: trangThai || 'DANGLAM',
+      soDienThoai,
+      ...(resolvedRoleId && { vaiTroId: resolvedRoleId }),
     },
+    include: { vaiTro: true },
   });
-  return { message: 'Thêm nhân viên thành công', employee };
+  return {
+    message: 'Thêm nhân viên thành công',
+    employee: {
+      id: employee.id,
+      hoTen: employee.hoTen,
+      soDienThoai: employee.soDienThoai,
+      vaiTroId: employee.vaiTroId || null,
+      chucVu: mapRoleToUiCode(employee.vaiTro?.ten),
+      trangThai: 'HOATDONG',
+    },
+  };
 };
 
 const updateEmployee = async (id, payload) => {
-  const { hoTen, email, soDienThoai, chucVu, trangThai } = payload;
+  const { hoTen, soDienThoai, vaiTroId, vaiTro } = payload;
+
+  let resolvedRoleId = vaiTroId;
+  if (!resolvedRoleId && vaiTro) {
+    const found = await prisma.vaiTro.findFirst({ where: { ten: String(vaiTro) } });
+    resolvedRoleId = found?.id;
+  }
+
   const employee = await prisma.nhanVien.update({
     where: { id },
     data: {
       ...(hoTen && { hoTen }),
-      ...(email !== undefined && { email }),
-      ...(soDienThoai !== undefined && { soDienThoai }),
-      ...(chucVu && { chucVu }),
-      ...(trangThai && { trangThai }),
+      ...(soDienThoai !== undefined && { soDienThoai: soDienThoai || null }),
+      ...(resolvedRoleId !== undefined && { vaiTroId: resolvedRoleId || null }),
     },
+    include: { vaiTro: true },
   }).catch(() => null);
   if (!employee) throw Object.assign(new Error('Nhân viên không tồn tại'), { status: 404 });
-  return { message: 'Cập nhật nhân viên thành công', employee };
+  return {
+    message: 'Cập nhật nhân viên thành công',
+    employee: {
+      id: employee.id,
+      hoTen: employee.hoTen,
+      soDienThoai: employee.soDienThoai,
+      vaiTroId: employee.vaiTroId || null,
+      chucVu: mapRoleToUiCode(employee.vaiTro?.ten),
+      trangThai: 'HOATDONG',
+    },
+  };
 };
 
 const deleteEmployee = async (id) => {
@@ -310,6 +354,10 @@ const checkOut = async (user) => {
 
 const attendanceReport = async (query = {}) => {
   const where = {};
+
+  if (query.nhanVienId) {
+    where.lichPhanCa = { nhanVienId: query.nhanVienId };
+  }
   
   if (query.startDate || query.endDate) {
     where.thoiGianVao = {};

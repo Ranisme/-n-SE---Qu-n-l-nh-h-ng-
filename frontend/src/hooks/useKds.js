@@ -12,7 +12,16 @@ export const useKdsTickets = (station) =>
 export const useKdsStream = (station) => {
   const [tickets, setTickets] = useState([]);
   useEffect(() => {
-    const source = new EventSource(`/api/kds/stream?station=${station || ''}`);
+    const token = localStorage.getItem('accessToken');
+    const url = token
+      ? `/api/kds/stream?station=${encodeURIComponent(station || '')}&token=${encodeURIComponent(token)}`
+      : `/api/kds/stream?station=${encodeURIComponent(station || '')}`;
+    const source = new EventSource(url);
+
+    source.onopen = () => {
+      // connected
+    };
+
     source.onmessage = (event) => {
       try {
         const parsed = JSON.parse(event.data);
@@ -23,9 +32,12 @@ export const useKdsStream = (station) => {
         // ignore parse errors
       }
     };
+
     source.onerror = () => {
       source.close();
+      // don't attempt immediate reconnect here; rely on user refresh or later improvements
     };
+
     return () => source.close();
   }, [station]);
   return tickets;

@@ -100,7 +100,97 @@ const createReceipt = async (payload) => {
 
 const listSuppliers = async () => {
   const items = await prisma.nhaCungCap.findMany({ orderBy: { ten: 'asc' } });
-  return { items };
+  // Frontend Suppliers page expects richer fields (soDienThoai, maNCC, ...)
+  // Our current schema only stores ten/dienThoai/diaChi; return a compatible shape.
+  return {
+    items: items.map((s) => ({
+      id: s.id,
+      ten: s.ten,
+      dienThoai: s.dienThoai || null,
+      soDienThoai: s.dienThoai || null,
+      diaChi: s.diaChi || null,
+      maNCC: null,
+      nguoiLienHe: null,
+      email: null,
+      ghiChu: null,
+      trangThai: 'active',
+    })),
+  };
 };
 
-module.exports = { list, create, updateStatus, createReceipt, listSuppliers };
+const createSupplier = async (payload) => {
+  const ten = (payload?.ten || '').trim();
+  const dienThoai = (payload?.dienThoai || payload?.soDienThoai || '').trim() || null;
+  const diaChi = (payload?.diaChi || '').trim() || null;
+  if (!ten) throw Object.assign(new Error('Thiếu tên nhà cung cấp'), { status: 400 });
+
+  const created = await prisma.nhaCungCap.create({
+    data: { ten, dienThoai, diaChi },
+  });
+
+  return {
+    supplier: {
+      id: created.id,
+      ten: created.ten,
+      dienThoai: created.dienThoai || null,
+      soDienThoai: created.dienThoai || null,
+      diaChi: created.diaChi || null,
+      maNCC: null,
+      nguoiLienHe: null,
+      email: null,
+      ghiChu: null,
+      trangThai: 'active',
+    },
+  };
+};
+
+const updateSupplier = async (id, payload) => {
+  const ten = payload?.ten != null ? String(payload.ten).trim() : undefined;
+  const dienThoai = payload?.dienThoai != null || payload?.soDienThoai != null
+    ? String(payload?.dienThoai || payload?.soDienThoai || '').trim() || null
+    : undefined;
+  const diaChi = payload?.diaChi != null ? String(payload.diaChi).trim() || null : undefined;
+
+  const data = {};
+  if (ten !== undefined) data.ten = ten;
+  if (dienThoai !== undefined) data.dienThoai = dienThoai;
+  if (diaChi !== undefined) data.diaChi = diaChi;
+  if (Object.keys(data).length === 0) throw Object.assign(new Error('Không có dữ liệu cập nhật'), { status: 400 });
+  if (data.ten !== undefined && !data.ten) throw Object.assign(new Error('Tên nhà cung cấp không hợp lệ'), { status: 400 });
+
+  const updated = await prisma.nhaCungCap.update({ where: { id }, data });
+  return {
+    supplier: {
+      id: updated.id,
+      ten: updated.ten,
+      dienThoai: updated.dienThoai || null,
+      soDienThoai: updated.dienThoai || null,
+      diaChi: updated.diaChi || null,
+      maNCC: null,
+      nguoiLienHe: null,
+      email: null,
+      ghiChu: null,
+      trangThai: 'active',
+    },
+  };
+};
+
+const deleteSupplier = async (id) => {
+  const poCount = await prisma.donMuaHang.count({ where: { nhaCungCapId: id } });
+  if (poCount > 0) {
+    throw Object.assign(new Error('Không thể xoá nhà cung cấp đã có đơn mua hàng'), { status: 400 });
+  }
+  await prisma.nhaCungCap.delete({ where: { id } });
+  return { message: 'Đã xoá nhà cung cấp' };
+};
+
+module.exports = {
+  list,
+  create,
+  updateStatus,
+  createReceipt,
+  listSuppliers,
+  createSupplier,
+  updateSupplier,
+  deleteSupplier,
+};

@@ -14,6 +14,7 @@ const {
   listAdjustments,
   createAdjustment,
   createBulkAdjustment,
+  getAdjustmentOrder,
   upsertRecipe, 
   getRecipe,
 } = require('../controllers/inventory.controller');
@@ -36,6 +37,7 @@ router.post('/alerts/test-email', requireAdmin(), sendTestEmail);
 
 // Adjustments - critical operations require STOCK_MANAGE permission
 router.get('/adjustments', requirePermissions([PERMISSIONS.STOCK_VIEW]), listAdjustments);
+router.get('/adjustments/:id/order', requirePermissions([PERMISSIONS.STOCK_VIEW]), getAdjustmentOrder);
 router.post('/adjustments', requirePermissions([PERMISSIONS.STOCK_MANAGE]), createAdjustment);
 router.post('/adjustments/bulk', requirePermissions([PERMISSIONS.STOCK_MANAGE]), createBulkAdjustment);
 

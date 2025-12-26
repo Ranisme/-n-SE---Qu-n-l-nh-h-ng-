@@ -7,6 +7,7 @@ import TablesView from '../pages/pos/TablesView';
 import TableMapEditor from '../pages/pos/TableMapEditor';
 import OrderPad from '../pages/pos/OrderPad';
 import KdsBoard from '../pages/kds/KdsBoard';
+import PosFallback from '../pages/pos/PosFallback';
 import OpenBills from '../pages/billing/OpenBills';
 import CashierShift from '../pages/billing/CashierShift';
 import Categories from '../pages/menu/Categories';
@@ -29,6 +30,7 @@ import ReportsDashboard from '../pages/reports/ReportsDashboard';
 import SalesReport from '../pages/reports/SalesReport';
 import MenuPerformance from '../pages/reports/MenuPerformance';
 import InventoryReport from '../pages/reports/InventoryReport';
+import { PERMISSIONS } from '../utils/permissions';
 import AttendanceReport from '../pages/reports/AttendanceReport';
 import Users from '../pages/admin/Users';
 import Roles from '../pages/admin/Roles';
@@ -43,10 +45,15 @@ const routes = [
     children: [
       // Dashboard - accessible to all authenticated
       { path: '/', element: <ManagerDashboard /> },
-      
-      // POS/Tables view - accessible to all authenticated
-      { path: '/pos', element: <TablesView /> },
-      
+
+      // POS/Tables view - require TABLE_VIEW permission (only users with table access)
+      {
+        element: <RequirePermission permissions={[PERMISSIONS.TABLE_VIEW]} fallback={<PosFallback />} />,
+        children: [
+          { path: '/pos', element: <TablesView /> },
+        ],
+      },
+
       // Orders - requires ORDER_CREATE permission (PhucVu, Manager, Admin)
       {
         element: <RequirePermission permissions={['ORDER_CREATE']} />,
@@ -54,7 +61,7 @@ const routes = [
           { path: '/pos/order', element: <OrderPad /> },
         ],
       },
-      
+
       // Table Editor - requires TABLE_MANAGE permission (Manager, Admin)
       {
         element: <RequirePermission permissions={['TABLE_MANAGE']} />,
@@ -62,25 +69,25 @@ const routes = [
           { path: '/pos/tables', element: <TableMapEditor /> },
         ],
       },
-      
-      // KDS - requires KDS_ACCESS permission (Bep, Manager, Admin)
+
+      // KDS - requires KDS_VIEW permission (Bep, Manager, Admin)
       {
-        element: <RequirePermission permissions={['KDS_ACCESS']} />,
+        element: <RequirePermission permissions={[PERMISSIONS.KDS_VIEW]} />,
         children: [
           { path: '/kds', element: <KdsBoard /> },
         ],
       },
-      
-      // Billing - requires PAYMENT_PROCESS permission (ThuNgan, Manager, Admin)
+
+      // Billing - requires PAYMENT_EXECUTE permission (ThuNgan, Manager, Admin)
       {
-        element: <RequirePermission permissions={['PAYMENT_PROCESS']} />,
+        element: <RequirePermission permissions={[PERMISSIONS.PAYMENT_EXECUTE]} />,
         children: [
           { path: '/billing', element: <OpenBills /> },
           { path: '/billing/shifts', element: <CashierShift /> },
           { path: '/shifts', element: <CashierShifts /> },
         ],
       },
-      
+
       // Menu management - requires MENU_MANAGE permission (Manager, Admin)
       {
         element: <RequirePermission permissions={['MENU_MANAGE']} />,
@@ -89,7 +96,7 @@ const routes = [
           { path: '/menu/dishes', element: <Dishes /> },
         ],
       },
-      
+
       // Inventory - requires INVENTORY_ADJUST permission (ThuKho, Manager, Admin)
       {
         element: <RequirePermission permissions={['INVENTORY_ADJUST']} />,
@@ -100,7 +107,7 @@ const routes = [
           { path: '/stock/adjustments', element: <Adjustments /> },
         ],
       },
-      
+
       // Purchase - requires PURCHASE_APPROVE permission (ThuKho, Manager, Admin)
       {
         element: <RequirePermission permissions={['PURCHASE_APPROVE']} />,
@@ -110,14 +117,14 @@ const routes = [
           { path: '/purchase/suppliers', element: <Suppliers /> },
         ],
       },
-      
+
       // Reservations - accessible to all authenticated (PhucVu can manage)
       { path: '/reservations', element: <Reservations /> },
-      
+
       // Customers - accessible to all authenticated
       { path: '/customers', element: <Customers /> },
       { path: '/loyalty', element: <Loyalty /> },
-      
+
       // HR - requires HR_MANAGE permission (Manager, Admin)
       {
         element: <RequirePermission permissions={['HR_MANAGE']} />,
@@ -128,7 +135,7 @@ const routes = [
       },
       // Attendance - accessible to all (self check-in/out)
       { path: '/hr/attendance', element: <Attendance /> },
-      
+
       // Reports - requires REPORT_VIEW permission (Manager, Admin)
       {
         element: <RequirePermission permissions={['REPORT_VIEW']} />,
@@ -140,7 +147,7 @@ const routes = [
           { path: '/reports/attendance', element: <AttendanceReport /> },
         ],
       },
-      
+
       // Admin - requires ADMIN_MANAGE permission (Admin only)
       {
         element: <RequirePermission permissions={['ADMIN_MANAGE']} />,

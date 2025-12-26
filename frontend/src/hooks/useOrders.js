@@ -1,6 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { listOrders, createOrder, sendOrder, voidOrderItem } from '../api/orders.api';
+import {
+  listOrders,
+  createOrder,
+  sendOrder,
+  createVoidRequest,
+  listVoidRequests,
+  approveVoidRequest,
+  rejectVoidRequest,
+} from '../api/orders.api';
 
 // Hook to subscribe to POS notifications (SSE) when items are done from kitchen
 export const usePosNotifications = (onItemDone) => {
@@ -28,12 +36,12 @@ export const usePosNotifications = (onItemDone) => {
       try {
         // Get the access token from localStorage and pass as query param for SSE
         const token = localStorage.getItem('accessToken');
-        const url = token 
+        const url = token
           ? `/api/orders/notifications/stream?token=${encodeURIComponent(token)}`
           : '/api/orders/notifications/stream';
-        
+
         source = new EventSource(url);
-        
+
         source.onopen = () => {
           setConnected(true);
         };
@@ -104,11 +112,46 @@ export const useSendOrder = () => {
   });
 };
 
-export const useVoidOrderItem = () => {
+// ==================== VOID REQUEST HOOKS ====================
+
+export const useCreateVoidRequest = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderId, orderItemId, reason, managerPin, managerUsername }) =>
-      voidOrderItem(orderId, { orderItemId, reason, managerPin, managerUsername }),
-    onSuccess: () => qc.invalidateQueries(['orders']),
+    mutationFn: ({ orderId, orderItemId, lyDo }) =>
+      createVoidRequest(orderId, { orderItemId, lyDo }),
+    onSuccess: () => {
+      qc.invalidateQueries(['orders']);
+      qc.invalidateQueries(['voidRequests']);
+    },
+  });
+};
+
+export const useVoidRequests = (params, options = {}) =>
+  useQuery({
+    queryKey: ['voidRequests', params],
+    queryFn: () => listVoidRequests(params),
+    staleTime: 5000,
+    ...options,
+  });
+
+export const useApproveVoidRequest = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (requestId) => approveVoidRequest(requestId),
+    onSuccess: () => {
+      qc.invalidateQueries(['voidRequests']);
+      qc.invalidateQueries(['orders']);
+      qc.invalidateQueries(['kds']);
+    },
+  });
+};
+
+export const useRejectVoidRequest = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ requestId, lyDoTuChoi }) => rejectVoidRequest(requestId, { lyDoTuChoi }),
+    onSuccess: () => {
+      qc.invalidateQueries(['voidRequests']);
+    },
   });
 };

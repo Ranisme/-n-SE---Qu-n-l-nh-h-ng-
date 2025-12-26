@@ -1,4 +1,5 @@
 /* Complete Seed Data for Testing All Features */
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const { prisma } = require('../src/config/db');
 const { PERMISSIONS, ROLES, ROLE_PERMISSIONS } = require('../src/utils/permissions');

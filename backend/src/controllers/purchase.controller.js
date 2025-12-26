@@ -45,4 +45,40 @@ const listSuppliers = async (req, res, next) => {
   }
 };
 
-module.exports = { listPOs, createPO, updatePOStatus, createReceipt, listSuppliers };
+const createSupplier = async (req, res, next) => {
+  try {
+    const data = await purchaseService.createSupplier(req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const updateSupplier = async (req, res, next) => {
+  try {
+    const data = await purchaseService.updateSupplier(req.params.id, req.body);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deleteSupplier = async (req, res, next) => {
+  try {
+    const data = await purchaseService.deleteSupplier(req.params.id);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  listPOs,
+  createPO,
+  updatePOStatus,
+  createReceipt,
+  listSuppliers,
+  createSupplier,
+  updateSupplier,
+  deleteSupplier,
+};

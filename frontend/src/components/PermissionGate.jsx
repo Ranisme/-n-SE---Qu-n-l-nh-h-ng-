@@ -60,7 +60,7 @@ export const PermissionGate = ({
     const hasAccess = requireAll
       ? hasAllPermissions(permissions)
       : hasAnyPermission(permissions);
-    
+
     if (!hasAccess) {
       return fallback;
     }

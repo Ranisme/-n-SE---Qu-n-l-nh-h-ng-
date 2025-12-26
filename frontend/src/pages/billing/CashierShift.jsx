@@ -34,7 +34,7 @@ import {
   ArrowDownward,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import { useCurrentShift, useOpenShift, useCloseShift } from '../../hooks/useBilling';
+import { useCurrentShift, useOpenShift, useCloseShift, useExportZReport } from '../../hooks/useBilling';
 
 // ==================== COLORS ====================
 const COLORS = {
@@ -100,6 +100,7 @@ const CashierShift = () => {
   const { data, isLoading, refetch } = useCurrentShift();
   const openShift = useOpenShift();
   const closeShift = useCloseShift();
+  const exportZ = useExportZReport();
   const shift = data?.shift;
   const summary = data?.summary;
 
@@ -144,10 +145,32 @@ const CashierShift = () => {
               Mở Ca Mới
             </Button>
           ) : (
-            <Button variant="contained" size="large" color="error" startIcon={<Lock />} onClick={() => setCloseDialog(true)}
-              sx={{ px: 4, py: 1.5, borderRadius: 3, fontWeight: 700, boxShadow: `0 4px 20px ${alpha(COLORS.error, 0.4)}` }}>
-              Đóng Ca
-            </Button>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Button variant="contained" size="large" color="error" startIcon={<Lock />} onClick={() => setCloseDialog(true)}
+                sx={{ px: 4, py: 1.5, borderRadius: 3, fontWeight: 700, boxShadow: `0 4px 20px ${alpha(COLORS.error, 0.4)}` }}>
+                Đóng Ca
+              </Button>
+              {shift?.trangThai === 'DADONG' && (
+                <Button variant="outlined" size="large" startIcon={<Assessment />} onClick={async () => {
+                  try {
+                    const csv = await exportZ.mutateAsync({ shiftId: shift.id, format: 'csv' });
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const a = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = `zreport_${shift.id}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    setFeedback({ message: err?.response?.data?.message || 'Không thể xuất Z-Report', severity: 'error' });
+                  }
+                }} sx={{ borderRadius: 3 }}>
+                  Xuất Z-Report
+                </Button>
+              )}
+            </Stack>
           )}
         </Stack>
 

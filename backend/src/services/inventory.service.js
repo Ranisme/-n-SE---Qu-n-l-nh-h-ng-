@@ -1,6 +1,12 @@
 const { prisma } = require('../config/db');
 const { sendLowStockAlert } = require('./email.service');
 
+const parseOrderIdFromNote = (note) => {
+  if (!note) return null;
+  const m = String(note).match(/Auto deduct for order\s+([0-9a-fA-F-]{36})/);
+  return m?.[1] || null;
+};
+
 // ==================== MATERIALS ====================
 
 const listMaterials = async () => {
@@ -13,6 +19,10 @@ const listMaterials = async () => {
       ten: m.ten,
       donViTinh: m.donViTinh,
       soLuongTon: Number(m.soLuongTon),
+      // Frontend expects these names
+      mucToiThieu: Number(m.mucTonToiThieu),
+      giaNhap: m.giaNhapGanNhat ? Number(m.giaNhapGanNhat) : 0,
+      // Keep legacy names for backwards compatibility
       mucTonToiThieu: Number(m.mucTonToiThieu),
       giaNhapGanNhat: m.giaNhapGanNhat ? Number(m.giaNhapGanNhat) : null,
       createdAt: m.createdAt,
@@ -24,32 +34,57 @@ const listMaterials = async () => {
 const getMaterial = async (id) => {
   const mat = await prisma.nguyenVatLieu.findUnique({ where: { id } });
   if (!mat) throw Object.assign(new Error('Nguyên vật liệu không tồn tại'), { status: 404 });
-  return mat;
+  return {
+    id: mat.id,
+    ten: mat.ten,
+    donViTinh: mat.donViTinh,
+    soLuongTon: Number(mat.soLuongTon),
+    mucToiThieu: Number(mat.mucTonToiThieu),
+    giaNhap: mat.giaNhapGanNhat ? Number(mat.giaNhapGanNhat) : 0,
+    createdAt: mat.createdAt,
+    updatedAt: mat.updatedAt,
+  };
 };
 
 const createMaterial = async (payload) => {
-  const { ten, donViTinh, soLuongTon = 0, mucTonToiThieu = 0, giaNhapGanNhat = null } = payload;
+  const {
+    ten,
+    donViTinh,
+    soLuongTon = 0,
+    mucTonToiThieu,
+    mucToiThieu,
+    giaNhapGanNhat,
+    giaNhap,
+  } = payload;
   if (!ten || !donViTinh) {
     throw Object.assign(new Error('Thiếu thông tin nguyên vật liệu'), { status: 400 });
   }
+
+  const minStock = mucTonToiThieu !== undefined ? mucTonToiThieu : (mucToiThieu !== undefined ? mucToiThieu : 0);
+  const unitPrice = giaNhapGanNhat !== undefined ? giaNhapGanNhat : (giaNhap !== undefined ? giaNhap : null);
+
   const mat = await prisma.nguyenVatLieu.create({
-    data: { ten, donViTinh, soLuongTon, mucTonToiThieu, giaNhapGanNhat },
+    data: { ten, donViTinh, soLuongTon, mucTonToiThieu: minStock, giaNhapGanNhat: unitPrice },
   });
   return { message: 'Tạo nguyên vật liệu thành công', material: mat };
 };
 
 const updateMaterial = async (id, payload) => {
-  const { ten, donViTinh, mucTonToiThieu, giaNhapGanNhat } = payload;
+  const { ten, donViTinh, soLuongTon, mucTonToiThieu, mucToiThieu, giaNhapGanNhat, giaNhap } = payload;
   const existing = await prisma.nguyenVatLieu.findUnique({ where: { id } });
   if (!existing) throw Object.assign(new Error('Nguyên vật liệu không tồn tại'), { status: 404 });
+
+  const minStock = mucTonToiThieu !== undefined ? mucTonToiThieu : mucToiThieu;
+  const unitPrice = giaNhapGanNhat !== undefined ? giaNhapGanNhat : giaNhap;
   
   const mat = await prisma.nguyenVatLieu.update({
     where: { id },
     data: {
       ...(ten && { ten }),
       ...(donViTinh && { donViTinh }),
-      ...(mucTonToiThieu !== undefined && { mucTonToiThieu }),
-      ...(giaNhapGanNhat !== undefined && { giaNhapGanNhat }),
+      ...(soLuongTon !== undefined && { soLuongTon }),
+      ...(minStock !== undefined && { mucTonToiThieu: minStock }),
+      ...(unitPrice !== undefined && { giaNhapGanNhat: unitPrice }),
     },
   });
   return { message: 'Cập nhật nguyên vật liệu thành công', material: mat };
@@ -73,6 +108,7 @@ const listAlerts = async () => {
   return { 
     alerts: alerts.map((m) => ({
       id: m.id,
+      nguyenVatLieuId: m.id,
       ten: m.ten,
       donViTinh: m.donViTinh,
       soLuongTon: Number(m.soLuongTon),
@@ -222,6 +258,53 @@ const createBulkAdjustment = async (payload, user = null) => {
   return { message: `Đã xử lý ${results.filter((r) => r.success).length}/${results.length} mục`, results };
 };
 
+const getAdjustmentOrder = async (adjustmentId) => {
+  const adj = await prisma.nhatKyXuatKho.findUnique({ where: { id: adjustmentId } });
+  if (!adj) throw Object.assign(new Error('Điều chỉnh không tồn tại'), { status: 404 });
+
+  const orderId = parseOrderIdFromNote(adj.ghiChu);
+  if (!orderId) throw Object.assign(new Error('Điều chỉnh này không gắn với đơn hàng'), { status: 404 });
+
+  const order = await prisma.donHang.findUnique({
+    where: { id: orderId },
+    include: {
+      ban: true,
+      chiTiet: {
+        include: {
+          monAn: true,
+          tuyChon: { include: { tuyChonMon: true } },
+        },
+      },
+      nhanVien: true,
+    },
+  });
+  if (!order) throw Object.assign(new Error('Đơn hàng không tồn tại'), { status: 404 });
+
+  return {
+    order: {
+      id: order.id,
+      ban: order.ban ? { id: order.ban.id, ten: order.ban.ten } : null,
+      trangThai: order.trangThai,
+      ghiChu: order.ghiChu,
+      createdAt: order.createdAt,
+      items: (order.chiTiet || []).map((l) => ({
+        id: l.id,
+        monAn: l.monAn ? { id: l.monAn.id, ten: l.monAn.ten } : null,
+        soLuong: l.soLuong,
+        donGia: Number(l.donGia),
+        trangThai: l.trangThai,
+        ghiChu: l.ghiChu,
+        tuyChon: (l.tuyChon || []).map((t) => ({
+          id: t.id,
+          ten: t.tuyChonMon?.ten,
+          giaThem: t.tuyChonMon?.giaThem ? Number(t.tuyChonMon.giaThem) : 0,
+        })),
+      })),
+      nhanVien: order.nhanVien ? { id: order.nhanVien.id, hoTen: order.nhanVien.hoTen } : null,
+    },
+  };
+};
+
 // ==================== RECIPES ====================
 
 const computeCost = (lines) =>
@@ -273,6 +356,7 @@ module.exports = {
   listAdjustments,
   createAdjustment,
   createBulkAdjustment,
+  getAdjustmentOrder,
   upsertRecipe, 
   getRecipe,
 };

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import {
   Paper,
@@ -34,9 +35,17 @@ const COLORS = {
 };
 
 // Get date range presets
+const localYMD = (d) => {
+  const x = new Date(d);
+  const yyyy = x.getFullYear();
+  const mm = String(x.getMonth() + 1).padStart(2, '0');
+  const dd = String(x.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 const getDateRange = (period) => {
   const now = new Date();
-  const end = now.toISOString().split('T')[0];
+  const end = localYMD(now);
   let start;
   
   switch (period) {
@@ -46,13 +55,13 @@ const getDateRange = (period) => {
     case 'week':
       const weekStart = new Date(now);
       weekStart.setDate(now.getDate() - 7);
-      start = weekStart.toISOString().split('T')[0];
+      start = localYMD(weekStart);
       break;
     case 'month':
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      start = localYMD(new Date(now.getFullYear(), now.getMonth(), 1));
       break;
     default:
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      start = localYMD(new Date(now.getFullYear(), now.getMonth(), 1));
   }
   
   return { from: start, to: end };
@@ -108,8 +117,14 @@ const formatCurrency = (amount) => {
 };
 
 const SalesReport = () => {
-  const [period, setPeriod] = useState('month');
-  const [filters, setFilters] = useState(() => getDateRange('month'));
+  const location = useLocation();
+  const initialPeriod = useMemo(() => {
+    const p = new URLSearchParams(location.search).get('period');
+    return ['today', 'week', 'month', 'custom'].includes(p) ? p : 'month';
+  }, [location.search]);
+
+  const [period, setPeriod] = useState(initialPeriod);
+  const [filters, setFilters] = useState(() => getDateRange(initialPeriod === 'custom' ? 'month' : initialPeriod));
   const { data: bills = [], isLoading, refetch } = useSalesReport(filters);
 
   // Calculate statistics
@@ -120,7 +135,8 @@ const SalesReport = () => {
     
     // Group by date
     const byDate = bills.reduce((acc, bill) => {
-      const date = new Date(bill.createdAt).toLocaleDateString('vi-VN');
+      const baseTime = bill.paidAt || bill.createdAt;
+      const date = new Date(baseTime).toLocaleDateString('vi-VN');
       if (!acc[date]) acc[date] = { count: 0, total: 0 };
       acc[date].count += 1;
       acc[date].total += Number(bill.tongThanhToan) || 0;
@@ -272,17 +288,17 @@ const SalesReport = () => {
                   <TableRow key={bill.id} hover>
                     <TableCell>
                       <Typography fontWeight={600} color={COLORS.primary}>
-                        #{bill.id}
+                        #{String(bill.id || '').slice(0, 8)}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {formatDate(bill.createdAt)}
+                        {formatDate(bill.paidAt || bill.createdAt)}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={bill.donHang?.ban?.ten || `Bàn ${bill.donHang?.banId || '---'}`}
+                        label={bill.donHang?.ban?.ten || `Bàn ---`}
                         size="small"
                         sx={{ bgcolor: alpha(COLORS.primary, 0.1), color: COLORS.primary }}
                       />

@@ -54,24 +54,28 @@ import {
   useDeleteArea,
 } from '../../hooks/useTables';
 
-// ==================== PREMIUM EDITOR COLORS ====================
-const EDITOR_COLORS = {
-  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-  surface: 'rgba(255, 255, 255, 0.05)',
-  surfaceHover: 'rgba(255, 255, 255, 0.1)',
-  primary: '#6C63FF',
-  primaryGlow: 'rgba(108, 99, 255, 0.4)',
-  secondary: '#00D9FF',
-  secondaryGlow: 'rgba(0, 217, 255, 0.4)',
-  success: '#4ADE80',
-  warning: '#FBBF24',
-  error: '#F87171',
-  text: '#E2E8F0',
-  textMuted: 'rgba(255, 255, 255, 0.6)',
-  border: 'rgba(255, 255, 255, 0.1)',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  gridMajor: 'rgba(255, 255, 255, 0.1)',
-  selection: 'rgba(108, 99, 255, 0.3)',
+import { useTheme, alpha } from '@mui/material/styles';
+
+// ==================== PREMIUM EDITOR COLORS (theme-aware) ====================
+const getEditorColors = (theme) => ({
+  background: theme.palette.mode === 'light'
+    ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`
+    : `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
+  surface: theme.palette.background.paper,
+  surfaceHover: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)',
+  primary: theme.palette.primary.main,
+  primaryGlow: theme.palette.primary.light ? `${theme.palette.primary.light}33` : 'rgba(108, 99, 255, 0.4)',
+  secondary: theme.palette.secondary.main,
+  secondaryGlow: theme.palette.secondary.light ? `${theme.palette.secondary.light}33` : 'rgba(0, 217, 255, 0.4)',
+  success: theme.palette.success?.main || '#4ADE80',
+  warning: theme.palette.warning?.main || '#FBBF24',
+  error: theme.palette.error?.main || '#F87171',
+  text: theme.palette.text.primary,
+  textMuted: theme.palette.text.secondary,
+  border: theme.palette.divider,
+  grid: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)',
+  gridMajor: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)',
+  selection: theme.palette.primary.main + '33',
   
   // Table status colors
   trong: { bg: '#4ADE80', glow: 'rgba(74, 222, 128, 0.4)' },
@@ -90,7 +94,19 @@ const EDITOR_COLORS = {
     { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.2)' },
     { color: '#2DD4BF', bg: 'rgba(45, 212, 191, 0.2)' },
   ],
-};
+});
+
+// Default area colors (fallback for helpers)
+const DEFAULT_AREA_COLORS = [
+  { color: '#6C63FF', bg: 'rgba(108, 99, 255, 0.2)' },
+  { color: '#00D9FF', bg: 'rgba(0, 217, 255, 0.2)' },
+  { color: '#4ADE80', bg: 'rgba(74, 222, 128, 0.2)' },
+  { color: '#FBBF24', bg: 'rgba(251, 191, 36, 0.2)' },
+  { color: '#F472B6', bg: 'rgba(244, 114, 182, 0.2)' },
+  { color: '#FB923C', bg: 'rgba(251, 146, 60, 0.2)' },
+  { color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.2)' },
+  { color: '#2DD4BF', bg: 'rgba(45, 212, 191, 0.2)' },
+];
 
 // ==================== GRID CONFIG ====================
 const GRID_SIZE = 20;
@@ -102,7 +118,7 @@ const snapToGrid = (value) => Math.round(value / GRID_SIZE) * GRID_SIZE;
 
 // ==================== GET AREA COLOR BY INDEX ====================
 const getAreaColorByIndex = (index) => {
-  return EDITOR_COLORS.areaColors[index % EDITOR_COLORS.areaColors.length];
+  return DEFAULT_AREA_COLORS[index % DEFAULT_AREA_COLORS.length];
 };
 
 // ==================== DRAGGABLE TABLE COMPONENT ====================
@@ -121,6 +137,10 @@ const DraggableTable = ({
   const dragRef = useRef(null);
   const startPos = useRef({ x: 0, y: 0 });
   const startMousePos = useRef({ x: 0, y: 0 });
+
+  // Theme-aware colors for this component
+  const theme = useTheme();
+  const editorColors = getEditorColors(theme);
 
   useEffect(() => {
     setPosition({ x: table.posX || 0, y: table.posY || 0 });
@@ -167,7 +187,7 @@ const DraggableTable = ({
 
   const tableSize = Math.max(70, 50 + (table.soGhe || 4) * 5);
   const statusKey = table.trangThai?.toLowerCase() || 'trong';
-  const statusColor = EDITOR_COLORS[statusKey] || EDITOR_COLORS.trong;
+  const statusColor = editorColors[statusKey] || editorColors.trong;
 
   return (
     <motion.div
@@ -202,8 +222,8 @@ const DraggableTable = ({
               position: 'absolute',
               inset: -8,
               borderRadius: table.shape === 'circle' ? '50%' : 16,
-              border: `2px dashed ${EDITOR_COLORS.primary}`,
-              background: EDITOR_COLORS.selection,
+              border: `2px dashed ${editorColors.primary}`,
+              background: editorColors.selection,
             }}
           />
         )}
@@ -265,7 +285,7 @@ const DraggableTable = ({
             top: -22,
             left: '50%',
             transform: 'translateX(-50%)',
-            background: EDITOR_COLORS.primary,
+            background: editorColors.primary,
             borderRadius: 2,
             px: 1,
             py: 0.3,
@@ -280,6 +300,8 @@ const DraggableTable = ({
 
 // ==================== AREA SECTION COMPONENT ====================
 const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) => {
+  const theme = useTheme();
+  const editorColors = getEditorColors(theme);
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -287,7 +309,7 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
     >
       <Paper
         sx={{
-          background: colorConfig.bg,
+          background: colorConfig.bg || editorColors.surface,
           border: `1px solid ${colorConfig.color}40`,
           borderRadius: 2,
           mb: 1.5,
@@ -312,7 +334,7 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
                 boxShadow: `0 0 10px ${colorConfig.color}80`,
               }}
             />
-            <Typography variant="subtitle2" sx={{ color: EDITOR_COLORS.text, fontWeight: 600 }}>
+            <Typography variant="subtitle2" sx={{ color: editorColors.text, fontWeight: 600 }}>
               {area.ten}
             </Typography>
             <Chip
@@ -321,8 +343,8 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
               sx={{
                 height: 22,
                 fontSize: '0.7rem',
-                background: 'rgba(255,255,255,0.1)',
-                color: EDITOR_COLORS.textMuted,
+                background: alpha(editorColors.textMuted, 0.08),
+                color: editorColors.textMuted,
               }}
             />
           </Box>
@@ -331,7 +353,7 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
               <IconButton
                 size="small"
                 onClick={() => onEditArea(area)}
-                sx={{ color: EDITOR_COLORS.textMuted, '&:hover': { color: EDITOR_COLORS.primary } }}
+                sx={{ color: editorColors.textMuted, '&:hover': { color: editorColors.primary } }}
               >
                 <EditIcon sx={{ fontSize: 16 }} />
               </IconButton>
@@ -340,7 +362,7 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
               <IconButton
                 size="small"
                 onClick={() => onDeleteArea(area.id)}
-                sx={{ color: EDITOR_COLORS.textMuted, '&:hover': { color: EDITOR_COLORS.error } }}
+                sx={{ color: editorColors.textMuted, '&:hover': { color: editorColors.error } }}
               >
                 <DeleteIcon sx={{ fontSize: 16 }} />
               </IconButton>
@@ -354,6 +376,9 @@ const AreaSection = ({ area, tables, colorConfig, onEditArea, onDeleteArea }) =>
 
 // ==================== MAIN COMPONENT ====================
 export default function TableMapEditor() {
+  const theme = useTheme();
+  const editorColors = getEditorColors(theme);
+
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: areas = [], isLoading: areasLoading } = useAreas();
   const createTableMutation = useCreateTable();
@@ -529,8 +554,8 @@ export default function TableMapEditor() {
   const selectedTable = tables.find((t) => t.id === selectedTableId);
 
   const getTableAreaColor = (table) => {
-    if (!table.khuVuc?.id) return EDITOR_COLORS.primary;
-    return areaColorMap[table.khuVuc.id]?.color || EDITOR_COLORS.primary;
+    if (!table.khuVuc?.id) return editorColors.primary;
+    return areaColorMap[table.khuVuc.id]?.color || editorColors.primary;
   };
 
   // ==================== RENDER ====================
@@ -539,7 +564,7 @@ export default function TableMapEditor() {
       <Box
         sx={{
           height: '100vh',
-          background: EDITOR_COLORS.background,
+          background: editorColors.background,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -549,7 +574,7 @@ export default function TableMapEditor() {
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
         >
-          <TableIcon sx={{ fontSize: 60, color: EDITOR_COLORS.primary }} />
+          <TableIcon sx={{ fontSize: 60, color: editorColors.primary }} />
         </motion.div>
       </Box>
     );
@@ -559,7 +584,7 @@ export default function TableMapEditor() {
     <Box
       sx={{
         height: '100vh',
-        background: EDITOR_COLORS.background,
+        background: editorColors.background,
         display: 'flex',
         overflow: 'hidden',
       }}
@@ -569,22 +594,22 @@ export default function TableMapEditor() {
         elevation={0}
         sx={{
           width: 280,
-          background: 'rgba(0, 0, 0, 0.3)',
-          borderRight: `1px solid ${EDITOR_COLORS.border}`,
+          background: editorColors.surface,
+          borderRight: `1px solid ${editorColors.border}`,
           display: 'flex',
           flexDirection: 'column',
           backdropFilter: 'blur(20px)',
         }}
       >
         {/* Header */}
-        <Box sx={{ p: 2, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+        <Box sx={{ p: 2, borderBottom: `1px solid ${editorColors.border}` }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
             <Box
               sx={{
                 width: 40,
                 height: 40,
                 borderRadius: 2,
-                background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+                background: `linear-gradient(135deg, ${editorColors.primary}, ${editorColors.secondary})`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -593,10 +618,10 @@ export default function TableMapEditor() {
               <LayersIcon sx={{ color: '#fff', fontSize: 24 }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ color: EDITOR_COLORS.text, fontWeight: 700, lineHeight: 1.2 }}>
+              <Typography variant="h6" sx={{ color: editorColors.text, fontWeight: 700, lineHeight: 1.2 }}>
                 Table Map
               </Typography>
-              <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted }}>
+              <Typography variant="caption" sx={{ color: editorColors.textMuted }}>
                 Editor v2.0
               </Typography>
             </Box>
@@ -609,9 +634,9 @@ export default function TableMapEditor() {
               label={`${tables.length} bàn`}
               size="small"
               sx={{
-                background: 'rgba(108, 99, 255, 0.2)',
-                color: EDITOR_COLORS.primary,
-                border: `1px solid ${EDITOR_COLORS.primary}40`,
+                background: alpha(editorColors.primary, 0.18),
+                color: editorColors.primary,
+                border: `1px solid ${editorColors.primary}40`,
               }}
             />
             <Chip
@@ -620,8 +645,8 @@ export default function TableMapEditor() {
               size="small"
               sx={{
                 background: 'rgba(0, 217, 255, 0.2)',
-                color: EDITOR_COLORS.secondary,
-                border: `1px solid ${EDITOR_COLORS.secondary}40`,
+                color: editorColors.secondary,
+                border: `1px solid ${editorColors.secondary}40`,
               }}
             />
           </Box>
@@ -630,7 +655,7 @@ export default function TableMapEditor() {
         {/* Areas List */}
         <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="subtitle2" sx={{ color: EDITOR_COLORS.textMuted, fontWeight: 600, letterSpacing: 1 }}>
+            <Typography variant="subtitle2" sx={{ color: editorColors.textMuted, fontWeight: 600, letterSpacing: 1 }}>
               KHU VỰC
             </Typography>
             <Tooltip title="Thêm khu vực">
@@ -638,11 +663,11 @@ export default function TableMapEditor() {
                 size="small"
                 onClick={() => handleOpenAreaDialog()}
                 sx={{
-                  background: EDITOR_COLORS.primary,
+                  background: editorColors.primary,
                   color: '#fff',
                   width: 26,
                   height: 26,
-                  '&:hover': { background: EDITOR_COLORS.primary, opacity: 0.9 },
+                  '&:hover': { background: editorColors.primary, opacity: 0.9 },
                 }}
               >
                 <AddIcon sx={{ fontSize: 16 }} />
@@ -668,15 +693,15 @@ export default function TableMapEditor() {
 
           {areas.length === 0 && (
             <Box sx={{ textAlign: 'center', py: 4 }}>
-              <AreaIcon sx={{ fontSize: 40, color: EDITOR_COLORS.textMuted, opacity: 0.3, mb: 1 }} />
-              <Typography variant="body2" sx={{ color: EDITOR_COLORS.textMuted }}>
+              <AreaIcon sx={{ fontSize: 40, color: editorColors.textMuted, opacity: 0.3, mb: 1 }} />
+              <Typography variant="body2" sx={{ color: editorColors.textMuted }}>
                 Chưa có khu vực nào
               </Typography>
               <Button
                 size="small"
                 startIcon={<AddIcon />}
                 onClick={() => handleOpenAreaDialog()}
-                sx={{ mt: 1, color: EDITOR_COLORS.primary }}
+                sx={{ mt: 1, color: editorColors.primary }}
               >
                 Thêm khu vực
               </Button>
@@ -685,7 +710,7 @@ export default function TableMapEditor() {
         </Box>
 
         {/* Add Table Button */}
-        <Box sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+        <Box sx={{ p: 2, borderTop: `1px solid ${editorColors.border}` }}>
           <Button
             fullWidth
             variant="contained"
@@ -693,24 +718,24 @@ export default function TableMapEditor() {
             onClick={() => handleOpenTableDialog()}
             disabled={areas.length === 0}
             sx={{
-              background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+              background: `linear-gradient(135deg, ${editorColors.primary}, ${editorColors.secondary})`,
               py: 1.5,
               borderRadius: 2,
               fontWeight: 600,
-              boxShadow: `0 4px 20px ${EDITOR_COLORS.primaryGlow}`,
+              boxShadow: `0 4px 20px ${editorColors.primaryGlow}`,
               '&:hover': {
-                boxShadow: `0 6px 30px ${EDITOR_COLORS.primaryGlow}`,
+                boxShadow: `0 6px 30px ${editorColors.primaryGlow}`,
               },
               '&:disabled': {
                 background: 'rgba(255,255,255,0.1)',
-                color: EDITOR_COLORS.textMuted,
+                color: editorColors.textMuted,
               },
             }}
           >
             Thêm Bàn Mới
           </Button>
           {areas.length === 0 && (
-            <Typography variant="caption" sx={{ color: EDITOR_COLORS.warning, display: 'block', mt: 1, textAlign: 'center' }}>
+            <Typography variant="caption" sx={{ color: editorColors.warning, display: 'block', mt: 1, textAlign: 'center' }}>
               Vui lòng tạo khu vực trước
             </Typography>
           )}
@@ -727,9 +752,9 @@ export default function TableMapEditor() {
             alignItems: 'center',
             justifyContent: 'space-between',
             p: 1.5,
-            background: 'rgba(0, 0, 0, 0.2)',
-            borderBottom: `1px solid ${EDITOR_COLORS.border}`,
-            backdropFilter: 'blur(20px)',
+            background: alpha(editorColors.surface, 0.05),
+            borderBottom: `1px solid ${editorColors.border}`,
+            backdropFilter: 'blur(6px)',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -741,13 +766,13 @@ export default function TableMapEditor() {
               size="small"
               sx={{
                 '& .MuiToggleButton-root': {
-                  color: EDITOR_COLORS.textMuted,
-                  borderColor: EDITOR_COLORS.border,
+                  color: editorColors.textMuted,
+                  borderColor: editorColors.border,
                   px: 2,
                   '&.Mui-selected': {
-                    background: EDITOR_COLORS.primary,
+                    background: editorColors.primary,
                     color: '#fff',
-                    '&:hover': { background: EDITOR_COLORS.primary },
+                    '&:hover': { background: editorColors.primary },
                   },
                 },
               }}
@@ -760,15 +785,15 @@ export default function TableMapEditor() {
               </ToggleButton>
             </ToggleButtonGroup>
 
-            <Divider orientation="vertical" flexItem sx={{ borderColor: EDITOR_COLORS.border }} />
+            <Divider orientation="vertical" flexItem sx={{ borderColor: editorColors.border }} />
 
             {/* Grid Toggle */}
             <Tooltip title={showGrid ? 'Ẩn lưới' : 'Hiện lưới'}>
               <IconButton
                 onClick={() => setShowGrid(!showGrid)}
                 sx={{
-                  color: showGrid ? EDITOR_COLORS.primary : EDITOR_COLORS.textMuted,
-                  background: showGrid ? 'rgba(108, 99, 255, 0.2)' : 'transparent',
+                  color: showGrid ? editorColors.primary : editorColors.textMuted,
+                  background: showGrid ? alpha(editorColors.primary, 0.15) : 'transparent',
                 }}
               >
                 {showGrid ? <GridOnIcon /> : <GridOffIcon />}
@@ -781,10 +806,10 @@ export default function TableMapEditor() {
                 value={filterArea}
                 onChange={(e) => setFilterArea(e.target.value)}
                 sx={{
-                  color: EDITOR_COLORS.text,
-                  '.MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.border },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
-                  '.MuiSvgIcon-root': { color: EDITOR_COLORS.textMuted },
+                  color: editorColors.text,
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: editorColors.border },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: editorColors.primary },
+                  '.MuiSvgIcon-root': { color: editorColors.textMuted },
                 }}
               >
                 <MenuItem value="all">Tất cả khu vực</MenuItem>
@@ -799,21 +824,21 @@ export default function TableMapEditor() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {/* Zoom Controls */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 2, px: 1.5, py: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, background: alpha(editorColors.textMuted, 0.06), borderRadius: 2, px: 1.5, py: 0.5 }}>
               <IconButton
                 size="small"
                 onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
-                sx={{ color: EDITOR_COLORS.textMuted }}
+                sx={{ color: editorColors.textMuted }}
               >
                 <ZoomOutIcon sx={{ fontSize: 18 }} />
               </IconButton>
-              <Typography variant="caption" sx={{ color: EDITOR_COLORS.text, minWidth: 45, textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ color: editorColors.text, minWidth: 45, textAlign: 'center' }}>
                 {Math.round(zoom * 100)}%
               </Typography>
               <IconButton
                 size="small"
                 onClick={() => setZoom((z) => Math.min(2, z + 0.1))}
-                sx={{ color: EDITOR_COLORS.textMuted }}
+                sx={{ color: editorColors.textMuted }}
               >
                 <ZoomInIcon sx={{ fontSize: 18 }} />
               </IconButton>
@@ -821,7 +846,7 @@ export default function TableMapEditor() {
                 <IconButton
                   size="small"
                   onClick={() => setZoom(1)}
-                  sx={{ color: EDITOR_COLORS.textMuted }}
+                  sx={{ color: editorColors.textMuted }}
                 >
                   <FitScreenIcon sx={{ fontSize: 18 }} />
                 </IconButton>
@@ -849,23 +874,23 @@ export default function TableMapEditor() {
               height: CANVAS_HEIGHT,
               minWidth: CANVAS_WIDTH,
               minHeight: CANVAS_HEIGHT,
-              background: EDITOR_COLORS.surface,
+              background: editorColors.surface,
               borderRadius: 4,
               position: 'relative',
               transform: `scale(${zoom})`,
               transformOrigin: 'center center',
               transition: 'transform 0.2s ease',
               boxShadow: `
-                0 0 0 1px ${EDITOR_COLORS.border},
-                0 20px 60px rgba(0, 0, 0, 0.5)
+                0 0 0 1px ${editorColors.border},
+                0 20px 60px rgba(0, 0, 0, 0.06)
               `,
               // Grid pattern
               ...(showGrid && {
                 backgroundImage: `
-                  linear-gradient(${EDITOR_COLORS.grid} 1px, transparent 1px),
-                  linear-gradient(90deg, ${EDITOR_COLORS.grid} 1px, transparent 1px),
-                  linear-gradient(${EDITOR_COLORS.gridMajor} 1px, transparent 1px),
-                  linear-gradient(90deg, ${EDITOR_COLORS.gridMajor} 1px, transparent 1px)
+                  linear-gradient(${editorColors.grid} 1px, transparent 1px),
+                  linear-gradient(90deg, ${editorColors.grid} 1px, transparent 1px),
+                  linear-gradient(${editorColors.gridMajor} 1px, transparent 1px),
+                  linear-gradient(90deg, ${editorColors.gridMajor} 1px, transparent 1px)
                 `,
                 backgroundSize: `${GRID_SIZE}px ${GRID_SIZE}px, ${GRID_SIZE}px ${GRID_SIZE}px, ${GRID_SIZE * 5}px ${GRID_SIZE * 5}px, ${GRID_SIZE * 5}px ${GRID_SIZE * 5}px`,
               }),
@@ -900,11 +925,11 @@ export default function TableMapEditor() {
                   justifyContent: 'center',
                 }}
               >
-                <TableIcon sx={{ fontSize: 80, color: EDITOR_COLORS.textMuted, opacity: 0.3, mb: 2 }} />
-                <Typography variant="h6" sx={{ color: EDITOR_COLORS.textMuted }}>
+                <TableIcon sx={{ fontSize: 80, color: editorColors.textMuted, opacity: 0.3, mb: 2 }} />
+                <Typography variant="h6" sx={{ color: editorColors.textMuted }}>
                   {filterArea === 'all' ? 'Chưa có bàn nào' : 'Không có bàn trong khu vực này'}
                 </Typography>
-                <Typography variant="body2" sx={{ color: EDITOR_COLORS.textMuted, mb: 3 }}>
+                <Typography variant="body2" sx={{ color: editorColors.textMuted, mb: 3 }}>
                   {areas.length === 0 ? 'Tạo khu vực trước, sau đó thêm bàn' : 'Nhấn "Thêm Bàn Mới" để bắt đầu'}
                 </Typography>
               </Box>
@@ -927,28 +952,28 @@ export default function TableMapEditor() {
               sx={{
                 width: 280,
                 height: '100%',
-                background: 'rgba(0, 0, 0, 0.3)',
-                borderLeft: `1px solid ${EDITOR_COLORS.border}`,
+                background: editorColors.surface,
+                borderLeft: `1px solid ${editorColors.border}`,
                 backdropFilter: 'blur(20px)',
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
               {/* Header */}
-              <Box sx={{ p: 2, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+              <Box sx={{ p: 2, borderBottom: `1px solid ${editorColors.border}` }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="subtitle1" sx={{ color: EDITOR_COLORS.text, fontWeight: 700 }}>
+                  <Typography variant="subtitle1" sx={{ color: editorColors.text, fontWeight: 700 }}>
                     Chi tiết bàn
                   </Typography>
                   <IconButton
                     size="small"
                     onClick={() => setSelectedTableId(null)}
-                    sx={{ color: EDITOR_COLORS.textMuted }}
+                    sx={{ color: editorColors.textMuted }}
                   >
                     <CloseIcon sx={{ fontSize: 18 }} />
                   </IconButton>
                 </Box>
-                <Typography variant="h5" sx={{ color: EDITOR_COLORS.primary, fontWeight: 700 }}>
+                <Typography variant="h5" sx={{ color: editorColors.primary, fontWeight: 700 }}>
                   {selectedTable.ten}
                 </Typography>
               </Box>
@@ -956,42 +981,42 @@ export default function TableMapEditor() {
               {/* Properties */}
               <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                  <Typography variant="caption" sx={{ color: editorColors.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
                     SỐ GHẾ
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <TableIcon sx={{ color: EDITOR_COLORS.primary }} />
-                    <Typography variant="h6" sx={{ color: EDITOR_COLORS.text }}>
+                    <TableIcon sx={{ color: editorColors.primary }} />
+                    <Typography variant="h6" sx={{ color: editorColors.text }}>
                       {selectedTable.soGhe} ghế
                     </Typography>
                   </Box>
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                  <Typography variant="caption" sx={{ color: editorColors.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
                     KHU VỰC
                   </Typography>
                   <Chip
                     label={selectedTable.khuVuc?.ten || 'Không xác định'}
                     sx={{
                       background: 'rgba(108, 99, 255, 0.2)',
-                      color: EDITOR_COLORS.primary,
-                      border: `1px solid ${EDITOR_COLORS.primary}40`,
+                      color: editorColors.primary,
+                      border: `1px solid ${editorColors.primary}40`,
                     }}
                   />
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                  <Typography variant="caption" sx={{ color: editorColors.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
                     VỊ TRÍ
                   </Typography>
-                  <Typography variant="body2" sx={{ color: EDITOR_COLORS.text }}>
+                  <Typography variant="body2" sx={{ color: editorColors.text }}>
                     X: {selectedTable.posX || 0}px, Y: {selectedTable.posY || 0}px
                   </Typography>
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="caption" sx={{ color: EDITOR_COLORS.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
+                  <Typography variant="caption" sx={{ color: editorColors.textMuted, mb: 1, display: 'block', letterSpacing: 1 }}>
                     TRẠNG THÁI
                   </Typography>
                   <Chip
@@ -1003,7 +1028,7 @@ export default function TableMapEditor() {
                       selectedTable.trangThai || 'Trống'
                     }
                     sx={{
-                      background: EDITOR_COLORS[selectedTable.trangThai?.toLowerCase()]?.glow || EDITOR_COLORS.trong.glow,
+                      background: editorColors[selectedTable.trangThai?.toLowerCase()]?.glow || editorColors.trong.glow,
                       color: '#fff',
                       fontWeight: 600,
                     }}
@@ -1012,18 +1037,18 @@ export default function TableMapEditor() {
               </Box>
 
               {/* Actions */}
-              <Box sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}`, display: 'flex', gap: 1 }}>
+              <Box sx={{ p: 2, borderTop: `1px solid ${editorColors.border}`, display: 'flex', gap: 1 }}>
                 <Button
                   fullWidth
                   variant="outlined"
                   startIcon={<EditIcon />}
                   onClick={() => handleOpenTableDialog(selectedTable)}
                   sx={{
-                    color: EDITOR_COLORS.primary,
-                    borderColor: EDITOR_COLORS.primary,
+                    color: editorColors.primary,
+                    borderColor: editorColors.primary,
                     '&:hover': {
                       background: 'rgba(108, 99, 255, 0.1)',
-                      borderColor: EDITOR_COLORS.primary,
+                      borderColor: editorColors.primary,
                     },
                   }}
                 >
@@ -1035,11 +1060,11 @@ export default function TableMapEditor() {
                   startIcon={<DeleteIcon />}
                   onClick={() => setDeleteConfirm({ open: true, type: 'table', id: selectedTable.id })}
                   sx={{
-                    color: EDITOR_COLORS.error,
-                    borderColor: EDITOR_COLORS.error,
+                    color: editorColors.error,
+                    borderColor: editorColors.error,
                     '&:hover': {
                       background: 'rgba(248, 113, 113, 0.1)',
-                      borderColor: EDITOR_COLORS.error,
+                      borderColor: editorColors.error,
                     },
                   }}
                 >
@@ -1059,15 +1084,15 @@ export default function TableMapEditor() {
         fullWidth
         PaperProps={{
           sx: {
-            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            background: editorColors.surface,
             borderRadius: 3,
-            border: `1px solid ${EDITOR_COLORS.border}`,
+            border: `1px solid ${editorColors.border}`,
           },
         }}
       >
-        <DialogTitle sx={{ color: EDITOR_COLORS.text, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+        <DialogTitle sx={{ color: editorColors.text, borderBottom: `1px solid ${editorColors.border}` }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <TableIcon sx={{ color: EDITOR_COLORS.primary }} />
+            <TableIcon sx={{ color: editorColors.primary }} />
             {tableDialog.table?.id ? 'Chỉnh sửa bàn' : 'Thêm bàn mới'}
           </Box>
         </DialogTitle>
@@ -1084,12 +1109,12 @@ export default function TableMapEditor() {
               placeholder="VD: Bàn 1, VIP 01..."
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  color: EDITOR_COLORS.text,
-                  '& fieldset': { borderColor: EDITOR_COLORS.border },
-                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
-                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                  color: editorColors.text,
+                  '& fieldset': { borderColor: editorColors.border },
+                  '&:hover fieldset': { borderColor: editorColors.primary },
+                  '&.Mui-focused fieldset': { borderColor: editorColors.primary },
                 },
-                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+                '& .MuiInputLabel-root': { color: editorColors.textMuted },
               }}
             />
 
@@ -1105,17 +1130,17 @@ export default function TableMapEditor() {
               inputProps={{ min: 1, max: 20 }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  color: EDITOR_COLORS.text,
-                  '& fieldset': { borderColor: EDITOR_COLORS.border },
-                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
-                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                  color: editorColors.text,
+                  '& fieldset': { borderColor: editorColors.border },
+                  '&:hover fieldset': { borderColor: editorColors.primary },
+                  '&.Mui-focused fieldset': { borderColor: editorColors.primary },
                 },
-                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+                '& .MuiInputLabel-root': { color: editorColors.textMuted },
               }}
             />
 
             <FormControl fullWidth>
-              <InputLabel sx={{ color: EDITOR_COLORS.textMuted }}>Khu vực</InputLabel>
+              <InputLabel sx={{ color: editorColors.textMuted }}>Khu vực</InputLabel>
               <Select
                 value={tableDialog.table?.khuVucId || ''}
                 onChange={(e) => setTableDialog((prev) => ({
@@ -1124,11 +1149,11 @@ export default function TableMapEditor() {
                 }))}
                 label="Khu vực"
                 sx={{
-                  color: EDITOR_COLORS.text,
-                  '.MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.border },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: EDITOR_COLORS.primary },
-                  '.MuiSvgIcon-root': { color: EDITOR_COLORS.textMuted },
+                  color: editorColors.text,
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: editorColors.border },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: editorColors.primary },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: editorColors.primary },
+                  '.MuiSvgIcon-root': { color: editorColors.textMuted },
                 }}
               >
                 {areas.map((area) => (
@@ -1140,10 +1165,10 @@ export default function TableMapEditor() {
             </FormControl>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${editorColors.border}` }}>
           <Button
             onClick={() => setTableDialog({ open: false, table: null })}
-            sx={{ color: EDITOR_COLORS.textMuted }}
+            sx={{ color: editorColors.textMuted }}
           >
             Hủy
           </Button>
@@ -1153,7 +1178,7 @@ export default function TableMapEditor() {
             startIcon={<CheckIcon />}
             disabled={!tableDialog.table?.ten || !tableDialog.table?.khuVucId}
             sx={{
-              background: `linear-gradient(135deg, ${EDITOR_COLORS.primary}, ${EDITOR_COLORS.secondary})`,
+              background: `linear-gradient(135deg, ${editorColors.primary}, ${editorColors.secondary})`,
               '&:disabled': { background: 'rgba(255,255,255,0.1)' },
             }}
           >
@@ -1170,15 +1195,15 @@ export default function TableMapEditor() {
         fullWidth
         PaperProps={{
           sx: {
-            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            background: editorColors.surface,
             borderRadius: 3,
-            border: `1px solid ${EDITOR_COLORS.border}`,
+            border: `1px solid ${editorColors.border}`,
           },
         }}
       >
-        <DialogTitle sx={{ color: EDITOR_COLORS.text, borderBottom: `1px solid ${EDITOR_COLORS.border}` }}>
+        <DialogTitle sx={{ color: editorColors.text, borderBottom: `1px solid ${editorColors.border}` }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <AreaIcon sx={{ color: EDITOR_COLORS.secondary }} />
+            <AreaIcon sx={{ color: editorColors.secondary }} />
             {areaDialog.area?.id ? 'Chỉnh sửa khu vực' : 'Thêm khu vực mới'}
           </Box>
         </DialogTitle>
@@ -1195,20 +1220,20 @@ export default function TableMapEditor() {
               placeholder="VD: Tầng 1, Sân vườn, VIP..."
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  color: EDITOR_COLORS.text,
-                  '& fieldset': { borderColor: EDITOR_COLORS.border },
-                  '&:hover fieldset': { borderColor: EDITOR_COLORS.primary },
-                  '&.Mui-focused fieldset': { borderColor: EDITOR_COLORS.primary },
+                  color: editorColors.text,
+                  '& fieldset': { borderColor: editorColors.border },
+                  '&:hover fieldset': { borderColor: editorColors.primary },
+                  '&.Mui-focused fieldset': { borderColor: editorColors.primary },
                 },
-                '& .MuiInputLabel-root': { color: EDITOR_COLORS.textMuted },
+                '& .MuiInputLabel-root': { color: editorColors.textMuted },
               }}
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: `1px solid ${EDITOR_COLORS.border}` }}>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${editorColors.border}` }}>
           <Button
             onClick={() => setAreaDialog({ open: false, area: null })}
-            sx={{ color: EDITOR_COLORS.textMuted }}
+            sx={{ color: editorColors.textMuted }}
           >
             Hủy
           </Button>
@@ -1218,7 +1243,7 @@ export default function TableMapEditor() {
             startIcon={<CheckIcon />}
             disabled={!areaDialog.area?.ten}
             sx={{
-              background: `linear-gradient(135deg, ${EDITOR_COLORS.secondary}, ${EDITOR_COLORS.primary})`,
+              background: `linear-gradient(135deg, ${editorColors.secondary}, ${editorColors.primary})`,
               '&:disabled': { background: 'rgba(255,255,255,0.1)' },
             }}
           >
@@ -1233,23 +1258,23 @@ export default function TableMapEditor() {
         onClose={() => setDeleteConfirm({ open: false, type: null, id: null })}
         PaperProps={{
           sx: {
-            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            background: editorColors.surface,
             borderRadius: 3,
-            border: `1px solid ${EDITOR_COLORS.error}40`,
+            border: `1px solid ${editorColors.error}40`,
           },
         }}
       >
-        <DialogTitle sx={{ color: EDITOR_COLORS.error }}>
+        <DialogTitle sx={{ color: editorColors.error }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <WarningIcon />
             Xác nhận xóa
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Typography sx={{ color: EDITOR_COLORS.text }}>
+          <Typography sx={{ color: editorColors.text }}>
             Bạn có chắc chắn muốn xóa {deleteConfirm.type === 'table' ? 'bàn' : 'khu vực'} này?
             {deleteConfirm.type === 'area' && (
-              <Box component="span" sx={{ display: 'block', color: EDITOR_COLORS.warning, mt: 1 }}>
+              <Box component="span" sx={{ display: 'block', color: editorColors.warning, mt: 1 }}>
                 Lưu ý: Các bàn trong khu vực sẽ được chuyển sang "Khu vực chung"
               </Box>
             )}
@@ -1258,7 +1283,7 @@ export default function TableMapEditor() {
         <DialogActions sx={{ p: 2 }}>
           <Button
             onClick={() => setDeleteConfirm({ open: false, type: null, id: null })}
-            sx={{ color: EDITOR_COLORS.textMuted }}
+            sx={{ color: editorColors.textMuted }}
           >
             Hủy
           </Button>
@@ -1267,7 +1292,7 @@ export default function TableMapEditor() {
             variant="contained"
             startIcon={<DeleteIcon />}
             sx={{
-              background: EDITOR_COLORS.error,
+              background: editorColors.error,
               '&:hover': { background: '#dc2626' },
             }}
           >

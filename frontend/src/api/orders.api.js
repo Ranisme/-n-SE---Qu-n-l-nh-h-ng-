@@ -19,3 +19,23 @@ export const voidOrderItem = async (orderId, payload) => {
   const { data } = await api.post(`/orders/${orderId}/void-item`, payload);
   return data;
 };
+
+export const createVoidRequest = async (orderId, payload) => {
+  const { data } = await api.post(`/orders/${orderId}/void-request`, payload);
+  return data;
+};
+
+export const listVoidRequests = async (params = {}) => {
+  const { data } = await api.get('/orders/void-requests', { params });
+  return data.items || [];
+};
+
+export const approveVoidRequest = async (id, payload = {}) => {
+  const { data } = await api.post(`/orders/void-requests/${id}/approve`, payload);
+  return data;
+};
+
+export const rejectVoidRequest = async (id, payload = {}) => {
+  const { data } = await api.post(`/orders/void-requests/${id}/reject`, payload);
+  return data;
+};

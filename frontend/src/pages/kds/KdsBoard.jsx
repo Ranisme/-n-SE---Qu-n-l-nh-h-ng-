@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { 
-  Grid, 
-  Paper, 
-  Typography, 
-  Stack, 
-  Button, 
+import {
+  Grid,
+  Paper,
+  Typography,
+  Stack,
+  Button,
   Box,
   Chip,
   IconButton,
@@ -48,56 +48,53 @@ import { motion, AnimatePresence } from 'framer-motion';
 import KdsLayout from '../../layouts/KdsLayout';
 import { useKdsTickets, useUpdateKdsStatus } from '../../hooks/useKds';
 
-// ==================== COLOR SYSTEM - KDS Premium Dark Theme ====================
+// ==================== COLOR SYSTEM - KDS Light Theme (harmonized) ====================
 const COLORS = {
-  // Background
-  bgPrimary: '#0a0e14',
-  bgSecondary: '#131920',
-  bgCard: '#1a2029',
-  bgCardHover: '#222b38',
-  bgHighlight: '#1e2a3a',
-  
+  // Backgrounds
+  bgPrimary: '#F8FAFC',       // page background similar to POS
+  bgSecondary: '#FFFFFF',     // header/content background
+  bgCard: '#FFFFFF',          // card background
+  bgCardHover: '#F1F5F9',
+  bgHighlight: '#F7FAFC',
+
   // Status Colors
   pending: '#64748B',         // Chờ xử lý - Gray
-  cooking: '#3B82F6',         // Đang làm - Blue
-  cookingGlow: 'rgba(59, 130, 246, 0.3)',
+  cooking: '#0EA5E9',         // Đang làm - Blue (match POS primary)
+  cookingGlow: 'rgba(14,165,233,0.12)',
   ready: '#F59E0B',           // Hoàn thành - Amber
-  readyGlow: 'rgba(245, 158, 11, 0.3)',
+  readyGlow: 'rgba(245,158,11,0.12)',
   served: '#10B981',          // Đã phục vụ - Green
-  servedGlow: 'rgba(16, 185, 129, 0.3)',
-  
+  servedGlow: 'rgba(16,185,129,0.12)',
+
   // Urgency Colors
-  normal: '#10B981',          // < 5 min - Green
-  warning: '#F59E0B',         // 5-10 min - Amber
-  danger: '#EF4444',          // 10-20 min - Red
-  critical: '#DC2626',        // > 20 min - Dark Red
-  criticalGlow: 'rgba(220, 38, 38, 0.4)',
-  
-  // Category Colors
-  catMain: '#8B5CF6',         // Món chính - Purple
-  catGrill: '#F97316',        // Món nướng - Orange
-  catNoodle: '#EC4899',       // Món nước - Pink
-  catDrink: '#06B6D4',        // Đồ uống - Cyan
-  catDessert: '#A855F7',      // Tráng miệng - Purple
-  
+  normal: '#10B981',
+  warning: '#F59E0B',
+  danger: '#EF4444',
+  critical: '#DC2626',
+  criticalGlow: 'rgba(220, 38, 38, 0.12)',
+
+  // Category Colors - tuned to app palette
+  catMain: '#0284C7',
+  catGrill: '#FB923C',
+  catNoodle: '#EC4899',
+  catDrink: '#06B6D4',
+  catDessert: '#A855F7',
+
   // Text
-  textPrimary: '#F8FAFC',
-  textSecondary: '#94A3B8',
-  textMuted: '#64748B',
-  
+  textPrimary: '#1E293B',
+  textSecondary: '#64748B',
+  textMuted: '#94A3B8',
+
   // Accent
-  primary: '#6366F1',
-  primaryLight: '#818CF8',
+  primary: '#00A76F',
+  primaryLight: '#5BE49B',
   accent: '#22D3EE',
-  
-  // Border
-  border: '#2D3748',
-  borderLight: '#374151',
-  
-  // Shadows
-  shadowSm: '0 2px 8px rgba(0,0,0,0.3)',
-  shadowMd: '0 4px 16px rgba(0,0,0,0.4)',
-  shadowLg: '0 8px 32px rgba(0,0,0,0.5)',
+
+  // Border / shadows
+  border: '#E6E9EE',
+  borderLight: '#F1F5F9',
+  shadowSm: '0 2px 8px rgba(2,6,23,0.06)',
+  shadowMd: '0 4px 16px rgba(2,6,23,0.08)',
 };
 
 // ==================== STATUS CONFIG ====================
@@ -171,9 +168,9 @@ const getCategoryFromItem = (item) => {
 // ==================== ANIMATION VARIANTS ====================
 const cardVariants = {
   initial: { opacity: 0, y: 20, scale: 0.95 },
-  animate: { 
-    opacity: 1, 
-    y: 0, 
+  animate: {
+    opacity: 1,
+    y: 0,
     scale: 1,
     transition: { type: 'spring', stiffness: 300, damping: 25 }
   },
@@ -202,7 +199,7 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
   const catConfig = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.default;
   const hasNotes = item.ghiChu || (item.tuyChon?.length > 0);
   const isCritical = urgency.level === 'critical';
-  
+
   return (
     <motion.div
       variants={cardVariants}
@@ -219,7 +216,7 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
             borderRadius: 3,
             border: `2px solid ${urgency.color}`,
             borderLeft: `6px solid ${catConfig.color}`,
-            boxShadow: isCritical 
+            boxShadow: isCritical
               ? `0 0 20px ${COLORS.criticalGlow}, ${COLORS.shadowMd}`
               : COLORS.shadowSm,
             transition: 'all 0.3s ease',
@@ -247,17 +244,17 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1.5}>
             <Box sx={{ flex: 1 }}>
               <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
-                <Box sx={{ 
-                  color: catConfig.color, 
+                <Box sx={{
+                  color: catConfig.color,
                   display: 'flex',
                   '& svg': { fontSize: 18 }
                 }}>
                   {catConfig.icon}
                 </Box>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 800, 
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 800,
                     color: COLORS.textPrimary,
                     fontSize: '1.1rem',
                     lineHeight: 1.2,
@@ -266,7 +263,7 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
                   {item.monAn?.ten || item.name}
                 </Typography>
               </Stack>
-              
+
               {/* Quantity badge */}
               {(item.soLuong || 1) > 1 && (
                 <Chip
@@ -282,7 +279,7 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
                 />
               )}
             </Box>
-            
+
             {/* Timer */}
             <Box sx={{
               display: 'flex',
@@ -295,10 +292,10 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
               border: `1px solid ${alpha(urgency.color, 0.3)}`,
             }}>
               <TimerIcon sx={{ fontSize: 16, color: urgency.color }} />
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 900, 
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 900,
                   color: urgency.color,
                   fontSize: '1.2rem',
                   fontFamily: 'monospace',
@@ -308,13 +305,13 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
               </Typography>
             </Box>
           </Stack>
-          
+
           {/* Notes Section */}
           {hasNotes && (
-            <Box sx={{ 
-              mb: 1.5, 
-              p: 1.5, 
-              borderRadius: 2, 
+            <Box sx={{
+              mb: 1.5,
+              p: 1.5,
+              borderRadius: 2,
               bgcolor: alpha(COLORS.warning, 0.1),
               border: `1px dashed ${alpha(COLORS.warning, 0.4)}`,
             }}>
@@ -336,7 +333,7 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
               )}
             </Box>
           )}
-          
+
           {/* Status Buttons */}
           <Stack direction="row" spacing={1}>
             {Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'CHOXULY').map(([key, config]) => {
@@ -383,17 +380,17 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
 
 // ==================== TABLE CARD COMPONENT ====================
 const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
-  const elapsedSeconds = ticket.createdAt 
+  const elapsedSeconds = ticket.createdAt
     ? Math.max(0, Math.floor((now - new Date(ticket.createdAt).getTime()) / 1000))
     : 0;
   const urgency = getUrgencyLevel(elapsedSeconds);
   const tableName = ticket.table || ticket.ban?.ten || 'Không rõ';
-  
+
   // Calculate stats
   const totalItems = ticket.items?.reduce((sum, item) => sum + (item.soLuong || 1), 0) || 0;
   const cookingItems = ticket.items?.filter(i => i.trangThai === 'DANGLAM').length || 0;
   const readyItems = ticket.items?.filter(i => i.trangThai === 'HOANTHANH').length || 0;
-  
+
   return (
     <motion.div
       variants={cardVariants}
@@ -436,10 +433,10 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
                   {tableName}
                 </Typography>
                 <Stack direction="row" gap={1} mt={0.5}>
-                  <Chip 
-                    size="small" 
+                  <Chip
+                    size="small"
                     label={`${totalItems} món`}
-                    sx={{ 
+                    sx={{
                       height: 20,
                       bgcolor: alpha(COLORS.textSecondary, 0.2),
                       color: COLORS.textSecondary,
@@ -448,11 +445,11 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
                     }}
                   />
                   {cookingItems > 0 && (
-                    <Chip 
+                    <Chip
                       size="small"
                       icon={<FireIcon sx={{ fontSize: '12px !important' }} />}
                       label={`${cookingItems} đang làm`}
-                      sx={{ 
+                      sx={{
                         height: 20,
                         bgcolor: alpha(COLORS.cooking, 0.2),
                         color: COLORS.cooking,
@@ -463,11 +460,11 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
                     />
                   )}
                   {readyItems > 0 && (
-                    <Chip 
+                    <Chip
                       size="small"
                       icon={<DoneIcon sx={{ fontSize: '12px !important' }} />}
                       label={`${readyItems} xong`}
-                      sx={{ 
+                      sx={{
                         height: 20,
                         bgcolor: alpha(COLORS.ready, 0.2),
                         color: COLORS.ready,
@@ -480,7 +477,7 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
                 </Stack>
               </Box>
             </Stack>
-            
+
             {/* Big Timer */}
             <Box sx={{
               px: 2,
@@ -490,10 +487,10 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
               border: `2px solid ${urgency.color}`,
               textAlign: 'center',
             }}>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  fontWeight: 900, 
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 900,
                   color: urgency.color,
                   fontFamily: 'monospace',
                   lineHeight: 1,
@@ -507,7 +504,7 @@ const TableCard = ({ ticket, now, onStatusChange, isNew }) => {
             </Box>
           </Stack>
         </Box>
-        
+
         {/* Items List */}
         <Box sx={{ p: 2 }}>
           <Stack spacing={1.5}>
@@ -542,18 +539,18 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
     served: allItems.filter(i => i.trangThai === 'DAPHUCVU').length,
     overdue: 0, // Would need to calculate based on time
   };
-  
+
   return (
-    <Box sx={{ 
+    <Box sx={{
       mb: 3,
       p: 2,
       borderRadius: 4,
       bgcolor: COLORS.bgSecondary,
       border: `1px solid ${COLORS.border}`,
     }}>
-      <Stack 
-        direction={{ xs: 'column', md: 'row' }} 
-        justifyContent="space-between" 
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent="space-between"
         alignItems={{ xs: 'stretch', md: 'center' }}
         gap={2}
       >
@@ -573,7 +570,7 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
               }}
             />
           </Tooltip>
-          
+
           <Tooltip title="Đang chế biến">
             <Chip
               icon={<FireIcon />}
@@ -588,7 +585,7 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
               }}
             />
           </Tooltip>
-          
+
           <Tooltip title="Đã hoàn thành, chờ phục vụ">
             <Chip
               icon={<DoneIcon />}
@@ -603,7 +600,7 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
               }}
             />
           </Tooltip>
-          
+
           <Tooltip title="Món bị trễ (>10 phút)">
             <Badge badgeContent={stats.overdue} color="error">
               <Chip
@@ -621,7 +618,7 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
             </Badge>
           </Tooltip>
         </Stack>
-        
+
         {/* Controls */}
         <Stack direction="row" spacing={2} alignItems="center">
           {/* View Mode Toggle */}
@@ -654,7 +651,7 @@ const StatsHeader = ({ tickets, viewMode, setViewMode, filterStatus, setFilterSt
               </Tooltip>
             </ToggleButton>
           </ToggleButtonGroup>
-          
+
           {/* Filter by Status */}
           <ToggleButtonGroup
             value={filterStatus}
@@ -690,10 +687,10 @@ const ItemViewMode = ({ tickets, now, onStatusChange }) => {
   const groupedItems = useMemo(() => {
     const groups = {};
     tickets.forEach(ticket => {
-      const elapsedSeconds = ticket.createdAt 
+      const elapsedSeconds = ticket.createdAt
         ? Math.max(0, Math.floor((now - new Date(ticket.createdAt).getTime()) / 1000))
         : 0;
-      
+
       ticket.items?.forEach(item => {
         const name = item.monAn?.ten || item.name || 'Không rõ';
         if (!groups[name]) {
@@ -715,7 +712,7 @@ const ItemViewMode = ({ tickets, now, onStatusChange }) => {
     });
     return Object.values(groups).sort((a, b) => b.totalQty - a.totalQty);
   }, [tickets, now]);
-  
+
   return (
     <Grid container spacing={2}>
       {groupedItems.map((group) => {
@@ -753,7 +750,7 @@ const ItemViewMode = ({ tickets, now, onStatusChange }) => {
                   />
                 </Stack>
               </Box>
-              
+
               {/* Items by Table */}
               <Box sx={{ p: 2 }}>
                 <Stack spacing={1}>
@@ -777,10 +774,10 @@ const ItemViewMode = ({ tickets, now, onStatusChange }) => {
                             <Chip label={`x${item.soLuong}`} size="small" sx={{ height: 18, fontSize: '0.65rem' }} />
                           )}
                         </Stack>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            fontWeight: 700, 
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 700,
                             color: getUrgencyLevel(item.elapsedSeconds).color,
                             fontFamily: 'monospace',
                           }}
@@ -788,7 +785,7 @@ const ItemViewMode = ({ tickets, now, onStatusChange }) => {
                           {formatTime(item.elapsedSeconds)}
                         </Typography>
                       </Stack>
-                      
+
                       <Stack direction="row" spacing={0.5}>
                         {Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'CHOXULY').map(([key, config]) => {
                           const isActive = item.trangThai === key;
@@ -867,10 +864,10 @@ const KdsBoard = ({ station }) => {
 
   // Sort and filter tickets
   const tickets = useMemo(() => {
-    let result = [...data].sort((a, b) => 
+    let result = [...data].sort((a, b) =>
       new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
     );
-    
+
     // Filter by status if needed
     if (filterStatus !== 'all') {
       result = result.map(ticket => ({
@@ -878,7 +875,7 @@ const KdsBoard = ({ station }) => {
         items: ticket.items?.filter(item => item.trangThai === filterStatus)
       })).filter(ticket => ticket.items?.length > 0);
     }
-    
+
     return result;
   }, [data, filterStatus]);
 
@@ -895,32 +892,32 @@ const KdsBoard = ({ station }) => {
   return (
     <KdsLayout>
       {/* Stats Header */}
-      <StatsHeader 
+      <StatsHeader
         tickets={data}
         viewMode={viewMode}
         setViewMode={setViewMode}
         filterStatus={filterStatus}
         setFilterStatus={setFilterStatus}
       />
-      
+
       {/* Loading */}
       {isLoading && (
         <Box sx={{ mb: 3 }}>
-          <LinearProgress 
-            sx={{ 
+          <LinearProgress
+            sx={{
               borderRadius: 2,
               bgcolor: COLORS.bgCard,
               '& .MuiLinearProgress-bar': {
                 bgcolor: COLORS.primary,
               }
-            }} 
+            }}
           />
           <Typography sx={{ color: COLORS.textSecondary, mt: 1, textAlign: 'center' }}>
             Đang tải đơn hàng...
           </Typography>
         </Box>
       )}
-      
+
       {/* No tickets */}
       {!isLoading && tickets.length === 0 && (
         <Box sx={{
@@ -939,7 +936,7 @@ const KdsBoard = ({ station }) => {
           </Typography>
         </Box>
       )}
-      
+
       {/* Content based on view mode */}
       {viewMode === 'table' ? (
         <Grid container spacing={2}>
@@ -957,9 +954,9 @@ const KdsBoard = ({ station }) => {
           </AnimatePresence>
         </Grid>
       ) : (
-        <ItemViewMode 
-          tickets={tickets} 
-          now={now} 
+        <ItemViewMode
+          tickets={tickets}
+          now={now}
           onStatusChange={handleStatusChange}
         />
       )}

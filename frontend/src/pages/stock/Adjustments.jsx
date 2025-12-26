@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import MainLayout from '../../layouts/MainLayout';
 import {
   Paper,
@@ -16,6 +16,8 @@ import {
   Typography,
   Chip,
   Autocomplete,
+  Divider,
+  Stack,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { Add, TrendingUp, TrendingDown, Delete, Edit } from '@mui/icons-material';
@@ -25,10 +27,12 @@ import {
   useAdjustments,
   useCreateAdjustment,
 } from '../../hooks/useInventory';
+import { getAdjustmentOrder } from '../../api/inventory.api';
 
 const ADJUSTMENT_TYPES = {
   NHAP: { label: 'Nhập kho', color: 'success', icon: <TrendingUp /> },
   XUAT: { label: 'Xuất kho', color: 'warning', icon: <TrendingDown /> },
+  BANHANG: { label: 'Bán hàng', color: 'warning', icon: <TrendingDown /> },
   HUYHANG: { label: 'Hủy hàng', color: 'error', icon: <Delete /> },
   DIEUCHINH: { label: 'Điều chỉnh', color: 'info', icon: <Edit /> },
 };
@@ -52,6 +56,11 @@ const Adjustments = () => {
     soLuong: 0,
     ghiChu: '',
   });
+
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(false);
+  const [orderError, setOrderError] = useState('');
+  const [orderData, setOrderData] = useState(null);
 
   const { data: materials = [] } = useMaterials();
   const { data: adjustments = [], isLoading } = useAdjustments({
@@ -93,6 +102,26 @@ const Adjustments = () => {
 
   const selectedMaterial = materials.find((m) => m.id === form.nguyenVatLieuId);
 
+  const orderTotal = useMemo(() => {
+    const items = orderData?.order?.items || [];
+    return items.reduce((sum, i) => sum + Number(i.soLuong || 0) * Number(i.donGia || 0), 0);
+  }, [orderData]);
+
+  const openOrderFromAdjustment = async (row) => {
+    setOrderDialogOpen(true);
+    setOrderLoading(true);
+    setOrderError('');
+    setOrderData(null);
+    try {
+      const data = await getAdjustmentOrder(row.id);
+      setOrderData(data);
+    } catch (err) {
+      setOrderError(err?.response?.data?.message || 'Không thể tải nội dung đơn hàng');
+    } finally {
+      setOrderLoading(false);
+    }
+  };
+
   const columns = [
     {
       field: 'createdAt',
@@ -125,7 +154,7 @@ const Adjustments = () => {
       width: 120,
       renderCell: (params) => {
         const type = params.row.loai;
-        const isNegative = type === 'XUAT' || type === 'HUYHANG';
+        const isNegative = type === 'XUAT' || type === 'HUYHANG' || type === 'BANHANG';
         return (
           <Typography color={isNegative ? 'error' : 'success.main'}>
             {isNegative ? '-' : '+'}
@@ -230,6 +259,12 @@ const Adjustments = () => {
           pageSizeOptions={[10, 25, 50]}
           initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
           disableRowSelectionOnClick
+          onRowClick={(params) => {
+            const row = params.row;
+            if (row?.loai === 'BANHANG') {
+              openOrderFromAdjustment(row);
+            }
+          }}
         />
       </Paper>
 
@@ -315,6 +350,66 @@ const Adjustments = () => {
           >
             Xác nhận
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Order Detail Dialog (from BANHANG adjustment) */}
+      <Dialog
+        open={orderDialogOpen}
+        onClose={() => setOrderDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Nội dung đơn hàng</DialogTitle>
+        <DialogContent dividers>
+          {orderLoading && <Typography>Đang tải...</Typography>}
+          {!!orderError && <Typography color="error">{orderError}</Typography>}
+
+          {orderData?.order && !orderLoading && !orderError && (
+            <Box>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Mã đơn: {orderData.order.id}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Bàn: {orderData.order.ban?.ten || '—'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Thời gian: {formatDate(orderData.order.createdAt)}
+                </Typography>
+              </Stack>
+
+              <Divider sx={{ my: 1 }} />
+
+              {(orderData.order.items || []).map((it) => (
+                <Box key={it.id} sx={{ py: 1 }}>
+                  <Stack direction="row" justifyContent="space-between" spacing={2}>
+                    <Box>
+                      <Typography fontWeight={600}>{it.monAn?.ten || '—'}</Typography>
+                      {!!it.tuyChon?.length && (
+                        <Typography variant="caption" color="text.secondary">
+                          Tùy chọn: {it.tuyChon.map((t) => t.ten).filter(Boolean).join(', ') || '—'}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Typography>
+                      {it.soLuong} × {Number(it.donGia || 0).toLocaleString('vi-VN')} đ
+                    </Typography>
+                  </Stack>
+                </Box>
+              ))}
+
+              <Divider sx={{ my: 1 }} />
+
+              <Stack direction="row" justifyContent="space-between">
+                <Typography fontWeight={700}>Tạm tính</Typography>
+                <Typography fontWeight={700}>{orderTotal.toLocaleString('vi-VN')} đ</Typography>
+              </Stack>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOrderDialogOpen(false)}>Đóng</Button>
         </DialogActions>
       </Dialog>
     </MainLayout>

@@ -40,6 +40,23 @@ export const splitBillByPeople = async (invoiceId, numPeople) => {
   return data;
 };
 
+export const mergeInvoices = async (invoiceIds) => {
+  const { data } = await api.post(`/billing/invoices/merge`, { invoiceIds });
+  return data;
+};
+
+export const getZReport = async (shiftId) => {
+  const { data } = await api.get(`/billing/shifts/${shiftId}/zreport`);
+  return data;
+};
+
+export const exportZReport = async (shiftId, format = 'csv') => {
+  const response = await api.get(`/billing/shifts/${shiftId}/zreport/export?format=${format}`, {
+    responseType: format === 'csv' ? 'text' : 'blob',
+  });
+  return response.data;
+};
+
 export const exportInvoices = async (filters = {}) => {
   const params = new URLSearchParams();
   if (filters.startDate) params.append('startDate', filters.startDate);

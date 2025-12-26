@@ -1,7 +1,7 @@
 import api from './client';
 
-export const fetchDashboard = async () => {
-  const { data } = await api.get('/reports/dashboard');
+export const fetchDashboard = async (params = {}) => {
+  const { data } = await api.get('/reports/dashboard', { params });
   return data;
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
+import Chart from 'react-apexcharts';
 import {
   Paper,
   Typography,
@@ -34,6 +35,8 @@ import {
   Today,
   Schedule,
 } from '@mui/icons-material';
+
+import { useDashboard } from '../../hooks/useReports';
 
 // ==================== PREMIUM COLORS ====================
 const COLORS = {
@@ -202,6 +205,74 @@ const ReportsDashboard = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState('today');
 
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(
+      amount || 0,
+    );
+
+  const localYMD = (d) => {
+    const x = new Date(d);
+    const yyyy = x.getFullYear();
+    const mm = String(x.getMonth() + 1).padStart(2, '0');
+    const dd = String(x.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const dashboardParams = useMemo(() => {
+    const now = new Date();
+    const end = localYMD(now);
+    let start = end;
+
+    if (dateRange === 'yesterday') {
+      const y = new Date(now);
+      y.setDate(now.getDate() - 1);
+      start = localYMD(y);
+      return { from: start, to: start };
+    }
+
+    if (dateRange === 'week') {
+      const s = new Date(now);
+      s.setDate(now.getDate() - 6);
+      start = localYMD(s);
+      return { from: start, to: end };
+    }
+
+    if (dateRange === 'month') {
+      const s = new Date(now);
+      s.setDate(now.getDate() - 29);
+      start = localYMD(s);
+      return { from: start, to: end };
+    }
+
+    if (dateRange === 'quarter') {
+      const qStartMonth = Math.floor(now.getMonth() / 3) * 3;
+      const s = new Date(now.getFullYear(), qStartMonth, 1);
+      start = localYMD(s);
+      return { from: start, to: end };
+    }
+
+    if (dateRange === 'year') {
+      const s = new Date(now.getFullYear(), 0, 1);
+      start = localYMD(s);
+      return { from: start, to: end };
+    }
+
+    // today
+    return { from: start, to: end };
+  }, [dateRange]);
+
+  const chartRange = useMemo(() => {
+    if (dateRange === 'year') return 'year';
+    if (dateRange === 'month' || dateRange === 'quarter') return 'month';
+    return 'week';
+  }, [dateRange]);
+
+  const { data, isLoading } = useDashboard({ range: chartRange, ...dashboardParams });
+
+  const bestSellerLabel = data?.bestSellers?.[0]?.ten || '--';
+  const stockAlertsCount = Array.isArray(data?.stockAlerts) ? data.stockAlerts.length : 0;
+  const employeesToday = Array.isArray(data?.todayShifts) ? data.todayShifts.length : 0;
+
   const reportCards = [
     {
       title: 'Báo cáo Doanh thu',
@@ -209,7 +280,7 @@ const ReportsDashboard = () => {
       icon: <AttachMoney sx={{ color: '#fff', fontSize: 28 }} />,
       color: COLORS.success,
       path: '/reports/sales',
-      stats: { label: 'Hôm nay', value: '-- VNĐ' },
+      stats: { label: 'Trong kỳ', value: isLoading ? '...' : formatCurrency(data?.revenue || 0) },
     },
     {
       title: 'Hiệu suất Thực đơn',
@@ -217,7 +288,7 @@ const ReportsDashboard = () => {
       icon: <Restaurant sx={{ color: '#fff', fontSize: 28 }} />,
       color: COLORS.primary,
       path: '/reports/menu',
-      stats: { label: 'Món bán chạy nhất', value: '--' },
+      stats: { label: 'Món bán chạy nhất', value: isLoading ? '...' : bestSellerLabel },
     },
     {
       title: 'Báo cáo Tồn kho',
@@ -225,7 +296,7 @@ const ReportsDashboard = () => {
       icon: <Inventory2 sx={{ color: '#fff', fontSize: 28 }} />,
       color: COLORS.warning,
       path: '/reports/inventory',
-      stats: { label: 'Cảnh báo', value: '-- mặt hàng' },
+      stats: { label: 'Cảnh báo', value: isLoading ? '...' : `${stockAlertsCount} mặt hàng` },
     },
     {
       title: 'Chấm công Nhân viên',
@@ -233,7 +304,7 @@ const ReportsDashboard = () => {
       icon: <People sx={{ color: '#fff', fontSize: 28 }} />,
       color: COLORS.info,
       path: '/reports/attendance',
-      stats: { label: 'Nhân viên hôm nay', value: '--' },
+      stats: { label: 'Nhân viên trong ca', value: isLoading ? '...' : String(employeesToday) },
     },
   ];
 
@@ -241,32 +312,80 @@ const ReportsDashboard = () => {
     {
       icon: <AttachMoney sx={{ color: COLORS.success, fontSize: 24 }} />,
       label: 'Doanh thu hôm nay',
-      value: '-- VNĐ',
-      change: '+---%',
+      value: isLoading ? '...' : formatCurrency(data?.revenue || 0),
       color: COLORS.success,
     },
     {
       icon: <Restaurant sx={{ color: COLORS.primary, fontSize: 24 }} />,
       label: 'Đơn hàng hôm nay',
-      value: '--',
-      change: '+---%',
+      value: isLoading ? '...' : String(data?.bills || 0),
       color: COLORS.primary,
     },
     {
       icon: <People sx={{ color: COLORS.info, fontSize: 24 }} />,
       label: 'Khách hàng mới',
-      value: '--',
-      change: '+---%',
+      value: isLoading ? '...' : String(data?.guests || 0),
       color: COLORS.info,
     },
     {
       icon: <TrendingUp sx={{ color: COLORS.purple, fontSize: 24 }} />,
       label: 'Giá trị TB/đơn',
-      value: '-- VNĐ',
-      change: '+---%',
+      value: isLoading ? '...' : formatCurrency(data?.avgBill || 0),
       color: COLORS.purple,
     },
   ];
+
+  const revenueChartCategories = data?.revenueChart?.categories || [];
+  const revenueChartSeries = data?.revenueChart?.series || [];
+
+  const revenueChartOptions = useMemo(
+    () => ({
+      chart: {
+        type: 'area',
+        toolbar: { show: false },
+        background: 'transparent',
+        animations: { enabled: true, easing: 'easeinout', speed: 700 },
+      },
+      colors: [COLORS.success],
+      stroke: { curve: 'smooth', width: 3 },
+      fill: {
+        type: 'gradient',
+        gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 90, 100] },
+      },
+      xaxis: {
+        categories: revenueChartCategories,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: { style: { colors: COLORS.textMuted, fontSize: '12px', fontWeight: 600 } },
+      },
+      yaxis: {
+        labels: {
+          formatter: (val) => new Intl.NumberFormat('vi-VN').format(val || 0),
+          style: { colors: COLORS.textMuted, fontSize: '11px' },
+        },
+      },
+      tooltip: {
+        y: { formatter: (val) => new Intl.NumberFormat('vi-VN').format(val || 0) + '₫' },
+      },
+      grid: { strokeDashArray: 4, borderColor: `${COLORS.border}` },
+      dataLabels: { enabled: false },
+    }),
+    [revenueChartCategories],
+  );
+
+  const topItems = (data?.bestSellers || []).slice(0, 5);
+  const topDishLabels = topItems.map((x) => x.ten);
+  const topDishSeries = topItems.map((x) => Number(x.soLuong || 0));
+  const topDishOptions = useMemo(
+    () => ({
+      chart: { type: 'donut' },
+      labels: topDishLabels,
+      legend: { position: 'bottom' },
+      dataLabels: { enabled: true },
+      tooltip: { y: { formatter: (val) => `${val} món` } },
+    }),
+    [topDishLabels.join('|')],
+  );
 
   return (
     <MainLayout title="Báo cáo & Thống kê">
@@ -383,35 +502,41 @@ const ReportsDashboard = () => {
                   <Chip
                     size="small"
                     icon={<ShowChart sx={{ fontSize: 16 }} />}
-                    label="7 ngày qua"
+                    label={chartRange === 'year' ? 'Năm nay' : chartRange === 'month' ? 'Tháng này' : '7 ngày qua'}
                     sx={{ background: `${COLORS.primary}15`, color: COLORS.primary }}
                   />
                 </Stack>
-                <Box
-                  sx={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `linear-gradient(135deg, ${COLORS.primary}05, ${COLORS.primaryLight}03)`,
-                    borderRadius: 3,
-                    border: `2px dashed ${COLORS.border}`,
-                  }}
-                >
-                  <Stack alignItems="center" spacing={1}>
-                    <BarChart sx={{ fontSize: 60, color: COLORS.textMuted, opacity: 0.4 }} />
-                    <Typography color={COLORS.textSecondary}>
-                      Biểu đồ doanh thu sẽ hiển thị ở đây
-                    </Typography>
-                    <Button
-                      size="small"
-                      onClick={() => navigate('/reports/sales')}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      Xem chi tiết →
-                    </Button>
-                  </Stack>
-                </Box>
+                {isLoading ? (
+                  <Typography color={COLORS.textSecondary}>Đang tải...</Typography>
+                ) : revenueChartSeries.length === 0 ? (
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: `linear-gradient(135deg, ${COLORS.primary}05, ${COLORS.primaryLight}03)`,
+                      borderRadius: 3,
+                      border: `2px dashed ${COLORS.border}`,
+                    }}
+                  >
+                    <Stack alignItems="center" spacing={1}>
+                      <BarChart sx={{ fontSize: 60, color: COLORS.textMuted, opacity: 0.4 }} />
+                      <Typography color={COLORS.textSecondary}>
+                        Không có dữ liệu doanh thu trong kỳ
+                      </Typography>
+                    </Stack>
+                  </Box>
+                ) : (
+                  <Box sx={{ flex: 1 }}>
+                    <Chart options={revenueChartOptions} series={revenueChartSeries} type="area" height={260} />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button size="small" onClick={() => navigate('/reports/sales')} sx={{ textTransform: 'none' }}>
+                        Xem chi tiết →
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
               </Paper>
             </motion.div>
           </Grid>
@@ -438,35 +563,41 @@ const ReportsDashboard = () => {
                   <Chip
                     size="small"
                     icon={<PieChart sx={{ fontSize: 16 }} />}
-                    label="Hôm nay"
+                    label={dateRange === 'today' ? 'Hôm nay' : dateRange === 'yesterday' ? 'Hôm qua' : 'Trong kỳ'}
                     sx={{ background: `${COLORS.warning}15`, color: COLORS.warning }}
                   />
                 </Stack>
-                <Box
-                  sx={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: `linear-gradient(135deg, ${COLORS.warning}05, ${COLORS.warningLight}03)`,
-                    borderRadius: 3,
-                    border: `2px dashed ${COLORS.border}`,
-                  }}
-                >
-                  <Stack alignItems="center" spacing={1}>
-                    <PieChart sx={{ fontSize: 60, color: COLORS.textMuted, opacity: 0.4 }} />
-                    <Typography color={COLORS.textSecondary} textAlign="center">
-                      Biểu đồ món ăn sẽ hiển thị ở đây
-                    </Typography>
-                    <Button
-                      size="small"
-                      onClick={() => navigate('/reports/menu')}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      Xem chi tiết →
-                    </Button>
-                  </Stack>
-                </Box>
+                {isLoading ? (
+                  <Typography color={COLORS.textSecondary}>Đang tải...</Typography>
+                ) : topDishSeries.length === 0 ? (
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: `linear-gradient(135deg, ${COLORS.warning}05, ${COLORS.warningLight}03)`,
+                      borderRadius: 3,
+                      border: `2px dashed ${COLORS.border}`,
+                    }}
+                  >
+                    <Stack alignItems="center" spacing={1}>
+                      <PieChart sx={{ fontSize: 60, color: COLORS.textMuted, opacity: 0.4 }} />
+                      <Typography color={COLORS.textSecondary} textAlign="center">
+                        Không có dữ liệu món bán chạy trong kỳ
+                      </Typography>
+                    </Stack>
+                  </Box>
+                ) : (
+                  <Box sx={{ flex: 1 }}>
+                    <Chart options={topDishOptions} series={topDishSeries} type="donut" height={260} />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button size="small" onClick={() => navigate('/reports/menu')} sx={{ textTransform: 'none' }}>
+                        Xem chi tiết →
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
               </Paper>
             </motion.div>
           </Grid>

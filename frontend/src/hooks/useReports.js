@@ -7,11 +7,11 @@ import {
   fetchAttendanceReport,
 } from '../api/reports.api';
 
-export const useDashboard = () =>
+export const useDashboard = (params = {}) =>
   useQuery({
-    queryKey: ['dashboard'],
-    queryFn: fetchDashboard,
-    refetchInterval: 10000,
+    queryKey: ['dashboard', params],
+    queryFn: () => fetchDashboard(params),
+    refetchInterval: 5000,
   });
 
 export const useSalesReport = (params = {}) =>
@@ -32,7 +32,7 @@ export const useInventoryReport = () =>
     queryFn: fetchInventoryReport,
   });
 
-export const useAttendanceReportReport = () =>
+export const useAttendanceReport = () =>
   useQuery({
     queryKey: ['attendanceReport'],
     queryFn: fetchAttendanceReport,

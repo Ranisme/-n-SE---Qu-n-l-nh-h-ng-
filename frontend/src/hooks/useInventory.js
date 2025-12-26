@@ -62,11 +62,12 @@ export const useDeleteMaterial = () => {
 
 // ==================== ALERTS ====================
 
-export const useInventoryAlerts = () =>
+export const useInventoryAlerts = (options = {}) =>
   useQuery({
     queryKey: ['inventoryAlerts'],
     queryFn: listAlerts,
     refetchInterval: 10000,
+    ...options,
   });
 
 // ==================== ADJUSTMENTS ====================

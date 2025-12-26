@@ -81,7 +81,7 @@ async function testRolePermissions() {
 
     console.log(`\nKiểm tra quyền cụ thể:`);
     console.log(`  - REPORT_VIEW: ${permissions.includes('REPORT_VIEW') ? '✅ CÓ' : '❌ KHÔNG'}`);
-    console.log(`  - PAYMENT_PROCESS: ${permissions.includes('PAYMENT_PROCESS') ? '✅ CÓ' : '❌ KHÔNG'}`);
+    console.log(`  - PAYMENT_EXECUTE: ${permissions.includes('PAYMENT_EXECUTE') ? '✅ CÓ' : '❌ KHÔNG'}`);
     console.log(`  - ADMIN_MANAGE: ${permissions.includes('ADMIN_MANAGE') ? '✅ CÓ' : '❌ KHÔNG'}`);
   }
 

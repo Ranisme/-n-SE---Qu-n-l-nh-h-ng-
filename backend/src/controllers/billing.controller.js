@@ -126,6 +126,40 @@ const getDailySalesReport = async (req, res, next) => {
   }
 };
 
+const mergeInvoices = async (req, res, next) => {
+  try {
+    const data = await billingService.mergeInvoices(req.body.invoiceIds, req.user);
+    res.status(201).json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getZReport = async (req, res, next) => {
+  try {
+    const data = await billingService.getZReport(req.params.id);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const exportZReport = async (req, res, next) => {
+  try {
+    const format = req.query.format || 'csv';
+    const data = await billingService.exportZReportCSV(req.params.id, format);
+    if (format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="zreport_${req.params.id}.csv"`);
+      return res.send(data);
+    }
+    // default JSON
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = { 
   listOpenInvoices,
   listPendingOrders,
@@ -140,4 +174,7 @@ module.exports = {
   getInvoicePrintData,
   exportInvoices,
   getDailySalesReport,
+  mergeInvoices,
+  getZReport,
+  exportZReport,
 };
