@@ -25,6 +25,12 @@ enum OrderItemStatus {
   DAHUY
 }
 
+enum VoidRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum PaymentMethod {
   TienMat
   The
@@ -65,6 +71,8 @@ model NhanVien {
   caThuNgan  CaThuNgan[]
   phieuNhap  PhieuNhapKho[]
   lichPhanCa LichPhanCa[]
+  yeuCauHuyTao    YeuCauHuyMon[] @relation("VoidRequester")
+  yeuCauHuyDuyet  YeuCauHuyMon[] @relation("VoidApprover")
 }
 
 model VaiTro {
@@ -180,6 +188,7 @@ model DonHang {
   nhanVien     NhanVien?   @relation(fields: [nhanVienId], references: [id])
   chiTiet      ChiTietDonHang[]
   hoaDon       HoaDon[]
+  yeuCauHuy    YeuCauHuyMon[]
 }
 
 model ChiTietDonHang {
@@ -193,6 +202,7 @@ model ChiTietDonHang {
   donHang     DonHang         @relation(fields: [donHangId], references: [id])
   monAn       MonAn           @relation(fields: [monAnId], references: [id])
   tuyChon     ChiTietTuyChonMon[]
+  yeuCauHuy   YeuCauHuyMon[]
 }
 
 model TuyChonMon {
@@ -414,4 +424,24 @@ model HangThanhVien {
   diemToiThieu    Int      @default(0)      // Điểm tối thiểu để đạt hạng
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// ==================== VOID REQUESTS ====================
+
+model YeuCauHuyMon {
+  id              String            @id @default(uuid())
+  donHangId       String
+  chiTietDonHangId String
+  lyDo            String            // Reason for void request
+  trangThai       VoidRequestStatus @default(PENDING)
+  nguoiYeuCauId   String?           // Waiter who requested
+  nguoiDuyetId    String?           // Manager who approved/rejected
+  ghiChuDuyet     String?           // Approval/rejection note
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  donHang         DonHang           @relation(fields: [donHangId], references: [id])
+  chiTietDonHang  ChiTietDonHang    @relation(fields: [chiTietDonHangId], references: [id])
+  nguoiYeuCau     NhanVien?         @relation("VoidRequester", fields: [nguoiYeuCauId], references: [id])
+  nguoiDuyet      NhanVien?         @relation("VoidApprover", fields: [nguoiDuyetId], references: [id])
 }
