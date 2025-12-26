@@ -20,6 +20,12 @@ router.use(authMiddleware);
 // Create void request: ORDER_UPDATE (waiters can create)
 router.post(
     '/',
+    (req, res, next) => {
+        console.log('🟢 POST /void-requests received');
+        console.log('🟢 Body:', req.body);
+        console.log('🟢 User:', req.user);
+        next();
+    },
     validate(createVoidRequestSchema),
     requirePermissions([PERMISSIONS.ORDER_UPDATE]),
     createVoidRequest
