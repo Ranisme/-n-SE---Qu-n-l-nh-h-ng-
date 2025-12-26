@@ -27,7 +27,15 @@ router.post(
         next();
     },
     validate(createVoidRequestSchema),
+    (req, res, next) => {
+        console.log('✅ Validation passed');
+        next();
+    },
     requirePermissions([PERMISSIONS.ORDER_UPDATE]),
+    (req, res, next) => {
+        console.log('✅ Permission check passed');
+        next();
+    },
     createVoidRequest
 );
 
