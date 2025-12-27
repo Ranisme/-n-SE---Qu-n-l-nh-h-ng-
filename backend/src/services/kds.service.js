@@ -4,7 +4,9 @@ const { ORDER_STATUS } = require('../utils/constants');
 const listByStation = async (station) => {
   const items = await prisma.chiTietDonHang.findMany({
     where: {
-      trangThai: { notIn: [ORDER_STATUS.DAHUY, ORDER_STATUS.DAPHUCVU] },
+      // Include DAHUY items to show them with visual indicators
+      // Only exclude DAPHUCVU (already served)
+      trangThai: { not: ORDER_STATUS.DAPHUCVU },
       donHang: { trangThai: 'SENT' },
       monAn: station ? { tramCheBien: station } : undefined,
     },
