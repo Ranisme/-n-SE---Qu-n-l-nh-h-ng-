@@ -104,35 +104,35 @@ const POS_COLORS = {
 // ============================================
 const TableItem = ({ table, isSelected, onClick }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  
+
   const getStatusConfig = (status) => {
     const configs = {
-      'TRONG': { 
-        color: POS_COLORS.status.available, 
+      'TRONG': {
+        color: POS_COLORS.status.available,
         bgColor: alpha(POS_COLORS.status.available, 0.15),
         icon: <LockOpen sx={{ fontSize: 12 }} />,
         label: 'Sẵn sàng'
       },
-      'COKHACH': { 
-        color: POS_COLORS.status.occupied, 
+      'COKHACH': {
+        color: POS_COLORS.status.occupied,
         bgColor: alpha(POS_COLORS.status.occupied, 0.15),
         icon: <Groups sx={{ fontSize: 12 }} />,
         label: 'Có khách'
       },
-      'DADAT': { 
-        color: POS_COLORS.status.reserved, 
+      'DADAT': {
+        color: POS_COLORS.status.reserved,
         bgColor: alpha(POS_COLORS.status.reserved, 0.15),
         icon: <Lock sx={{ fontSize: 12 }} />,
         label: 'Đặt trước'
       },
-      'CHOTHANHTOAN': { 
-        color: POS_COLORS.status.pending, 
+      'CHOTHANHTOAN': {
+        color: POS_COLORS.status.pending,
         bgColor: alpha(POS_COLORS.status.pending, 0.15),
         icon: <Receipt sx={{ fontSize: 12 }} />,
         label: 'Chờ thanh toán'
       },
-      'CANDON': { 
-        color: POS_COLORS.status.cleaning, 
+      'CANDON': {
+        color: POS_COLORS.status.cleaning,
         bgColor: alpha(POS_COLORS.status.cleaning, 0.15),
         icon: <AccessTime sx={{ fontSize: 12 }} />,
         label: 'Cần dọn'
@@ -171,7 +171,7 @@ const TableItem = ({ table, isSelected, onClick }) => {
             bgcolor: isSelected ? statusConfig.bgColor : 'background.paper',
             position: 'relative',
             transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: isSelected 
+            boxShadow: isSelected
               ? `0 8px 24px ${alpha(statusConfig.color, 0.35)}, 0 0 0 3px ${alpha(statusConfig.color, 0.2)}`
               : `0 2px 8px ${alpha('#000', 0.06)}`,
             '&:hover': {
@@ -304,21 +304,21 @@ const MenuCard = ({ dish, onAdd }) => {
       onHoverEnd={() => setIsHovered(false)}
       style={{ cursor: 'pointer' }}
     >
-      <Box 
+      <Box
         onClick={handleAddItem}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter') handleAddItem(e); }}
-        sx={{ 
-          height: '100%', 
-          display: 'flex', 
+        sx={{
+          height: '100%',
+          display: 'flex',
           flexDirection: 'column',
           borderRadius: '12px',
           overflow: 'hidden',
           bgcolor: 'white',
           border: '1px solid',
           borderColor: alpha('#000', 0.06),
-          boxShadow: isHovered 
+          boxShadow: isHovered
             ? `0 12px 28px ${alpha('#000', 0.12)}`
             : `0 2px 8px ${alpha('#000', 0.04)}`,
           transform: isHovered ? 'translateY(-2px)' : 'none',
@@ -340,7 +340,7 @@ const MenuCard = ({ dish, onAdd }) => {
               objectFit: 'cover',
             }}
           />
-          
+
           {badges.length > 0 && (
             <Stack direction="row" spacing={0.5} sx={{ position: 'absolute', top: 8, left: 8 }}>
               {badges.map((badge, idx) => (
@@ -388,17 +388,17 @@ const MenuCard = ({ dish, onAdd }) => {
         </Box>
 
         <CardContent sx={{ p: 1.25, pt: 1 }}>
-          <Typography 
-            variant="body2" 
-            fontWeight="600" 
-            noWrap 
+          <Typography
+            variant="body2"
+            fontWeight="600"
+            noWrap
             title={dish.ten}
             sx={{ color: POS_COLORS.text.primary, fontSize: '0.9rem', mb: 0.25 }}
           >
             {dish.ten}
           </Typography>
-          <Typography 
-            variant="body2" 
+          <Typography
+            variant="body2"
             fontWeight="700"
             sx={{ color: POS_COLORS.primary.main, fontSize: '0.95rem' }}
           >
@@ -455,9 +455,9 @@ const CartItem = ({ item, options = [], onUpdate, onRemove, onVoid }) => {
           borderColor: alpha('#000', 0.04),
         }}
       >
-        <Avatar 
-          src={item.hinhAnh || getDishImage(item)} 
-          variant="rounded" 
+        <Avatar
+          src={item.hinhAnh || getDishImage(item)}
+          variant="rounded"
           sx={{ width: 52, height: 52, borderRadius: '10px', boxShadow: `0 2px 8px ${alpha('#000', 0.08)}` }}
         >
           <LocalDining />
@@ -467,7 +467,7 @@ const CartItem = ({ item, options = [], onUpdate, onRemove, onVoid }) => {
           <Typography variant="body2" fontWeight="600" noWrap sx={{ color: POS_COLORS.text.primary, fontSize: '0.9rem' }}>
             {item.ten}
           </Typography>
-          
+
           {/* Show options */}
           {optionNames && (
             <Typography variant="caption" sx={{ color: POS_COLORS.text.muted, display: 'block', fontSize: '0.75rem' }}>
@@ -475,7 +475,7 @@ const CartItem = ({ item, options = [], onUpdate, onRemove, onVoid }) => {
               {optionNames}
             </Typography>
           )}
-          
+
           {/* Show note */}
           {item.note && (
             <Typography variant="caption" sx={{ color: POS_COLORS.warning, display: 'block', fontSize: '0.75rem', fontStyle: 'italic' }}>
@@ -483,7 +483,7 @@ const CartItem = ({ item, options = [], onUpdate, onRemove, onVoid }) => {
               {item.note}
             </Typography>
           )}
-          
+
           <Typography variant="caption" sx={{ color: POS_COLORS.primary.main, fontWeight: 600, fontSize: '0.85rem' }}>
             {getItemTotal().toLocaleString()}₫
           </Typography>
@@ -491,27 +491,27 @@ const CartItem = ({ item, options = [], onUpdate, onRemove, onVoid }) => {
 
         <Stack direction="column" spacing={0.5} alignItems="flex-end">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'white', borderRadius: '10px', p: 0.5, boxShadow: `0 1px 4px ${alpha('#000', 0.06)}` }}>
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => item.quantity > 1 ? onUpdate(item.cartKey, -1) : onRemove(item.cartKey)}
               sx={{ width: 26, height: 26, color: item.quantity === 1 ? POS_COLORS.danger : POS_COLORS.text.secondary }}
             >
               {item.quantity === 1 ? <DeleteOutline sx={{ fontSize: 16 }} /> : <Remove sx={{ fontSize: 16 }} />}
             </IconButton>
-            
+
             <Typography variant="body2" fontWeight="700" sx={{ minWidth: 24, textAlign: 'center', color: POS_COLORS.text.primary, fontSize: '0.9rem' }}>
               {item.quantity}
             </Typography>
-            
-            <IconButton 
-              size="small" 
+
+            <IconButton
+              size="small"
               onClick={() => onUpdate(item.cartKey, 1)}
               sx={{ width: 26, height: 26, bgcolor: POS_COLORS.primary.main, color: 'white', '&:hover': { bgcolor: POS_COLORS.primary.dark } }}
             >
               <Add sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
-          
+
           {/* Void button */}
           <Tooltip title="Hủy món (cần PIN quản lý)">
             <IconButton
@@ -559,7 +559,7 @@ const CategoryTab = ({ category, isSelected, onClick }) => (
         justifyContent: 'center',
         whiteSpace: 'nowrap',
         userSelect: 'none',
-        '&:hover': { 
+        '&:hover': {
           backgroundColor: isSelected ? '#0D47A1' : alpha('#1565C0', 0.08),
         },
       }}
@@ -946,7 +946,7 @@ const TablesView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  
+
   // Dialog states
   const [addItemDialog, setAddItemDialog] = useState({ open: false, dish: null });
   const [voidDialog, setVoidDialog] = useState({ open: false, item: null });
@@ -1016,7 +1016,7 @@ const TablesView = () => {
   // Confirm add from dialog
   const handleConfirmAdd = ({ dish, quantity, options: selectedOpts, note }) => {
     const cartKey = `${dish.id}-${selectedOpts.sort().join('-')}-${note}`;
-    
+
     setCart(prev => {
       const existing = prev.find(item => item.cartKey === cartKey);
       if (existing) {
@@ -1115,7 +1115,7 @@ const TablesView = () => {
   return (
     <PosLayout>
       <Box sx={{ height: 'calc(100vh - 64px)', bgcolor: POS_COLORS.background.main, display: 'flex', overflow: 'hidden' }}>
-        
+
         {/* ========== LEFT PANEL: TABLES ========== */}
         <Box sx={{ width: 340, minWidth: 340, display: 'flex', flexDirection: 'column', bgcolor: 'white', borderRight: '1px solid', borderColor: alpha('#000', 0.06) }}>
           <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: alpha('#000', 0.06) }}>
@@ -1126,7 +1126,7 @@ const TablesView = () => {
               <Typography variant="h6" fontWeight="700" color={POS_COLORS.text.primary} sx={{ fontSize: '1.1rem' }}>Sơ đồ bàn</Typography>
             </Stack>
           </Box>
-          
+
           <Box sx={{ flex: 1, p: 1.5, overflowY: 'auto' }}>
             {tables.length === 0 ? (
               <Box sx={{ textAlign: 'center', mt: 4, opacity: 0.5 }}>
@@ -1141,7 +1141,7 @@ const TablesView = () => {
               </Box>
             )}
           </Box>
-          
+
           <Box sx={{ p: 1.5, borderTop: '1px solid', borderColor: alpha('#000', 0.06), bgcolor: POS_COLORS.background.subtle }}>
             <Grid container spacing={0.75}>
               {[
@@ -1170,7 +1170,7 @@ const TablesView = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><Search sx={{ color: POS_COLORS.text.muted }} /></InputAdornment> }}
-              sx={{ 
+              sx={{
                 mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '10px', bgcolor: POS_COLORS.background.subtle, height: 40,
@@ -1180,7 +1180,7 @@ const TablesView = () => {
                 },
               }}
             />
-            
+
             <Box sx={{ display: 'flex', gap: 0.75, overflowX: 'auto', pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>
               {categoryTabs.map(cat => (
                 <CategoryTab key={cat.id} category={cat} isSelected={selectedCategory === cat.id} onClick={() => setSelectedCategory(cat.id)} />
@@ -1196,7 +1196,7 @@ const TablesView = () => {
                 </Grid>
               ))}
             </Grid>
-            
+
             {filteredDishes.length === 0 && (
               <Box sx={{ textAlign: 'center', mt: 8, opacity: 0.5 }}>
                 <Restaurant sx={{ fontSize: 56, mb: 2, color: POS_COLORS.text.muted }} />
@@ -1235,33 +1235,33 @@ const TablesView = () => {
 
             <Box sx={{ flex: 1, overflowY: 'auto', p: 1.25 }}>
               {/* Sent items from kitchen (orders already created and sent) */}
-            {sentItems.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>Đã gửi đến bếp</Typography>
-                <Stack spacing={1}>
-                  {sentItems.map(si => (
-                    <Paper key={si.orderItemId} sx={{ p: 1, borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid', borderColor: alpha('#000', 0.04) }}>
-                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', minWidth: 0 }}>
-                        <Avatar src={si.monAn?.hinhAnh || getDishImage(si)} variant="rounded" sx={{ width: 44, height: 44, borderRadius: '8px' }} />
-                        <Box sx={{ minWidth: 0 }}>
-                          <Typography variant="body2" fontWeight={700} noWrap sx={{ color: POS_COLORS.text.primary }}>{si.ten}</Typography>
-                          <Typography variant="caption" sx={{ color: POS_COLORS.text.muted }}>{si.quantity} × {Number(si.giaBan || 0).toLocaleString()}₫</Typography>
+              {sentItems.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>Đã gửi đến bếp</Typography>
+                  <Stack spacing={1}>
+                    {sentItems.map(si => (
+                      <Paper key={si.orderItemId} sx={{ p: 1, borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid', borderColor: alpha('#000', 0.04) }}>
+                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', minWidth: 0 }}>
+                          <Avatar src={si.monAn?.hinhAnh || getDishImage(si)} variant="rounded" sx={{ width: 44, height: 44, borderRadius: '8px' }} />
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography variant="body2" fontWeight={700} noWrap sx={{ color: POS_COLORS.text.primary }}>{si.ten}</Typography>
+                            <Typography variant="caption" sx={{ color: POS_COLORS.text.muted }}>{si.quantity} × {Number(si.giaBan || 0).toLocaleString()}₫</Typography>
+                          </Box>
                         </Box>
-                      </Box>
 
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <Chip label={si.trangThai || 'CHOCHEBIEN'} size="small" sx={{ fontWeight: 700 }} />
-                        <IconButton size="small" onClick={() => handleOpenVoidDialog(si)} sx={{ color: POS_COLORS.danger }}>
-                          <Cancel />
-                        </IconButton>
-                      </Stack>
-                    </Paper>
-                  ))}
-                </Stack>
-              </Box>
-            )}
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Chip label={si.trangThai || 'CHOCHEBIEN'} size="small" sx={{ fontWeight: 700 }} />
+                          <IconButton size="small" onClick={() => handleOpenVoidDialog(si)} sx={{ color: POS_COLORS.danger }}>
+                            <Cancel />
+                          </IconButton>
+                        </Stack>
+                      </Paper>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
 
-            {cart.length === 0 ? (
+              {cart.length === 0 ? (
                 <Box sx={{ textAlign: 'center', mt: 5, opacity: 0.5 }}>
                   <Box sx={{ width: 64, height: 64, borderRadius: '50%', bgcolor: POS_COLORS.background.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 1.5 }}>
                     <Restaurant sx={{ fontSize: 28, color: POS_COLORS.text.muted }} />
@@ -1292,7 +1292,7 @@ const TablesView = () => {
                   {cartTotal.toLocaleString()}₫
                 </Typography>
               </Box>
-              
+
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   variant="contained"
@@ -1301,7 +1301,7 @@ const TablesView = () => {
                   endIcon={<KeyboardArrowRight />}
                   disabled={!selectedTable || cart.length === 0 || createOrder.isPending}
                   onClick={handleSendOrder}
-                  sx={{ 
+                  sx={{
                     height: 54,
                     borderRadius: '14px',
                     fontWeight: 700,

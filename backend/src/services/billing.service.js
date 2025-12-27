@@ -106,7 +106,7 @@ const computeTotals = (order, discount) => {
 
 const createFromOrder = async (orderId, payload, user = null) => {
   const discountAmount = Number(payload.discount || 0);
-  
+
   // If discount is applied, require manager approval
   let approver = null;
   if (discountAmount > 0) {
@@ -194,7 +194,7 @@ const deductStockForOrder = async (tx, orderId) => {
 
 const pay = async (invoiceId, payload, user) => {
   const { payments, usePoints = 0, khachHangId = null } = payload;
-  
+
   // QĐ-LOYALTY: Validate and apply points redemption before transaction
   let pointsDiscount = 0;
   if (usePoints > 0 && khachHangId) {
@@ -310,10 +310,10 @@ const pay = async (invoiceId, payload, user) => {
           userId: user?.id || null,
         }),
       },
-    }).catch(() => {});
+    }).catch(() => { });
 
     // QĐ-ALERT: Schedule low stock alert check after transaction
-    setImmediate(() => checkAndSendLowStockAlert().catch(() => {}));
+    setImmediate(() => checkAndSendLowStockAlert().catch(() => { }));
     await tx.donHang.update({
       where: { id: invoice.donHangId },
       data: { trangThai: 'CLOSED' },
@@ -321,24 +321,24 @@ const pay = async (invoiceId, payload, user) => {
     await tx.ban.update({
       where: { id: invoice.donHang.banId },
       data: { trangThai: TABLE_STATUS.TRONG },
-    }).catch(() => {});
+    }).catch(() => { });
 
-    return { 
-      message: 'Thanh toán thành công', 
-      invoiceId, 
-      changeDue, 
-      totalPaid, 
+    return {
+      message: 'Thanh toán thành công',
+      invoiceId,
+      changeDue,
+      totalPaid,
       pointsUsed: usePoints,
       pointsDiscount,
-      shiftId: shift?.id || null, 
+      shiftId: shift?.id || null,
       banId: invoice.donHang.banId,
       tongThanhToan: invoice.tongThanhToan,
       khachHangId,
     };
   });
 
-  await broadcastTables().catch(() => {});
-  
+  await broadcastTables().catch(() => { });
+
   // QĐ-LOYALTY: Earn points for customer after successful payment (outside transaction)
   if (khachHangId && result.tongThanhToan > 0) {
     try {
@@ -355,7 +355,7 @@ const pay = async (invoiceId, payload, user) => {
       console.error('Failed to add loyalty points:', e.message);
     }
   }
-  
+
   return result;
 };
 
@@ -474,13 +474,13 @@ const splitBillByItems = async (invoiceId, itemIds) => {
   return prisma.$transaction(async (tx) => {
     const invoice = await tx.hoaDon.findUnique({
       where: { id: invoiceId },
-      include: { 
-        donHang: { 
-          include: { 
+      include: {
+        donHang: {
+          include: {
             chiTiet: { include: { tuyChon: { include: { tuyChonMon: true } } } },
-            ban: true 
-          } 
-        } 
+            ban: true
+          }
+        }
       },
     });
     if (!invoice) throw Object.assign(new Error('Hóa đơn không tồn tại'), { status: 404 });
@@ -525,7 +525,7 @@ const splitBillByItems = async (invoiceId, itemIds) => {
         });
       }
       tongTienMoi += Number(item.donGia) * item.soLuong;
-      
+
       // Remove from original order
       await tx.chiTietDonHang.delete({ where: { id: item.id } });
     }
@@ -566,8 +566,8 @@ const splitBillByItems = async (invoiceId, itemIds) => {
       },
     });
 
-    return { 
-      message: 'Tách hóa đơn thành công', 
+    return {
+      message: 'Tách hóa đơn thành công',
       newInvoice,
       originalInvoiceId: invoiceId,
     };
@@ -596,7 +596,7 @@ const splitBillByPeople = async (invoiceId, numPeople) => {
     const remainder = totalAmount - (amountPerPerson * numPeople);
 
     const newInvoices = [];
-    
+
     // Create (numPeople - 1) new invoices with equal amounts
     for (let i = 0; i < numPeople - 1; i++) {
       // Create placeholder order for split invoice
@@ -707,7 +707,7 @@ const mergeInvoices = async (invoiceIds, user) => {
       // delete order if empty
       const remaining = await tx.chiTietDonHang.count({ where: { donHangId: inv.donHangId } });
       if (remaining === 0) {
-        await tx.donHang.delete({ where: { id: inv.donHangId } }).catch(() => {});
+        await tx.donHang.delete({ where: { id: inv.donHangId } }).catch(() => { });
       }
     }
 
@@ -807,7 +807,7 @@ const getInvoicePrintData = async (invoiceId) => {
   // Format payments
   const payments = invoice.thanhToan?.map((p) => {
     let meta = {};
-    try { meta = JSON.parse(p.ghiChu || '{}'); } catch (_) {}
+    try { meta = JSON.parse(p.ghiChu || '{}'); } catch (_) { }
     return {
       method: p.phuongThuc,
       amount: Number(p.soTien),
@@ -979,13 +979,13 @@ const getDailySalesReport = async (date) => {
   };
 };
 
-module.exports = { 
+module.exports = {
   listOpen,
   listPendingOrders,
-  createFromOrder, 
-  pay, 
-  openShift, 
-  closeShift, 
+  createFromOrder,
+  pay,
+  openShift,
+  closeShift,
   getCurrentShift,
   splitBillByItems,
   splitBillByPeople,
