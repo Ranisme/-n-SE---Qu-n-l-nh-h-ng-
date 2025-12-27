@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { listOrders, createOrder, sendOrder, voidOrderItem } from '../api/orders.api';
+import { listOrders, createOrder, sendOrder, voidOrderItem, createVoidRequest } from '../api/orders.api';
 
 // Hook to subscribe to POS notifications (SSE) when items are done from kitchen
 export const usePosNotifications = (onItemDone) => {
@@ -112,3 +112,16 @@ export const useVoidOrderItem = () => {
     onSuccess: () => qc.invalidateQueries(['orders']),
   });
 };
+
+export const useCreateVoidRequest = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ orderId, orderItemId, reason }) =>
+      createVoidRequest({ orderId, orderItemId, reason }),
+    onSuccess: () => {
+      qc.invalidateQueries(['orders']);
+      qc.invalidateQueries(['voidRequests']);
+    },
+  });
+};
+

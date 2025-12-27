@@ -57,6 +57,7 @@ import {
   AdminPanelSettings,
   Security,
   History,
+  Cancel,
 } from '@mui/icons-material';
 import { useThemeMode } from '../theme/ThemeContext';
 import { useAuth } from '../auth/authContext';
@@ -64,6 +65,7 @@ import { PERMISSIONS } from '../utils/permissions';
 import { usePermissions } from '../hooks/usePermissions';
 import PermissionGate from '../components/PermissionGate';
 import { useInventoryAlerts } from '../hooks/useInventory';
+import { useVoidRequestsCount } from '../hooks/useVoidRequests';
 
 const DRAWER_WIDTH = 280;
 const DRAWER_WIDTH_COLLAPSED = 80;
@@ -89,6 +91,7 @@ const menuItems = [
   {
     title: 'Quản lý',
     items: [
+      { title: 'Yêu cầu hủy món', icon: <Cancel />, path: '/manager/void-requests', permission: PERMISSIONS.ORDER_VOID_APPROVE },
       {
         title: 'Thực đơn',
         icon: <LocalDining />,
@@ -215,6 +218,10 @@ const NavItem = ({ item, collapsed, depth = 0 }) => {
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === location.pathname || (hasChildren && item.children.some((child) => child.path === location.pathname));
 
+  // Get void requests count for badge
+  const { data: voidRequestsCount = 0 } = useVoidRequestsCount();
+  const showBadge = item.path === '/manager/void-requests' && voidRequestsCount > 0;
+
   // Check permissions
   if (item.adminOnly && !isAdmin()) {
     return null;
@@ -274,7 +281,13 @@ const NavItem = ({ item, collapsed, depth = 0 }) => {
                   color: isActive ? 'primary.main' : 'text.secondary',
                 }}
               >
-                {item.icon}
+                {showBadge ? (
+                  <Badge badgeContent={voidRequestsCount} color="error" max={99}>
+                    {item.icon}
+                  </Badge>
+                ) : (
+                  item.icon
+                )}
               </ListItemIcon>
             )}
             {!collapsed && (
