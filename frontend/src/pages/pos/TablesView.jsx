@@ -928,8 +928,16 @@ const TablesView = () => {
   const [addItemDialog, setAddItemDialog] = useState({ open: false, dish: null });
   const [voidDialog, setVoidDialog] = useState({ open: false, item: null });
 
-  // Orders for selected table (sent orders)
-  const { data: sentOrders = [], isLoading: sentOrdersLoading, refetch: refetchOrders } = useOrders(selectedTable ? { tableId: selectedTable.id } : {}, { enabled: !!selectedTable });
+  // Orders for selected table (sent orders) - exclude paid/closed orders
+  const { data: sentOrders = [], isLoading: sentOrdersLoading, refetch: refetchOrders } = useOrders(
+    selectedTable ? { tableId: selectedTable.id } : {},
+    { enabled: !!selectedTable }
+  );
+
+  // Filter out paid/closed orders
+  const activeOrders = sentOrders.filter(order =>
+    order.trangThai !== 'CLOSED' && order.trangThai !== 'CANCELLED'
+  );
 
   // Auto-refresh orders when KDS updates (includes void approvals)
   useEffect(() => {
@@ -938,16 +946,18 @@ const TablesView = () => {
     }
   }, [sentOrders?.length, selectedTable, refetchOrders]);
 
-  // Flatten sent items for current table
-  const sentItems = (sentOrders || []).flatMap(o => (o.chiTiet || []).map(i => ({
-    ...i,
-    ten: i.monAn?.ten,
-    quantity: i.soLuong,
-    giaBan: i.donGia,
-    note: i.ghiChu,
-    orderId: o.id,
-    orderItemId: i.id,
-  })));
+  // Flatten sent items for current table (only from active orders)
+  const sentItems = (activeOrders || []).flatMap(o => (o.chiTiet || [])
+    .filter(i => i.trangThai !== 'DAHUY') // Also exclude voided items
+    .map(i => ({
+      ...i,
+      ten: i.monAn?.ten,
+      quantity: i.soLuong,
+      giaBan: i.donGia,
+      note: i.ghiChu,
+      orderId: o.id,
+      orderItemId: i.id,
+    })));
 
   // Derived Data
   const tables = tablesData?.items || [];
