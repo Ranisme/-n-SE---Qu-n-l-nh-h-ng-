@@ -929,7 +929,14 @@ const TablesView = () => {
   const [voidDialog, setVoidDialog] = useState({ open: false, item: null });
 
   // Orders for selected table (sent orders)
-  const { data: sentOrders = [], isLoading: sentOrdersLoading } = useOrders(selectedTable ? { tableId: selectedTable.id } : {}, { enabled: !!selectedTable });
+  const { data: sentOrders = [], isLoading: sentOrdersLoading, refetch: refetchOrders } = useOrders(selectedTable ? { tableId: selectedTable.id } : {}, { enabled: !!selectedTable });
+
+  // Auto-refresh orders when KDS updates (includes void approvals)
+  useEffect(() => {
+    if (selectedTable) {
+      refetchOrders();
+    }
+  }, [sentOrders?.length, selectedTable, refetchOrders]);
 
   // Flatten sent items for current table
   const sentItems = (sentOrders || []).flatMap(o => (o.chiTiet || []).map(i => ({
