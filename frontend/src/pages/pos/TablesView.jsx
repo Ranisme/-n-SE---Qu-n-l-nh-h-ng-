@@ -1106,6 +1106,11 @@ const TablesView = () => {
     const uniqueCategories = categories.filter((cat, index, self) =>
       index === self.findIndex(c => c.id === cat.id)
     );
+
+    // Debug logging
+    console.log('🔍 Categories from API:', categories.length, categories);
+    console.log('✅ Unique categories:', uniqueCategories.length, uniqueCategories);
+
     return [
       { id: 'all', label: 'Tất cả' },
       ...uniqueCategories.map(cat => ({ id: cat.id, label: cat.ten }))
