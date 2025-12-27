@@ -362,35 +362,18 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
 
           {/* Status Buttons or Voided Message */}
           {isVoided ? (
-            <Stack spacing={1}>
-              <Typography
-                variant="body2"
-                sx={{
-                  textAlign: 'center',
-                  color: COLORS.danger,
-                  fontWeight: 700,
-                  fontStyle: 'italic',
-                }}
-              >
-                Món này đã được hủy bởi quản lý
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => onStatusChange(item.id, 'DAPHUCVU')}
-                sx={{
-                  borderColor: COLORS.danger,
-                  color: COLORS.danger,
-                  fontWeight: 700,
-                  '&:hover': {
-                    borderColor: COLORS.danger,
-                    bgcolor: alpha(COLORS.danger, 0.1),
-                  },
-                }}
-              >
-                Xóa khỏi màn hình
-              </Button>
-            </Stack>
+            <Typography
+              variant="body2"
+              sx={{
+                textAlign: 'center',
+                color: COLORS.danger,
+                fontWeight: 700,
+                fontStyle: 'italic',
+                py: 1,
+              }}
+            >
+              Món này đã được hủy bởi quản lý - Không cần chế biến
+            </Typography>
           ) : (
             <Stack direction="row" spacing={1}>
               {Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'CHOXULY').map(([key, config]) => {
