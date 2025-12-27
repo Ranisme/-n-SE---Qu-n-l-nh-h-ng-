@@ -223,7 +223,7 @@ const Dishes = () => {
       field: 'danhMuc',
       headerName: 'Danh mục',
       width: 150,
-      valueGetter: (params) => params.row.danhMuc?.ten || '—',
+      valueGetter: (value) => value?.ten || '—',
     },
     {
       field: 'giaBan',
