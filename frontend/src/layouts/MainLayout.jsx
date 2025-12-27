@@ -58,6 +58,7 @@ import {
   Security,
   History,
   Cancel,
+  AccessTime,
 } from '@mui/icons-material';
 import { useThemeMode } from '../theme/ThemeContext';
 import { useAuth } from '../auth/authContext';
@@ -85,6 +86,7 @@ const menuItems = [
       { title: 'Sơ đồ bàn', icon: <TableBar />, path: '/pos/tables', permission: PERMISSIONS.TABLE_VIEW },
       { title: 'Đặt bàn', icon: <EventSeat />, path: '/reservations', permission: PERMISSIONS.RESERVATION_MANAGE },
       { title: 'Thanh toán', icon: <Receipt />, path: '/billing', permission: PERMISSIONS.PAYMENT_EXECUTE },
+      { title: 'Quản lý ca', icon: <AccessTime />, path: '/billing/shifts', permission: PERMISSIONS.SHIFT_MANAGE },
       { title: 'Chấm công', icon: <History />, path: '/hr/attendance' },
     ],
   },

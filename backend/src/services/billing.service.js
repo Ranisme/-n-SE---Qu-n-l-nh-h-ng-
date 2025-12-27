@@ -418,6 +418,18 @@ const closeShift = async (user, shiftId, payload) => {
   const actualCash = Number(payload.actualCash);
   const variance = actualCash - expectedCash;
 
+  // Create Z-Report for audit trail
+  await prisma.zReport.create({
+    data: {
+      shiftId: shift.id,
+      closedAt: endTime,
+      summary: summary, // JSON object with payment breakdown by method
+      expectedCash,
+      actualCash,
+      variance,
+    },
+  });
+
   const closed = await prisma.caThuNgan.update({
     where: { id: shiftId },
     data: { thoiGianDong: endTime, tienMatThuc: actualCash, trangThai: 'DADONG' },
