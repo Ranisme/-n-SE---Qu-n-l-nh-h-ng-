@@ -1101,20 +1101,16 @@ const TablesView = () => {
     });
   };
 
-  // Category tabs with deduplication
-  const uniqueCategories = useMemo(() => {
-    const seen = new Set();
-    return categories.filter(cat => {
-      if (seen.has(cat.id)) return false;
-      seen.add(cat.id);
-      return true;
-    });
+  const categoryTabs = useMemo(() => {
+    // Filter unique categories by id to prevent duplicates
+    const uniqueCategories = categories.filter((cat, index, self) =>
+      index === self.findIndex(c => c.id === cat.id)
+    );
+    return [
+      { id: 'all', label: 'Tất cả' },
+      ...uniqueCategories.map(cat => ({ id: cat.id, label: cat.ten }))
+    ];
   }, [categories]);
-
-  const categoryTabs = [
-    { id: 'all', label: 'Tất cả' },
-    ...uniqueCategories.map(cat => ({ id: cat.id, label: cat.ten }))
-  ];
 
   return (
     <PosLayout>
