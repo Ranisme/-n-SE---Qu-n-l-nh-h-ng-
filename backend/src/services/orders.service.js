@@ -29,7 +29,7 @@ const assertTableAvailable = async (ban, datBanId = null) => {
   if ([TABLE_STATUS.CHOTHANHTOAN, TABLE_STATUS.CANDON].includes(ban.trangThai)) {
     throw Object.assign(new Error('Bàn đang chờ thanh toán hoặc dọn'), { status: 400 });
   }
-
+  
   // QĐ-BOOK: If table is reserved (DADAT), only allow if opening for the reservation
   if (ban.trangThai === TABLE_STATUS.DADAT) {
     if (!datBanId) {
@@ -209,9 +209,9 @@ const create = async (user, payload) => {
     where: { id: created.id },
     data: { trangThai: 'SENT' },
   });
-
-  await broadcastTables().catch(() => { });
-  await broadcastSnapshot().catch(() => { }); // Notify KDS
+  
+  await broadcastTables().catch(() => {});
+  await broadcastSnapshot().catch(() => {}); // Notify KDS
   return { ...created, trangThai: 'SENT' };
 };
 
@@ -288,44 +288,227 @@ const sendToKitchen = async (id) => {
     data: { trangThai: 'SENT' },
   }).catch(() => null);
   if (!updated) throw Object.assign(new Error('Đơn hàng không tồn tại'), { status: 404 });
-  await broadcastSnapshot().catch(() => { });
+  await broadcastSnapshot().catch(() => {});
   return { message: 'Đã gửi bếp', id };
 };
 
-const voidItem = async (orderId, payload, user) => {
-  const { orderItemId, reason, managerPin, managerUsername } = payload;
-  const approver = await verifyManagerPin(managerPin, managerUsername);
+// ==================== VOID REQUEST WORKFLOW ====================
+
+// Waiter creates void request (no manager PIN needed)
+const createVoidRequest = async (orderId, payload, user) => {
+  const { orderItemId, lyDo } = payload;
 
   const result = await prisma.$transaction(async (tx) => {
+    // Verify order item exists and belongs to this order
     const item = await tx.chiTietDonHang.findUnique({
       where: { id: orderItemId },
+      include: { donHang: true, monAn: true },
     });
-    if (!item || item.donHangId !== orderId) throw Object.assign(new Error('Món không tồn tại'), { status: 404 });
-    if (![ORDER_STATUS.CHOCHEBIEN, ORDER_STATUS.DANGLAM].includes(item.trangThai)) {
-      throw Object.assign(new Error('Không thể hủy món đã hoàn thành'), { status: 400 });
+
+    if (!item || item.donHangId !== orderId) {
+      throw Object.assign(new Error('Món không tồn tại'), { status: 404 });
     }
-    await tx.chiTietDonHang.update({
-      where: { id: orderItemId },
-      data: { trangThai: ORDER_STATUS.DAHUY, ghiChu: reason || item.ghiChu },
+
+    // Check if item can be voided
+    if (![ORDER_STATUS.CHOCHEBIEN, ORDER_STATUS.DANGLAM].includes(item.trangThai)) {
+      throw Object.assign(new Error('Không thể hủy món đã hoàn thành hoặc đã phục vụ'), { status: 400 });
+    }
+
+    // Check if there's already a pending request for this item
+    const existingRequest = await tx.yeuCauHuyMon.findFirst({
+      where: {
+        orderItemId,
+        trangThai: 'CHO_DUYET',
+      },
     });
+
+    if (existingRequest) {
+      throw Object.assign(new Error('Đã có yêu cầu hủy món đang chờ duyệt'), { status: 400 });
+    }
+
+    // Create void request
+    const voidRequest = await tx.yeuCauHuyMon.create({
+      data: {
+        donHangId: orderId,
+        orderItemId,
+        lyDo,
+        nguoiYeuCauId: user?.id || null,
+        trangThai: 'CHO_DUYET',
+      },
+      include: {
+        orderItem: {
+          include: { monAn: true },
+        },
+        nguoiYeuCau: true,
+        donHang: {
+          include: { ban: true },
+        },
+      },
+    });
+
+    // Log the request
     await tx.nhatKyHeThong.create({
       data: {
-        hanhDong: 'VOID_ITEM',
+        hanhDong: 'CREATE_VOID_REQUEST',
         thongTinBoSung: JSON.stringify({
           orderId,
           orderItemId,
-          reason,
+          lyDo,
           requestedBy: user?.id || null,
-          approvedBy: approver?.nhanVienId || null,
-          approvedUsername: approver?.username || null,
+          requestId: voidRequest.id,
         }),
       },
     });
-    return { message: 'Đã hủy món', orderItemId, approvedBy: approver?.nhanVienId || null };
+
+    return voidRequest;
   });
 
-  await broadcastSnapshot().catch(() => { });
   return result;
 };
 
-module.exports = { list, create, update, sendToKitchen, voidItem };
+// List all void requests (for managers)
+const listVoidRequests = async (query = {}) => {
+  const where = {};
+  
+  if (query.trangThai) {
+    where.trangThai = query.trangThai;
+  } else {
+    // Default: only show pending requests
+    where.trangThai = 'CHO_DUYET';
+  }
+
+  const requests = await prisma.yeuCauHuyMon.findMany({
+    where,
+    include: {
+      orderItem: {
+        include: { monAn: true },
+      },
+      donHang: {
+        include: { ban: true },
+      },
+      nguoiYeuCau: true,
+      nguoiDuyet: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return { items: requests };
+};
+
+// Manager approves void request
+const approveVoidRequest = async (requestId, user) => {
+  const result = await prisma.$transaction(async (tx) => {
+    // Get void request
+    const voidRequest = await tx.yeuCauHuyMon.findUnique({
+      where: { id: requestId },
+      include: {
+        orderItem: true,
+        donHang: true,
+      },
+    });
+
+    if (!voidRequest) {
+      throw Object.assign(new Error('Yêu cầu hủy món không tồn tại'), { status: 404 });
+    }
+
+    if (voidRequest.trangThai !== 'CHO_DUYET') {
+      throw Object.assign(new Error('Yêu cầu đã được xử lý'), { status: 400 });
+    }
+
+    // Update void request status
+    await tx.yeuCauHuyMon.update({
+      where: { id: requestId },
+      data: {
+        trangThai: 'DA_DUYET',
+        nguoiDuyetId: user?.id || null,
+        updatedAt: new Date(),
+      },
+    });
+
+    // Void the order item
+    await tx.chiTietDonHang.update({
+      where: { id: voidRequest.orderItemId },
+      data: {
+        trangThai: ORDER_STATUS.DAHUY,
+        ghiChu: `Đã hủy: ${voidRequest.lyDo}`,
+      },
+    });
+
+    // Log the approval
+    await tx.nhatKyHeThong.create({
+      data: {
+        hanhDong: 'APPROVE_VOID_REQUEST',
+        thongTinBoSung: JSON.stringify({
+          requestId,
+          orderItemId: voidRequest.orderItemId,
+          approvedBy: user?.id || null,
+        }),
+      },
+    });
+
+    return { message: 'Đã duyệt yêu cầu hủy món', requestId };
+  });
+
+  // Notify KDS about voided item
+  await broadcastSnapshot().catch(() => {});
+
+  return result;
+};
+
+// Manager rejects void request
+const rejectVoidRequest = async (requestId, payload, user) => {
+  const { lyDoTuChoi } = payload;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const voidRequest = await tx.yeuCauHuyMon.findUnique({
+      where: { id: requestId },
+    });
+
+    if (!voidRequest) {
+      throw Object.assign(new Error('Yêu cầu hủy món không tồn tại'), { status: 404 });
+    }
+
+    if (voidRequest.trangThai !== 'CHO_DUYET') {
+      throw Object.assign(new Error('Yêu cầu đã được xử lý'), { status: 400 });
+    }
+
+    // Update void request status
+    await tx.yeuCauHuyMon.update({
+      where: { id: requestId },
+      data: {
+        trangThai: 'TU_CHOI',
+        nguoiDuyetId: user?.id || null,
+        lyDo: lyDoTuChoi ? `${voidRequest.lyDo} | Từ chối: ${lyDoTuChoi}` : voidRequest.lyDo,
+        updatedAt: new Date(),
+      },
+    });
+
+    // Log the rejection
+    await tx.nhatKyHeThong.create({
+      data: {
+        hanhDong: 'REJECT_VOID_REQUEST',
+        thongTinBoSung: JSON.stringify({
+          requestId,
+          lyDoTuChoi,
+          rejectedBy: user?.id || null,
+        }),
+      },
+    });
+
+    return { message: 'Đã từ chối yêu cầu hủy món', requestId };
+  });
+
+  return result;
+};
+
+module.exports = { 
+  list, 
+  create, 
+  update, 
+  sendToKitchen, 
+  createVoidRequest,
+  listVoidRequests,
+  approveVoidRequest,
+  rejectVoidRequest,
+};
+

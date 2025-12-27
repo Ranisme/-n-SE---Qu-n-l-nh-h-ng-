@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const authRoutes = require('./auth.routes');
 const ordersRoutes = require('./orders.routes');
-const voidRequestsRoutes = require('./voidRequests.routes');
 const tablesRoutes = require('./tables.routes');
 const kdsRoutes = require('./kds.routes');
 const billingRoutes = require('./billing.routes');
@@ -16,7 +15,6 @@ const adminRoutes = require('./admin.routes');
 
 router.use('/auth', authRoutes);
 router.use('/orders', ordersRoutes);
-router.use('/void-requests', voidRequestsRoutes);
 router.use('/tables', tablesRoutes);
 router.use('/kds', kdsRoutes);
 router.use('/billing', billingRoutes);

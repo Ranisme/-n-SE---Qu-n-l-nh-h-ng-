@@ -700,10 +700,6 @@ const mergeInvoices = async (invoiceIds, user) => {
           });
         }
         tongTien += Number(item.donGia) * item.soLuong;
-
-        // Delete void requests first to avoid foreign key constraint
-        await tx.yeuCauHuyMon.deleteMany({ where: { chiTietDonHangId: item.id } });
-
         await tx.chiTietDonHang.delete({ where: { id: item.id } });
       }
       // delete invoice

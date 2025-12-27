@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Grid,
@@ -60,7 +60,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PosLayout from '../../layouts/PosLayout';
 import { useTables } from '../../hooks/useTables';
 import { useMenuDishes, useMenuCategories, useMenuOptions } from '../../hooks/useMenu';
-import { useCreateOrder, useVoidOrderItem, usePosNotifications, useOrders, useCreateVoidRequest } from '../../hooks/useOrders';
+import { useCreateOrder, useVoidOrderItem, usePosNotifications, useOrders } from '../../hooks/useOrders';
 
 // ============================================
 // 🎨 PREMIUM POS COLOR SYSTEM
@@ -97,7 +97,6 @@ const POS_COLORS = {
   },
   danger: '#EF4444',
   success: '#22C55E',
-  warning: '#F59E0B',
 };
 
 // ============================================
@@ -764,25 +763,33 @@ const AddItemDialog = ({ open, dish, options, onClose, onConfirm }) => {
 };
 
 // ============================================
-// 🔐 VOID REQUEST DIALOG - Waiter Request (No PIN)
+// 🔐 PIN VOID DIALOG - Manager Approval
 // ============================================
-const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
+const VoidPinDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
+  const [pin, setPin] = useState('');
+  const [username, setUsername] = useState('');
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
 
   React.useEffect(() => {
     if (open) {
+      setPin('');
+      setUsername('');
       setReason('');
       setError('');
     }
   }, [open]);
 
   const handleConfirm = () => {
-    if (!reason || reason.trim().length < 5) {
-      setError('Vui lòng nhập lý do hủy món (tối thiểu 5 ký tự)');
+    if (!pin) {
+      setError('Vui lòng nhập mã PIN');
       return;
     }
-    onConfirm({ reason: reason.trim() });
+    if (!reason) {
+      setError('Vui lòng nhập lý do hủy');
+      return;
+    }
+    onConfirm({ pin, username, reason });
   };
 
   if (!item) return null;
@@ -799,7 +806,7 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
     >
       <DialogTitle
         sx={{
-          background: `linear-gradient(135deg, ${POS_COLORS.warning} 0%, #F59E0B 100%)`,
+          background: `linear-gradient(135deg, ${POS_COLORS.danger} 0%, #DC2626 100%)`,
           color: 'white',
           display: 'flex',
           alignItems: 'center',
@@ -808,7 +815,7 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
       >
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <Warning />
-          <Typography variant="h6" fontWeight="700">Yêu cầu hủy món</Typography>
+          <Typography variant="h6" fontWeight="700">Xác nhận hủy món</Typography>
         </Stack>
         <IconButton onClick={onClose} sx={{ color: 'white' }}>
           <Close />
@@ -822,10 +829,10 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
           sx={{
             p: 2,
             mb: 3,
-            bgcolor: alpha(POS_COLORS.warning, 0.05),
+            bgcolor: alpha(POS_COLORS.danger, 0.05),
             borderRadius: '12px',
             border: '1px solid',
-            borderColor: alpha(POS_COLORS.warning, 0.2),
+            borderColor: alpha(POS_COLORS.danger, 0.2),
           }}
         >
           <Typography variant="subtitle1" fontWeight="600">{item.ten}</Typography>
@@ -839,10 +846,6 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
           )}
         </Paper>
 
-        <Alert severity="info" sx={{ mb: 2, borderRadius: '10px' }}>
-          Yêu cầu sẽ được gửi đến quản lý để xét duyệt
-        </Alert>
-
         {error && (
           <Alert severity="error" sx={{ mb: 2, borderRadius: '10px' }}>
             {error}
@@ -852,23 +855,44 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
         {/* Reason */}
         <TextField
           fullWidth
-          label="Lý do hủy món *"
-          placeholder="VD: Khách đổi ý, hết nguyên liệu, món bị lỗi..."
+          label="Lý do hủy món"
+          placeholder="VD: Khách đổi ý, hết nguyên liệu..."
           value={reason}
           onChange={(e) => { setReason(e.target.value); setError(''); }}
-          multiline
-          rows={3}
-          autoFocus
+          sx={{ mb: 2 }}
+        />
+
+        {/* Username (optional) */}
+        <TextField
+          fullWidth
+          label="Tên đăng nhập quản lý (không bắt buộc)"
+          placeholder="admin"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+
+        {/* PIN */}
+        <TextField
+          fullWidth
+          label="Mã PIN quản lý"
+          type="password"
+          placeholder="••••••"
+          value={pin}
+          onChange={(e) => { setPin(e.target.value); setError(''); }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Key sx={{ color: POS_COLORS.text.muted }} />
+              </InputAdornment>
+            ),
+          }}
           sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: '12px',
             },
           }}
         />
-
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-          * Quản lý sẽ xem xét và phê duyệt yêu cầu của bạn
-        </Typography>
       </DialogContent>
 
       <DialogActions sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
@@ -877,13 +901,13 @@ const VoidRequestDialog = ({ open, item, onClose, onConfirm, isLoading }) => {
         </Button>
         <Button
           variant="contained"
-          color="warning"
+          color="error"
           onClick={handleConfirm}
           disabled={isLoading}
           startIcon={<Cancel />}
           sx={{ fontWeight: 600 }}
         >
-          {isLoading ? 'Đang gửi...' : 'Gửi yêu cầu'}
+          {isLoading ? 'Đang xử lý...' : 'Xác nhận hủy món'}
         </Button>
       </DialogActions>
     </Dialog>
@@ -901,7 +925,6 @@ const TablesView = () => {
   const { data: optionsData } = useMenuOptions();
   const createOrder = useCreateOrder();
   const voidOrderItem = useVoidOrderItem();
-  const createVoidRequestMutation = useCreateVoidRequest();
 
   // If tables API failed, show a helpful message instead of blank screen
   if (tablesError) {
@@ -928,36 +951,19 @@ const TablesView = () => {
   const [addItemDialog, setAddItemDialog] = useState({ open: false, dish: null });
   const [voidDialog, setVoidDialog] = useState({ open: false, item: null });
 
-  // Orders for selected table (sent orders) - exclude paid/closed orders
-  const { data: sentOrders = [], isLoading: sentOrdersLoading, refetch: refetchOrders } = useOrders(
-    selectedTable ? { tableId: selectedTable.id } : {},
-    { enabled: !!selectedTable }
-  );
+  // Orders for selected table (sent orders)
+  const { data: sentOrders = [], isLoading: sentOrdersLoading } = useOrders(selectedTable ? { tableId: selectedTable.id } : {}, { enabled: !!selectedTable });
 
-  // Filter out paid/closed orders
-  const activeOrders = sentOrders.filter(order =>
-    order.trangThai !== 'CLOSED' && order.trangThai !== 'CANCELLED'
-  );
-
-  // Auto-refresh orders when KDS updates (includes void approvals)
-  useEffect(() => {
-    if (selectedTable) {
-      refetchOrders();
-    }
-  }, [sentOrders?.length, selectedTable, refetchOrders]);
-
-  // Flatten sent items for current table (only from active orders)
-  const sentItems = (activeOrders || []).flatMap(o => (o.chiTiet || [])
-    .filter(i => i.trangThai !== 'DAHUY') // Also exclude voided items
-    .map(i => ({
-      ...i,
-      ten: i.monAn?.ten,
-      quantity: i.soLuong,
-      giaBan: i.donGia,
-      note: i.ghiChu,
-      orderId: o.id,
-      orderItemId: i.id,
-    })));
+  // Flatten sent items for current table
+  const sentItems = (sentOrders || []).flatMap(o => (o.chiTiet || []).map(i => ({
+    ...i,
+    ten: i.monAn?.ten,
+    quantity: i.soLuong,
+    giaBan: i.donGia,
+    note: i.ghiChu,
+    orderId: o.id,
+    orderItemId: i.id,
+  })));
 
   // Derived Data
   const tables = tablesData?.items || [];
@@ -1050,31 +1056,31 @@ const TablesView = () => {
     setVoidDialog({ open: true, item });
   };
 
-  // Confirm void request (waiter creates request, no PIN needed)
-  const handleConfirmVoid = async ({ reason }) => {
+  // Confirm void with PIN
+  const handleConfirmVoid = async ({ pin, username, reason }) => {
     const item = voidDialog.item;
     if (!item) return;
 
-    // For items already sent to kitchen (have orderItemId) - create void request
+    // For items already sent to kitchen (have orderItemId)
     if (item.orderItemId) {
       try {
-        await createVoidRequestMutation.mutateAsync({
+        await voidOrderItem.mutateAsync({
           orderId: item.orderId,
           orderItemId: item.orderItemId,
           reason,
+          managerPin: pin,
+          managerUsername: username || undefined,
         });
-        setSnackbar({ open: true, message: `✅ Đã gửi yêu cầu hủy món ${item.ten}, chờ quản lý duyệt`, severity: 'success' });
-        setVoidDialog({ open: false, item: null });
+        setSnackbar({ open: true, message: `✅ Đã hủy món ${item.ten} thành công`, severity: 'success' });
       } catch (error) {
-        setSnackbar({ open: true, message: `❌ ${error.response?.data?.message || error.message || 'Lỗi khi gửi yêu cầu'}`, severity: 'error' });
+        setSnackbar({ open: true, message: `❌ ${error.message || 'PIN không hợp lệ'}`, severity: 'error' });
         return;
       }
-    } else {
-      // For items not yet sent (still in cart) - just remove from cart
-      setCart(prev => prev.filter(i => i.cartKey !== item.cartKey));
-      setSnackbar({ open: true, message: `✅ Đã xóa ${item.ten} khỏi đơn tạm`, severity: 'success' });
-      setVoidDialog({ open: false, item: null });
     }
+
+    // Remove from cart
+    setCart(prev => prev.filter(i => i.cartKey !== item.cartKey));
+    setVoidDialog({ open: false, item: null });
   };
 
   const handleSendOrder = () => {
@@ -1101,21 +1107,10 @@ const TablesView = () => {
     });
   };
 
-  const categoryTabs = useMemo(() => {
-    // Filter unique categories by id to prevent duplicates
-    const uniqueCategories = categories.filter((cat, index, self) =>
-      index === self.findIndex(c => c.id === cat.id)
-    );
-
-    // Debug logging
-    console.log('🔍 Categories from API:', categories.length, categories);
-    console.log('✅ Unique categories:', uniqueCategories.length, uniqueCategories);
-
-    return [
-      { id: 'all', label: 'Tất cả' },
-      ...uniqueCategories.map(cat => ({ id: cat.id, label: cat.ten }))
-    ];
-  }, [categories]);
+  const categoryTabs = useMemo(() => [
+    { id: 'all', label: 'Tất cả' },
+    ...categories.map(cat => ({ id: cat.id, label: cat.ten }))
+  ], [categories]);
 
   return (
     <PosLayout>
@@ -1335,13 +1330,13 @@ const TablesView = () => {
         onConfirm={handleConfirmAdd}
       />
 
-      {/* VOID REQUEST DIALOG */}
-      <VoidRequestDialog
+      {/* VOID PIN DIALOG */}
+      <VoidPinDialog
         open={voidDialog.open}
         item={voidDialog.item}
         onClose={() => setVoidDialog({ open: false, item: null })}
         onConfirm={handleConfirmVoid}
-        isLoading={createVoidRequestMutation.isPending}
+        isLoading={voidOrderItem.isPending}
       />
 
       {/* Kitchen Notifications (SSE) */}
