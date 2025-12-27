@@ -1101,10 +1101,20 @@ const TablesView = () => {
     });
   };
 
-  const categoryTabs = useMemo(() => [
+  // Category tabs with deduplication
+  const uniqueCategories = useMemo(() => {
+    const seen = new Set();
+    return categories.filter(cat => {
+      if (seen.has(cat.id)) return false;
+      seen.add(cat.id);
+      return true;
+    });
+  }, [categories]);
+
+  const categoryTabs = [
     { id: 'all', label: 'Tất cả' },
-    ...categories.map(cat => ({ id: cat.id, label: cat.ten }))
-  ], [categories]);
+    ...uniqueCategories.map(cat => ({ id: cat.id, label: cat.ten }))
+  ];
 
   return (
     <PosLayout>
