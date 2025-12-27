@@ -69,35 +69,35 @@ import { useTables } from '../../hooks/useTables';
 // ==================== COLOR SYSTEM - Premium Pastel ====================
 const COLORS = {
   // Primary Palette - Soft Indigo
-  primary: '#6366F1',      
+  primary: '#6366F1',
   primaryLight: '#A5B4FC',
   primaryDark: '#4F46E5',
   primaryPastel: '#EEF2FF',     // Tím nhạt premium
-  
+
   // Secondary Palette - Mint Green
-  secondary: '#10B981',    
+  secondary: '#10B981',
   secondaryLight: '#6EE7B7',
   secondaryPastel: '#ECFDF5',   // Xanh mint premium
-  
+
   // Accent Colors
-  warning: '#F59E0B',      
+  warning: '#F59E0B',
   warningLight: '#FCD34D',
   warningPastel: '#FEF3C7',     // Vàng ấm premium
-  
-  danger: '#EF4444',       
+
+  danger: '#EF4444',
   dangerLight: '#FCA5A5',
   dangerPastel: '#FEF2F2',      // Rose nhạt premium
-  
-  info: '#3B82F6',         
+
+  info: '#3B82F6',
   infoLight: '#93C5FD',
   infoPastel: '#EFF6FF',        // Blue nhạt premium
-  
+
   // Premium Gradients
   gradientPrimary: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   gradientSuccess: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
   gradientWarning: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   gradientInfo: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-  
+
   // Table Status Colors (Pastel Soft)
   tableEmpty: '#D1FAE5',       // Mint pastel - Trống
   tableEmptyGlow: 'rgba(16, 185, 129, 0.15)',
@@ -107,27 +107,27 @@ const COLORS = {
   tableWaitingGlow: 'rgba(245, 158, 11, 0.15)',
   tableOccupied: '#FECDD3',    // Rose pastel - Có khách
   tableOccupiedGlow: 'rgba(239, 68, 68, 0.15)',
-  
+
   // Background - Soft & Clean
   background: '#F8FAFC',
   backgroundGradient: 'linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)',
   cardBg: '#FFFFFF',
   cardBgHover: '#FAFBFF',
-  
+
   // Glass Effect
   glass: 'rgba(255, 255, 255, 0.7)',
   glassBorder: 'rgba(255, 255, 255, 0.3)',
-  
+
   // Text
   textPrimary: '#1E293B',
   textSecondary: '#64748B',
   textMuted: '#94A3B8',
-  
+
   // Border - Softer
   border: '#E2E8F0',
   borderLight: '#F1F5F9',
   borderFocus: '#A5B4FC',
-  
+
   // Shadows - Apple style soft ambient
   shadowSm: '0 2px 8px rgba(0, 0, 0, 0.04)',
   shadowMd: '0 4px 12px rgba(0, 0, 0, 0.05)',
@@ -141,30 +141,30 @@ const COLORS = {
 
 // ==================== STATUS CONFIG - Enhanced with Premium Badges ====================
 const STATUS_CONFIG = {
-  CHODEN: { 
-    label: 'Chờ đến', 
-    color: COLORS.warning, 
+  CHODEN: {
+    label: 'Chờ đến',
+    color: COLORS.warning,
     bgColor: COLORS.warningPastel,
     gradient: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
     icon: <ScheduleIcon fontSize="small" />
   },
-  DANHANBAN: { 
-    label: 'Đã nhận bàn', 
-    color: COLORS.info, 
+  DANHANBAN: {
+    label: 'Đã nhận bàn',
+    color: COLORS.info,
     bgColor: COLORS.infoPastel,
     gradient: 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)',
     icon: <CheckIcon fontSize="small" />
   },
-  HUY: { 
-    label: 'Đã hủy', 
-    color: COLORS.danger, 
+  HUY: {
+    label: 'Đã hủy',
+    color: COLORS.danger,
     bgColor: COLORS.dangerPastel,
     gradient: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
     icon: <CloseIcon fontSize="small" />
   },
-  KHONGDEN: { 
-    label: 'Không đến', 
-    color: COLORS.textMuted, 
+  KHONGDEN: {
+    label: 'Không đến',
+    color: COLORS.textMuted,
     bgColor: '#F1F5F9',
     gradient: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
     icon: <WarningIcon fontSize="small" />
@@ -185,43 +185,43 @@ const BADGE_TYPES = {
 const detectBadges = (ghiChu = '') => {
   const badges = [];
   const note = ghiChu.toLowerCase();
-  
+
   if (note.includes('vip') || note.includes('quan trọng')) badges.push('VIP');
   if (note.includes('sinh nhật') || note.includes('birthday')) badges.push('BIRTHDAY');
   if (note.includes('kỷ niệm') || note.includes('anniversary') || note.includes('ngày cưới')) badges.push('ANNIVERSARY');
   if (note.includes('dị ứng') || note.includes('allergy')) badges.push('ALLERGY');
-  
+
   return badges;
 };
 
 const TABLE_STATUS_CONFIG = {
-  TRONG: { 
-    label: 'Trống', 
-    color: COLORS.secondary, 
+  TRONG: {
+    label: 'Trống',
+    color: COLORS.secondary,
     bgColor: COLORS.tableEmpty,
     glowColor: COLORS.tableEmptyGlow,
     gradient: 'linear-gradient(145deg, #D1FAE5 0%, #A7F3D0 50%, #6EE7B7 100%)',
     icon: <CheckIcon fontSize="small" />
   },
-  DADAT: { 
-    label: 'Đã đặt', 
-    color: COLORS.info, 
+  DADAT: {
+    label: 'Đã đặt',
+    color: COLORS.info,
     bgColor: COLORS.tableReserved,
     glowColor: COLORS.tableReservedGlow,
     gradient: 'linear-gradient(145deg, #DBEAFE 0%, #BFDBFE 50%, #93C5FD 100%)',
     icon: <LockIcon fontSize="small" />
   },
-  CHOKHACH: { 
-    label: 'Chờ khách', 
-    color: COLORS.warning, 
+  CHOKHACH: {
+    label: 'Chờ khách',
+    color: COLORS.warning,
     bgColor: COLORS.tableWaiting,
     glowColor: COLORS.tableWaitingGlow,
     gradient: 'linear-gradient(145deg, #FEF3C7 0%, #FDE68A 50%, #FCD34D 100%)',
     icon: <TimerIcon fontSize="small" />
   },
-  COKHACH: { 
-    label: 'Có khách', 
-    color: COLORS.danger, 
+  COKHACH: {
+    label: 'Có khách',
+    color: COLORS.danger,
     bgColor: COLORS.tableOccupied,
     glowColor: COLORS.tableOccupiedGlow,
     gradient: 'linear-gradient(145deg, #FECDD3 0%, #FDA4AF 50%, #FB7185 100%)',
@@ -240,9 +240,9 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0, scale: 0.95 },
-  visible: { 
-    y: 0, 
-    opacity: 1, 
+  visible: {
+    y: 0,
+    opacity: 1,
     scale: 1,
     transition: { type: 'spring', stiffness: 300, damping: 24 }
   }
@@ -250,7 +250,7 @@ const itemVariants = {
 
 const tableHoverVariants = {
   initial: { scale: 1, y: 0 },
-  hover: { 
+  hover: {
     scale: 1.08,
     y: -4,
     boxShadow: '0 16px 32px rgba(0,0,0,0.12)',
@@ -261,8 +261,8 @@ const tableHoverVariants = {
 
 const cardHoverVariants = {
   initial: { y: 0, boxShadow: COLORS.shadowMd },
-  hover: { 
-    y: -4, 
+  hover: {
+    y: -4,
     boxShadow: COLORS.shadowLg,
     transition: { type: 'spring', stiffness: 400, damping: 17 }
   }
@@ -282,24 +282,24 @@ const shimmerAnimation = {
 const formatPhoneNumber = (value) => {
   const cleaned = value.replace(/\D/g, '');
   if (cleaned.length <= 4) return cleaned;
-  if (cleaned.length <= 7) return `${cleaned.slice(0,4)} ${cleaned.slice(4)}`;
-  return `${cleaned.slice(0,4)} ${cleaned.slice(4,7)} ${cleaned.slice(7,10)}`;
+  if (cleaned.length <= 7) return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
+  return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 10)}`;
 };
 
 const getTimeUntil = (dateTime) => {
   const now = new Date();
   const target = new Date(dateTime);
   const diff = target - now;
-  
+
   if (diff < 0) {
     const minLate = Math.abs(Math.floor(diff / 60000));
     if (minLate > 10) return { text: 'Đã quá giờ', late: true, minutes: minLate };
     return { text: `Trễ ${minLate} phút`, late: true, minutes: minLate };
   }
-  
+
   const hours = Math.floor(diff / 3600000);
   const minutes = Math.floor((diff % 3600000) / 60000);
-  
+
   if (hours > 0) return { text: `Còn ${hours}h ${minutes}p`, late: false };
   return { text: `Còn ${minutes} phút`, late: false, minutes };
 };
@@ -309,8 +309,11 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
   const timeInfo = getTimeUntil(reservation.thoiGianDen);
   const status = STATUS_CONFIG[reservation.trangThai] || STATUS_CONFIG.CHODEN;
   const badges = detectBadges(reservation.ghiChu);
-  const isComingSoon = !timeInfo.late && timeInfo.minutes && timeInfo.minutes <= 15;
-  
+  // Multi-level urgency: 0-30min (very urgent), 30-60min (urgent), 60-120min (coming soon)
+  const isVeryUrgent = !timeInfo.late && timeInfo.minutes && timeInfo.minutes <= 30;
+  const isUrgent = !timeInfo.late && timeInfo.minutes && timeInfo.minutes > 30 && timeInfo.minutes <= 60;
+  const isComingSoon = !timeInfo.late && timeInfo.minutes && timeInfo.minutes > 60 && timeInfo.minutes <= 120;
+
   return (
     <motion.div
       variants={itemVariants}
@@ -325,10 +328,10 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
           borderRadius: 4,
           cursor: 'pointer',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: isSelected 
+          boxShadow: isSelected
             ? COLORS.shadowPrimary
             : COLORS.shadowSm,
-          background: isSelected 
+          background: isSelected
             ? `linear-gradient(135deg, ${alpha(COLORS.primaryPastel, 0.5)} 0%, ${COLORS.cardBg} 100%)`
             : COLORS.cardBg,
           position: 'relative',
@@ -370,10 +373,10 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             }
           }} />
         )}
-        
+
         {/* Header with status indicator */}
-        <Box sx={{ 
-          px: 2.5, 
+        <Box sx={{
+          px: 2.5,
           py: 2,
           background: status.gradient || status.bgColor,
           borderBottom: `1px solid ${alpha(status.color, 0.1)}`,
@@ -410,9 +413,9 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.3 }}>
                 <PhoneIcon sx={{ fontSize: 13, color: COLORS.textSecondary }} />
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
+                <Typography
+                  variant="caption"
+                  sx={{
                     color: COLORS.textSecondary,
                     cursor: 'pointer',
                     '&:hover': { color: COLORS.primary, textDecoration: 'underline' }
@@ -425,11 +428,11 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                   {reservation.khachHang?.soDienThoai || '-'}
                 </Typography>
                 <Tooltip title="Gọi điện" arrow>
-                  <IconButton 
-                    size="small" 
-                    sx={{ 
-                      ml: 0.5, 
-                      width: 24, 
+                  <IconButton
+                    size="small"
+                    sx={{
+                      ml: 0.5,
+                      width: 24,
                       height: 24,
                       bgcolor: alpha(COLORS.secondary, 0.1),
                       '&:hover': { bgcolor: alpha(COLORS.secondary, 0.2) }
@@ -445,7 +448,7 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
               </Box>
             </Box>
           </Box>
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
             <Chip
               icon={status.icon}
@@ -462,14 +465,14 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             />
           </Box>
         </Box>
-        
+
         {/* Badges Row */}
         {badges.length > 0 && (
-          <Box sx={{ 
-            px: 2.5, 
+          <Box sx={{
+            px: 2.5,
             py: 1,
-            display: 'flex', 
-            gap: 1, 
+            display: 'flex',
+            gap: 1,
             flexWrap: 'wrap',
             borderBottom: `1px solid ${COLORS.borderLight}`,
             bgcolor: alpha(COLORS.primaryPastel, 0.3)
@@ -499,14 +502,14 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             })}
           </Box>
         )}
-        
+
         {/* Body */}
         <Box sx={{ p: 2.5 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 p: 1.5,
                 borderRadius: 3,
@@ -517,7 +520,7 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                   width: 36,
                   height: 36,
                   borderRadius: 2,
-                  background: timeInfo.late 
+                  background: timeInfo.late
                     ? `linear-gradient(135deg, ${COLORS.dangerPastel} 0%, ${alpha(COLORS.danger, 0.2)} 100%)`
                     : `linear-gradient(135deg, ${COLORS.primaryPastel} 0%, ${alpha(COLORS.primary, 0.15)} 100%)`,
                   display: 'flex',
@@ -527,9 +530,9 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                   <TimeIcon sx={{ fontSize: 18, color: timeInfo.late ? COLORS.danger : COLORS.primary }} />
                 </Box>
                 <Box>
-                  <Typography variant="h6" sx={{ 
-                    fontWeight: 800, 
-                    color: timeInfo.late ? COLORS.danger : COLORS.textPrimary, 
+                  <Typography variant="h6" sx={{
+                    fontWeight: 800,
+                    color: timeInfo.late ? COLORS.danger : COLORS.textPrimary,
                     fontSize: '1.15rem',
                     lineHeight: 1.2
                   }}>
@@ -541,11 +544,11 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                 </Box>
               </Box>
             </Grid>
-            
+
             <Grid item xs={6}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 p: 1.5,
                 borderRadius: 3,
@@ -576,13 +579,13 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
               </Box>
             </Grid>
           </Grid>
-          
+
           {/* Time countdown - Enhanced with gradient */}
-          <Box sx={{ 
-            mt: 2, 
-            p: 1.5, 
-            borderRadius: 3, 
-            background: timeInfo.late 
+          <Box sx={{
+            mt: 2,
+            p: 1.5,
+            borderRadius: 3,
+            background: timeInfo.late
               ? `linear-gradient(135deg, ${alpha(COLORS.danger, 0.12)} 0%, ${alpha(COLORS.danger, 0.06)} 100%)`
               : isComingSoon
                 ? `linear-gradient(135deg, ${alpha(COLORS.warning, 0.15)} 0%, ${alpha(COLORS.warning, 0.08)} 100%)`
@@ -603,39 +606,43 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             ) : (
               <TimerIcon sx={{ fontSize: 20, color: COLORS.primary }} />
             )}
-            <Typography variant="body2" sx={{ 
-              fontWeight: 700, 
+            <Typography variant="body2" sx={{
+              fontWeight: 700,
               color: timeInfo.late ? COLORS.danger : isComingSoon ? COLORS.warning : COLORS.primary,
               fontSize: '0.9rem'
             }}>
               {timeInfo.text}
             </Typography>
-            {isComingSoon && (
-              <Chip 
-                label="Sắp đến!" 
-                size="small" 
-                sx={{ 
-                  ml: 'auto', 
-                  bgcolor: COLORS.warningPastel, 
-                  color: COLORS.warning,
+            {(isVeryUrgent || isUrgent || isComingSoon) && (
+              <Chip
+                label={
+                  isVeryUrgent ? "SẮP ĐẾN!" :
+                    isUrgent ? "RẤT GẦN" :
+                      "SẮP CÓ KHÁCH"
+                }
+                size="small"
+                sx={{
+                  ml: 'auto',
+                  bgcolor: isVeryUrgent ? COLORS.dangerPastel : isUrgent ? alpha(COLORS.warning, 0.2) : COLORS.warningPastel,
+                  color: isVeryUrgent ? COLORS.danger : isUrgent ? COLORS.warning : COLORS.warning,
                   fontWeight: 700,
                   fontSize: '0.65rem',
                   height: 22,
-                  animation: 'pulse 1.5s infinite',
+                  animation: isVeryUrgent ? 'pulse 1s infinite' : isUrgent ? 'pulse 1.5s infinite' : 'none',
                   '@keyframes pulse': {
                     '0%, 100%': { opacity: 1 },
                     '50%': { opacity: 0.7 }
                   }
-                }} 
+                }}
               />
             )}
           </Box>
-          
+
           {reservation.ghiChu && (
-            <Box sx={{ 
-              mt: 2, 
-              p: 1.5, 
-              borderRadius: 3, 
+            <Box sx={{
+              mt: 2,
+              p: 1.5,
+              borderRadius: 3,
               bgcolor: alpha(COLORS.infoPastel, 0.5),
               border: `1px dashed ${alpha(COLORS.info, 0.3)}`,
               display: 'flex',
@@ -649,11 +656,11 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             </Box>
           )}
         </Box>
-        
+
         {/* Actions Footer - Enhanced */}
-        <Box sx={{ 
-          px: 2.5, 
-          py: 2, 
+        <Box sx={{
+          px: 2.5,
+          py: 2,
           borderTop: `1px solid ${COLORS.borderLight}`,
           bgcolor: alpha(COLORS.background, 0.5),
           display: 'flex',
@@ -674,7 +681,7 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                   textTransform: 'none',
                   fontWeight: 700,
                   boxShadow: COLORS.shadowSuccess,
-                  '&:hover': { 
+                  '&:hover': {
                     background: `linear-gradient(135deg, ${COLORS.secondaryLight} 0%, ${COLORS.secondary} 100%)`,
                     transform: 'translateY(-1px)'
                   }
@@ -719,7 +726,7 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
                 textTransform: 'none',
                 fontWeight: 700,
                 boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                '&:hover': { 
+                '&:hover': {
                   background: `linear-gradient(135deg, ${COLORS.infoLight} 0%, ${COLORS.info} 100%)`,
                 }
               }}
@@ -728,10 +735,10 @@ const BookingTicket = ({ reservation, isSelected, onSelect, onStatusChange }) =>
             </Button>
           )}
           {reservation.trangThai === 'DANHANBAN' && !reservation.ban && (
-            <Chip 
-              icon={<CelebrationIcon />} 
-              label="Khách đã đến - Chờ gán bàn" 
-              color="success" 
+            <Chip
+              icon={<CelebrationIcon />}
+              label="Khách đã đến - Chờ gán bàn"
+              color="success"
               sx={{ width: '100%', fontWeight: 600, py: 2 }}
             />
           )}
@@ -746,10 +753,10 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
   const [showPopup, setShowPopup] = useState(false);
   const status = TABLE_STATUS_CONFIG[table.trangThai] || TABLE_STATUS_CONFIG.TRONG;
   const isAssigned = table.reservationId === selectedResvId;
-  
+
   const seats = table.soGhe || 4;
   const size = Math.max(85, 65 + seats * 8);
-  
+
   return (
     <Tooltip
       open={showPopup}
@@ -783,8 +790,8 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
       title={
         <Box>
           {/* Popover Header */}
-          <Box sx={{ 
-            p: 2, 
+          <Box sx={{
+            p: 2,
             background: status.gradient,
             borderBottom: `1px solid ${alpha(status.color, 0.2)}`
           }}>
@@ -813,25 +820,25 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
                 </Box>
               </Box>
               <Box sx={{ ml: 'auto' }}>
-                {React.cloneElement(status.icon, { 
-                  sx: { 
-                    fontSize: 20, 
+                {React.cloneElement(status.icon, {
+                  sx: {
+                    fontSize: 20,
                     color: status.color,
                     bgcolor: alpha(status.color, 0.15),
                     p: 0.5,
                     borderRadius: 1
-                  } 
+                  }
                 })}
               </Box>
             </Box>
           </Box>
-          
+
           {/* Popover Body */}
           <Box sx={{ p: 2 }}>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1, 
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
               p: 1.5,
               borderRadius: 2,
               bgcolor: status.bgColor,
@@ -842,12 +849,12 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
                 {status.label}
               </Typography>
             </Box>
-            
+
             {reservation && (
-              <Box sx={{ 
+              <Box sx={{
                 mt: 2,
-                p: 1.5, 
-                borderRadius: 2, 
+                p: 1.5,
+                borderRadius: 2,
                 background: `linear-gradient(135deg, ${COLORS.infoPastel} 0%, ${alpha(COLORS.info, 0.08)} 100%)`,
                 border: `1px solid ${alpha(COLORS.info, 0.2)}`
               }}>
@@ -876,7 +883,7 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
                 )}
               </Box>
             )}
-            
+
             {selectedResvId && table.trangThai === 'TRONG' && (
               <Button
                 fullWidth
@@ -924,9 +931,9 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
             height: size,
             borderRadius: table.shape === 'circle' ? '50%' : 4,
             background: status.gradient,
-            border: isAssigned 
-              ? `3px solid ${COLORS.primary}` 
-              : isHighlighted 
+            border: isAssigned
+              ? `3px solid ${COLORS.primary}`
+              : isHighlighted
                 ? `3px solid ${COLORS.secondary}`
                 : isRecommended
                   ? `3px dashed ${COLORS.warning}`
@@ -941,7 +948,7 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
             position: 'relative',
             overflow: 'visible',
             // 3D Soft Bubble Effect
-            boxShadow: isAssigned 
+            boxShadow: isAssigned
               ? `0 8px 32px ${alpha(COLORS.primary, 0.4)}, inset 0 -4px 12px ${alpha(status.color, 0.15)}, inset 0 4px 8px rgba(255,255,255,0.4)`
               : isRecommended
                 ? `0 8px 24px ${alpha(COLORS.warning, 0.35)}, inset 0 -3px 10px ${alpha(status.color, 0.1)}, inset 0 3px 6px rgba(255,255,255,0.3)`
@@ -983,7 +990,7 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
           }}>
             {React.cloneElement(status.icon, { sx: { fontSize: 14 } })}
           </Box>
-          
+
           {/* Recommended Badge - Animated */}
           {isRecommended && (
             <motion.div
@@ -1016,20 +1023,20 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
               </Box>
             </motion.div>
           )}
-          
-          <Typography variant="subtitle1" sx={{ 
-            fontWeight: 800, 
-            color: COLORS.textPrimary, 
+
+          <Typography variant="subtitle1" sx={{
+            fontWeight: 800,
+            color: COLORS.textPrimary,
             fontSize: '1.1rem',
             textShadow: '0 1px 2px rgba(255,255,255,0.5)'
           }}>
             {table.ten}
           </Typography>
-          
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 0.5, 
+
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
             mt: 0.5,
             px: 1,
             py: 0.3,
@@ -1042,7 +1049,7 @@ const TableBubble = ({ table, isHighlighted, isRecommended, onSelect, selectedRe
               {seats} ghế
             </Typography>
           </Box>
-          
+
           {/* Reserved Time indicator */}
           {table.trangThai === 'DADAT' && reservation && (
             <Box sx={{
@@ -1078,38 +1085,39 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
   const [filterZone, setFilterZone] = useState('all');
   const [filterSeats, setFilterSeats] = useState('all');
   const [showComingSoon, setShowComingSoon] = useState(false);
-  
+
   const zones = [...new Set(tables.flat().flatMap(([zone]) => zone))];
   const seatOptions = [2, 4, 6, 8, 10];
-  
+
   const getTableReservation = (tableId) => {
     return reservations.find(r => r.banId === tableId && r.trangThai === 'CHODEN');
   };
-  
-  // Check if table has reservation coming in next 15 minutes
+
+  // Check if table has reservation coming in next 2 hours (extended from 15 minutes)
   const hasComingSoonReservation = (tableId) => {
     const reservation = reservations.find(r => r.banId === tableId && r.trangThai === 'CHODEN');
     if (!reservation) return false;
-    
+
     const now = new Date();
     const arrivalTime = new Date(reservation.thoiGianDen);
     const diff = arrivalTime - now;
-    return diff > 0 && diff <= 15 * 60 * 1000; // 15 minutes
+    const TWO_HOURS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+    return diff > 0 && diff <= TWO_HOURS;
   };
-  
+
   const isRecommended = (table) => {
     if (!suggestedSeats || !selectedResvId) return false;
     const seats = table.soGhe || 4;
     return table.trangThai === 'TRONG' && seats >= suggestedSeats && seats <= suggestedSeats + 2;
   };
-  
+
   return (
     <Box>
       {/* Enhanced Filters */}
-      <Box sx={{ 
-        mb: 3, 
-        p: 2.5, 
-        borderRadius: 4, 
+      <Box sx={{
+        mb: 3,
+        p: 2.5,
+        borderRadius: 4,
         background: `linear-gradient(135deg, ${COLORS.primaryPastel} 0%, ${alpha(COLORS.infoPastel, 0.5)} 100%)`,
         border: `1px solid ${alpha(COLORS.primary, 0.1)}`
       }}>
@@ -1117,7 +1125,7 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
           <FilterIcon sx={{ fontSize: 18 }} />
           Bộ lọc thông minh
         </Typography>
-        
+
         <Stack spacing={2}>
           {/* Status Filter - Tab Style */}
           <Box>
@@ -1175,7 +1183,7 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
-          
+
           <Grid container spacing={2}>
             {/* Seats Filter */}
             <Grid item xs={12} sm={4}>
@@ -1207,7 +1215,7 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
                 ))}
               </ToggleButtonGroup>
             </Grid>
-            
+
             {/* Zone Filter */}
             {zones.length > 1 && (
               <Grid item xs={12} sm={4}>
@@ -1235,7 +1243,7 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
                 </TextField>
               </Grid>
             )}
-            
+
             {/* Coming Soon Toggle */}
             <Grid item xs={12} sm={4}>
               <Typography variant="caption" sx={{ color: COLORS.textSecondary, fontWeight: 600, mb: 1, display: 'block' }}>
@@ -1266,14 +1274,14 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
           </Grid>
         </Stack>
       </Box>
-      
+
       {/* Legend - Premium Style */}
-      <Box sx={{ 
-        display: 'flex', 
-        gap: 2, 
-        mb: 3, 
-        p: 2, 
-        borderRadius: 3, 
+      <Box sx={{
+        display: 'flex',
+        gap: 2,
+        mb: 3,
+        p: 2,
+        borderRadius: 3,
         bgcolor: COLORS.cardBg,
         border: `1px solid ${COLORS.border}`,
         boxShadow: COLORS.shadowSm,
@@ -1281,9 +1289,9 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
         justifyContent: 'center'
       }}>
         {Object.entries(TABLE_STATUS_CONFIG).map(([key, config]) => (
-          <Box key={key} sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+          <Box key={key} sx={{
+            display: 'flex',
+            alignItems: 'center',
             gap: 1,
             px: 1.5,
             py: 0.5,
@@ -1291,10 +1299,10 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
             bgcolor: alpha(config.bgColor, 0.5),
             border: `1px solid ${alpha(config.color, 0.2)}`
           }}>
-            <Box sx={{ 
-              width: 20, 
-              height: 20, 
-              borderRadius: '50%', 
+            <Box sx={{
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
               background: config.gradient,
               border: `2px solid ${alpha(config.color, 0.5)}`,
               boxShadow: `inset 0 2px 4px rgba(255,255,255,0.3)`
@@ -1305,36 +1313,36 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
           </Box>
         ))}
       </Box>
-      
+
       {/* Table zones */}
       <Stack spacing={4}>
         {tables.map(([zone, list]) => {
           if (filterZone !== 'all' && zone !== filterZone) return null;
-          
-          let filteredList = filterStatus === 'all' 
-            ? list 
+
+          let filteredList = filterStatus === 'all'
+            ? list
             : list.filter(t => t.trangThai === filterStatus);
-          
+
           // Filter by seats
           if (filterSeats !== 'all') {
             filteredList = filteredList.filter(t => (t.soGhe || 4) >= filterSeats);
           }
-          
+
           // Filter by coming soon
           if (showComingSoon) {
             filteredList = filteredList.filter(t => hasComingSoonReservation(t.id));
           }
-          
+
           if (!filteredList.length) return null;
-          
+
           const emptyCount = filteredList.filter(t => t.trangThai === 'TRONG').length;
-          
+
           return (
             <Box key={zone}>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2, 
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
                 mb: 2.5,
                 pb: 1.5,
                 borderBottom: `3px solid transparent`,
@@ -1355,10 +1363,10 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
                 <Typography variant="h6" sx={{ fontWeight: 800, color: COLORS.textPrimary }}>
                   {zone}
                 </Typography>
-                <Chip 
+                <Chip
                   label={`${emptyCount}/${filteredList.length} bàn trống`}
                   size="small"
-                  sx={{ 
+                  sx={{
                     background: `linear-gradient(135deg, ${COLORS.secondaryPastel} 0%, ${alpha(COLORS.secondary, 0.15)} 100%)`,
                     color: COLORS.secondary,
                     fontWeight: 700,
@@ -1366,11 +1374,11 @@ const TableMap = ({ tables, onAssign, selectedResvId, reservations, suggestedSea
                   }}
                 />
               </Box>
-              
-              <Box sx={{ 
-                position: 'relative', 
-                minHeight: 400, 
-                border: `2px dashed ${alpha(COLORS.primary, 0.15)}`, 
+
+              <Box sx={{
+                position: 'relative',
+                minHeight: 400,
+                border: `2px dashed ${alpha(COLORS.primary, 0.15)}`,
                 borderRadius: 5,
                 background: `linear-gradient(180deg, ${alpha(COLORS.primaryPastel, 0.3)} 0%, ${alpha(COLORS.infoPastel, 0.2)} 100%)`,
                 p: 4,
@@ -1471,18 +1479,18 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
   return (
     <Box>
       {/* Week Navigation Header */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'space-between',
         mb: 2,
         pb: 2,
         borderBottom: `1px solid ${COLORS.border}`
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton 
+          <IconButton
             onClick={goToPrevWeek}
-            sx={{ 
+            sx={{
               bgcolor: alpha(COLORS.primary, 0.1),
               '&:hover': { bgcolor: alpha(COLORS.primary, 0.2) }
             }}
@@ -1492,9 +1500,9 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: COLORS.textPrimary, minWidth: 200, textAlign: 'center' }}>
             {weekStart.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })} - {weekEndDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
           </Typography>
-          <IconButton 
+          <IconButton
             onClick={goToNextWeek}
-            sx={{ 
+            sx={{
               bgcolor: alpha(COLORS.primary, 0.1),
               '&:hover': { bgcolor: alpha(COLORS.primary, 0.2) }
             }}
@@ -1506,9 +1514,9 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
           size="small"
           variant="outlined"
           onClick={goToCurrentWeek}
-          sx={{ 
-            borderRadius: 2, 
-            textTransform: 'none', 
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
             fontWeight: 600,
             borderColor: COLORS.primary,
             color: COLORS.primary
@@ -1525,7 +1533,7 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
           const isPast = day < new Date(new Date().setHours(0, 0, 0, 0));
           const pendingCount = dayReservations.filter(r => r.trangThai === 'CHODEN').length;
           const confirmedCount = dayReservations.filter(r => r.trangThai === 'DANHANBAN').length;
-          
+
           return (
             <Grid item xs={12 / 7} key={index}>
               <motion.div
@@ -1543,9 +1551,9 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
                     display: 'flex',
                     flexDirection: 'column',
                     transition: 'all 0.2s ease',
-                    border: isSelected(day) 
-                      ? `2px solid ${COLORS.primary}` 
-                      : isToday(day) 
+                    border: isSelected(day)
+                      ? `2px solid ${COLORS.primary}`
+                      : isToday(day)
                         ? `2px solid ${COLORS.secondary}`
                         : `1px solid ${COLORS.border}`,
                     background: isSelected(day)
@@ -1564,10 +1572,10 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
                   }}
                 >
                   {/* Day Name */}
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      fontWeight: 700, 
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 700,
                       color: isToday(day) ? COLORS.secondary : COLORS.textSecondary,
                       textTransform: 'uppercase',
                       fontSize: '0.65rem',
@@ -1576,12 +1584,12 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
                   >
                     {dayNames[index]}
                   </Typography>
-                  
+
                   {/* Day Number */}
-                  <Typography 
-                    variant="h5" 
-                    sx={{ 
-                      fontWeight: 800, 
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 800,
                       color: isSelected(day) ? COLORS.primary : isToday(day) ? COLORS.secondary : COLORS.textPrimary,
                       my: 0.5
                     }}
@@ -1650,10 +1658,10 @@ const WeekCalendar = ({ onSelectDate, selectedDate, reservations = [] }) => {
       </Grid>
 
       {/* Weekly Summary */}
-      <Box sx={{ 
-        mt: 2, 
-        p: 2, 
-        borderRadius: 3, 
+      <Box sx={{
+        mt: 2,
+        p: 2,
+        borderRadius: 3,
         bgcolor: alpha(COLORS.infoPastel, 0.5),
         border: `1px solid ${alpha(COLORS.info, 0.2)}`,
         display: 'flex',
@@ -1713,13 +1721,14 @@ const Reservations = () => {
     soKhach: 2,
     thoiGianDen: `${today}T19:00`,
     ghiChu: '',
+    banId: null, // Add table selection
   });
   const [selectedResv, setSelectedResv] = useState(null);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [confirmDialog, setConfirmDialog] = useState({ open: false, table: null });
-  
+
   // Calculate week dates for week view
   const weekDates = useMemo(() => {
     const selected = new Date(date);
@@ -1728,21 +1737,21 @@ const Reservations = () => {
     const monday = new Date(selected);
     monday.setDate(monday.getDate() + diff);
     monday.setHours(0, 0, 0, 0);
-    
+
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-    
+
     return {
       start: monday.toISOString().slice(0, 10),
       end: sunday.toISOString().slice(0, 10)
     };
   }, [date]);
-  
+
   const { data: reservations = [], refetch, isLoading } = useReservations({ date });
   const { data: weekReservations = [], isLoading: weekLoading } = useWeekReservations(weekDates.start, weekDates.end);
   const { data: tableData } = useTables();
   const tables = tableData?.items || [];
-  
+
   const groupedTables = useMemo(() => {
     const groups = {};
     tables.forEach((t) => {
@@ -1752,17 +1761,17 @@ const Reservations = () => {
     });
     return Object.entries(groups);
   }, [tables]);
-  
+
   const filteredReservations = useMemo(() => {
     return reservations.filter(r => {
-      const matchSearch = !searchQuery || 
+      const matchSearch = !searchQuery ||
         r.khachHang?.hoTen?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.khachHang?.soDienThoai?.includes(searchQuery);
       const matchStatus = statusFilter === 'all' || r.trangThai === statusFilter;
       return matchSearch && matchStatus;
     });
   }, [reservations, searchQuery, statusFilter]);
-  
+
   const createReservation = useCreateReservation();
   const updateReservation = useUpdateReservation();
 
@@ -1775,18 +1784,18 @@ const Reservations = () => {
       setFeedback({ type: 'error', message: 'Vui lòng nhập số điện thoại' });
       return;
     }
-    
+
     setFeedback({ type: '', message: '' });
     createReservation
       .mutateAsync(form)
       .then(() => {
-        setForm({ ...form, tenKhach: '', soDienThoai: '', ghiChu: '' });
+        setForm({ ...form, tenKhach: '', soDienThoai: '', ghiChu: '', banId: null });
         setFeedback({ type: 'success', message: 'Đặt bàn thành công!' });
         refetch();
       })
-      .catch((err) => setFeedback({ 
-        type: 'error', 
-        message: err?.response?.data?.message || 'Không thể tạo đặt bàn' 
+      .catch((err) => setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || 'Không thể tạo đặt bàn'
       }));
   };
 
@@ -1801,20 +1810,20 @@ const Reservations = () => {
     }
     setConfirmDialog({ open: true, table });
   };
-  
+
   const confirmAssign = () => {
     const table = confirmDialog.table;
     setConfirmDialog({ open: false, table: null });
-    
+
     updateReservation
       .mutateAsync({ id: selectedResv.id, payload: { status: selectedResv.trangThai, banId: table.id } })
       .then(() => {
         setFeedback({ type: 'success', message: `Đã gán bàn ${table.ten} thành công!` });
         refetch();
       })
-      .catch((err) => setFeedback({ 
-        type: 'error', 
-        message: err?.response?.data?.message || 'Không thể gán bàn' 
+      .catch((err) => setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || 'Không thể gán bàn'
       }));
   };
 
@@ -1826,12 +1835,12 @@ const Reservations = () => {
         setFeedback({ type: 'success', message: 'Cập nhật trạng thái thành công!' });
         refetch();
       })
-      .catch((err) => setFeedback({ 
-        type: 'error', 
-        message: err?.response?.data?.message || 'Không thể cập nhật trạng thái' 
+      .catch((err) => setFeedback({
+        type: 'error',
+        message: err?.response?.data?.message || 'Không thể cập nhật trạng thái'
       }));
   };
-  
+
   // Clear feedback after 3 seconds
   useEffect(() => {
     if (feedback.message) {
@@ -1844,11 +1853,11 @@ const Reservations = () => {
 
   return (
     <MainLayout title="Đặt bàn & Sơ đồ bàn">
-      <Box sx={{ 
-        background: COLORS.backgroundGradient, 
-        minHeight: '100vh', 
-        mx: -3, 
-        mt: -3, 
+      <Box sx={{
+        background: COLORS.backgroundGradient,
+        minHeight: '100vh',
+        mx: -3,
+        mt: -3,
         p: 3,
         position: 'relative',
         '&::before': {
@@ -1870,11 +1879,11 @@ const Reservations = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <Alert 
-              severity={feedback.type || 'info'} 
+            <Alert
+              severity={feedback.type || 'info'}
               onClose={() => setFeedback({ type: '', message: '' })}
-              sx={{ 
-                mb: 3, 
+              sx={{
+                mb: 3,
                 borderRadius: 4,
                 boxShadow: COLORS.shadowMd,
                 backdropFilter: 'blur(10px)',
@@ -1887,16 +1896,16 @@ const Reservations = () => {
             </Alert>
           </motion.div>
         </Collapse>
-        
+
         <Grid container spacing={3} sx={{ position: 'relative', zIndex: 1 }}>
           {/* LEFT COLUMN - Form & Date */}
           <Grid item xs={12} lg={4}>
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               {/* Create Reservation Card - Premium Glass Effect */}
               <motion.div variants={itemVariants}>
-                <Paper sx={{ 
-                  p: 3, 
-                  borderRadius: 5, 
+                <Paper sx={{
+                  p: 3,
+                  borderRadius: 5,
                   border: `1px solid ${alpha(COLORS.primary, 0.1)}`,
                   boxShadow: COLORS.shadowLg,
                   background: `linear-gradient(135deg, ${alpha(COLORS.cardBg, 0.95)} 0%, ${alpha(COLORS.primaryPastel, 0.3)} 100%)`,
@@ -1937,7 +1946,7 @@ const Reservations = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Grid container spacing={2.5}>
                     <Grid item xs={12} sm={6}>
                       <TextField
@@ -1958,11 +1967,11 @@ const Reservations = () => {
                             borderRadius: 3,
                             bgcolor: alpha(COLORS.cardBg, 0.8),
                             transition: 'all 0.3s ease',
-                            '&:hover': { 
+                            '&:hover': {
                               bgcolor: COLORS.cardBg,
-                              boxShadow: COLORS.shadowSm 
+                              boxShadow: COLORS.shadowSm
                             },
-                            '&.Mui-focused': { 
+                            '&.Mui-focused': {
                               bgcolor: COLORS.cardBg,
                               boxShadow: `0 0 0 3px ${alpha(COLORS.primary, 0.15)}`
                             },
@@ -2000,7 +2009,7 @@ const Reservations = () => {
                         }}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Typography variant="caption" sx={{ color: COLORS.textSecondary, fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <GroupIcon sx={{ fontSize: 16 }} />
@@ -2019,14 +2028,14 @@ const Reservations = () => {
                                 borderRadius: 3,
                                 fontWeight: 700,
                                 fontSize: '1rem',
-                                background: form.soKhach === num 
+                                background: form.soKhach === num
                                   ? `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryLight} 100%)`
                                   : 'transparent',
                                 borderColor: form.soKhach === num ? 'transparent' : COLORS.border,
                                 boxShadow: form.soKhach === num ? COLORS.shadowPrimary : 'none',
                                 transition: 'all 0.3s ease',
                                 '&:hover': {
-                                  background: form.soKhach === num 
+                                  background: form.soKhach === num
                                     ? `linear-gradient(135deg, ${COLORS.primaryDark} 0%, ${COLORS.primary} 100%)`
                                     : alpha(COLORS.primary, 0.08),
                                   borderColor: COLORS.primary,
@@ -2040,7 +2049,7 @@ const Reservations = () => {
                         ))}
                       </Box>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -2066,7 +2075,7 @@ const Reservations = () => {
                         }}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -2098,11 +2107,11 @@ const Reservations = () => {
                             key={tag}
                             label={tag}
                             size="small"
-                            onClick={() => setForm(prev => ({ 
-                              ...prev, 
-                              ghiChu: prev.ghiChu ? `${prev.ghiChu}, ${tag}` : tag 
+                            onClick={() => setForm(prev => ({
+                              ...prev,
+                              ghiChu: prev.ghiChu ? `${prev.ghiChu}, ${tag}` : tag
                             }))}
-                            sx={{ 
+                            sx={{
                               cursor: 'pointer',
                               fontSize: '0.7rem',
                               height: 24,
@@ -2113,7 +2122,67 @@ const Reservations = () => {
                         ))}
                       </Box>
                     </Grid>
-                    
+
+                    {/* Table Selection */}
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        select
+                        label="Chọn bàn (tùy chọn)"
+                        value={form.banId || ''}
+                        onChange={(e) => setForm((prev) => ({ ...prev, banId: e.target.value || null }))}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <TableIcon sx={{ color: COLORS.primary }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            borderRadius: 3,
+                            bgcolor: alpha(COLORS.cardBg, 0.8),
+                            '&:hover': { bgcolor: COLORS.cardBg, boxShadow: COLORS.shadowSm },
+                            '&.Mui-focused': { bgcolor: COLORS.cardBg, boxShadow: `0 0 0 3px ${alpha(COLORS.primary, 0.15)}` },
+                          }
+                        }}
+                        helperText="Có thể chọn bàn ngay hoặc gán sau"
+                      >
+                        <MenuItem value="">Không chọn (gán sau)</MenuItem>
+                        {tables
+                          .filter(t => t.trangThai === 'TRONG' && t.soGhe >= form.soKhach)
+                          .sort((a, b) => a.soGhe - b.soGhe)
+                          .map((table) => (
+                            <MenuItem key={table.id} value={table.id}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                                <TableIcon sx={{ color: COLORS.secondary, fontSize: 20 }} />
+                                <Box sx={{ flex: 1 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                    Bàn {table.ten}
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ color: COLORS.textSecondary }}>
+                                    {table.soGhe} ghế • {table.khuVuc?.ten || 'Khu vực chung'}
+                                  </Typography>
+                                </Box>
+                                {table.soGhe === form.soKhach && (
+                                  <Chip
+                                    label="Phù hợp"
+                                    size="small"
+                                    sx={{
+                                      height: 20,
+                                      fontSize: '0.65rem',
+                                      bgcolor: COLORS.secondaryPastel,
+                                      color: COLORS.secondary,
+                                      fontWeight: 700
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                            </MenuItem>
+                          ))}
+                      </TextField>
+                    </Grid>
+
                     <Grid item xs={12}>
                       <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                         <Button
@@ -2158,13 +2227,13 @@ const Reservations = () => {
                   </Grid>
                 </Paper>
               </motion.div>
-              
+
               {/* Date Picker Card - Premium with View Mode Toggle */}
               <motion.div variants={itemVariants}>
-                <Paper sx={{ 
-                  p: 3, 
-                  mt: 3, 
-                  borderRadius: 5, 
+                <Paper sx={{
+                  p: 3,
+                  mt: 3,
+                  borderRadius: 5,
                   border: `1px solid ${alpha(COLORS.warning, 0.15)}`,
                   boxShadow: COLORS.shadowMd,
                   background: `linear-gradient(135deg, ${alpha(COLORS.cardBg, 0.95)} 0%, ${alpha(COLORS.warningPastel, 0.3)} 100%)`,
@@ -2187,7 +2256,7 @@ const Reservations = () => {
                         Lịch đặt bàn
                       </Typography>
                     </Box>
-                    
+
                     {/* View Mode Toggle */}
                     <ToggleButtonGroup
                       value={viewMode}
@@ -2219,7 +2288,7 @@ const Reservations = () => {
                       </ToggleButton>
                     </ToggleButtonGroup>
                   </Box>
-                  
+
                   {viewMode === 'day' ? (
                     <>
                       <TextField
@@ -2237,7 +2306,7 @@ const Reservations = () => {
                           }
                         }}
                       />
-                      
+
                       {/* Quick date buttons - Enhanced */}
                       <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
                         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} style={{ flex: 1 }}>
@@ -2246,7 +2315,7 @@ const Reservations = () => {
                             size="medium"
                             variant={date === today ? 'contained' : 'outlined'}
                             onClick={() => setDate(today)}
-                            sx={{ 
+                            sx={{
                               borderRadius: 3,
                               py: 1,
                               textTransform: 'none',
@@ -2284,21 +2353,21 @@ const Reservations = () => {
                   )}
                 </Paper>
               </motion.div>
-              
+
               {/* Stats Card - Premium Glassmorphism */}
               <motion.div variants={itemVariants}>
-                <Paper sx={{ 
-                  p: 3, 
-                  mt: 3, 
-                  borderRadius: 5, 
+                <Paper sx={{
+                  p: 3,
+                  mt: 3,
+                  borderRadius: 5,
                   border: `1px solid ${alpha(COLORS.primary, 0.1)}`,
                   background: `linear-gradient(135deg, ${alpha(COLORS.primaryPastel, 0.4)} 0%, ${alpha(COLORS.secondaryPastel, 0.3)} 100%)`,
                   backdropFilter: 'blur(10px)',
                   boxShadow: COLORS.shadowMd,
                 }}>
-                  <Typography variant="subtitle2" sx={{ 
-                    fontWeight: 800, 
-                    color: COLORS.textPrimary, 
+                  <Typography variant="subtitle2" sx={{
+                    fontWeight: 800,
+                    color: COLORS.textPrimary,
                     mb: 2.5,
                     display: 'flex',
                     alignItems: 'center',
@@ -2320,9 +2389,9 @@ const Reservations = () => {
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <motion.div whileHover={{ scale: 1.03 }}>
-                        <Box sx={{ 
-                          p: 2.5, 
-                          borderRadius: 4, 
+                        <Box sx={{
+                          p: 2.5,
+                          borderRadius: 4,
                           bgcolor: COLORS.cardBg,
                           textAlign: 'center',
                           border: `1px solid ${alpha(COLORS.primary, 0.1)}`,
@@ -2339,8 +2408,8 @@ const Reservations = () => {
                             background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryLight})`
                           }
                         }}>
-                          <Typography variant="h3" sx={{ 
-                            fontWeight: 900, 
+                          <Typography variant="h3" sx={{
+                            fontWeight: 900,
                             background: `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.primaryLight} 100%)`,
                             backgroundClip: 'text',
                             WebkitBackgroundClip: 'text',
@@ -2356,9 +2425,9 @@ const Reservations = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <motion.div whileHover={{ scale: 1.03 }}>
-                        <Box sx={{ 
-                          p: 2.5, 
-                          borderRadius: 4, 
+                        <Box sx={{
+                          p: 2.5,
+                          borderRadius: 4,
                           bgcolor: COLORS.cardBg,
                           textAlign: 'center',
                           border: `1px solid ${alpha(COLORS.secondary, 0.1)}`,
@@ -2375,8 +2444,8 @@ const Reservations = () => {
                             background: `linear-gradient(90deg, ${COLORS.secondary}, ${COLORS.secondaryLight})`
                           }
                         }}>
-                          <Typography variant="h3" sx={{ 
-                            fontWeight: 900, 
+                          <Typography variant="h3" sx={{
+                            fontWeight: 900,
                             background: `linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondaryLight} 100%)`,
                             backgroundClip: 'text',
                             WebkitBackgroundClip: 'text',
@@ -2395,15 +2464,15 @@ const Reservations = () => {
               </motion.div>
             </motion.div>
           </Grid>
-          
+
           {/* RIGHT COLUMN - Booking List & Table Map */}
           <Grid item xs={12} lg={8}>
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
               {/* Booking List - Premium */}
               <motion.div variants={itemVariants}>
-                <Paper sx={{ 
-                  p: 3, 
-                  borderRadius: 5, 
+                <Paper sx={{
+                  p: 3,
+                  borderRadius: 5,
                   border: `1px solid ${alpha(COLORS.secondary, 0.1)}`,
                   boxShadow: COLORS.shadowLg,
                   background: `linear-gradient(135deg, ${alpha(COLORS.cardBg, 0.98)} 0%, ${alpha(COLORS.secondaryPastel, 0.2)} 100%)`,
@@ -2444,12 +2513,12 @@ const Reservations = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
                       <Badge badgeContent={filteredReservations.length} color="primary" max={99}>
-                        <Chip 
-                          label="Đặt bàn" 
-                          sx={{ 
+                        <Chip
+                          label="Đặt bàn"
+                          sx={{
                             fontWeight: 700,
                             bgcolor: COLORS.primaryPastel,
                             color: COLORS.primary
@@ -2458,12 +2527,12 @@ const Reservations = () => {
                       </Badge>
                     </Box>
                   </Box>
-                  
+
                   {/* Search & Filter - Enhanced */}
-                  <Box sx={{ 
-                    p: 2, 
-                    mb: 3, 
-                    borderRadius: 4, 
+                  <Box sx={{
+                    p: 2,
+                    mb: 3,
+                    borderRadius: 4,
                     bgcolor: alpha(COLORS.background, 0.7),
                     border: `1px solid ${COLORS.border}`
                   }}>
@@ -2473,9 +2542,9 @@ const Reservations = () => {
                         placeholder="🔍 Tìm theo tên hoặc SĐT..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        sx={{ 
+                        sx={{
                           flex: 1,
-                          '& .MuiOutlinedInput-root': { 
+                          '& .MuiOutlinedInput-root': {
                             borderRadius: 3,
                             bgcolor: COLORS.cardBg,
                             '&:hover': { boxShadow: COLORS.shadowSm }
@@ -2506,13 +2575,13 @@ const Reservations = () => {
                       </ToggleButtonGroup>
                     </Stack>
                   </Box>
-                  
+
                   {isLoading && <LinearProgress sx={{ mb: 2, borderRadius: 2, height: 6 }} />}
-                  
+
                   {/* Booking tickets - Premium Scroll */}
-                  <Box sx={{ 
-                    maxHeight: 480, 
-                    overflowY: 'auto', 
+                  <Box sx={{
+                    maxHeight: 480,
+                    overflowY: 'auto',
                     pr: 1,
                     '&::-webkit-scrollbar': {
                       width: 6,
@@ -2542,14 +2611,14 @@ const Reservations = () => {
                         </AnimatePresence>
                       </Stack>
                     </motion.div>
-                    
+
                     {!filteredReservations.length && !isLoading && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                       >
-                        <Box sx={{ 
-                          py: 8, 
+                        <Box sx={{
+                          py: 8,
                           textAlign: 'center',
                           color: COLORS.textSecondary,
                           borderRadius: 4,
@@ -2568,13 +2637,13 @@ const Reservations = () => {
                   </Box>
                 </Paper>
               </motion.div>
-              
+
               {/* Table Map - Premium */}
               <motion.div variants={itemVariants}>
-                <Paper sx={{ 
-                  p: 3, 
-                  mt: 3, 
-                  borderRadius: 5, 
+                <Paper sx={{
+                  p: 3,
+                  mt: 3,
+                  borderRadius: 5,
                   border: `1px solid ${alpha(COLORS.info, 0.1)}`,
                   boxShadow: COLORS.shadowLg,
                   background: `linear-gradient(135deg, ${alpha(COLORS.cardBg, 0.98)} 0%, ${alpha(COLORS.infoPastel, 0.2)} 100%)`,
@@ -2611,13 +2680,13 @@ const Reservations = () => {
                           Sơ đồ bàn
                         </Typography>
                         <Typography variant="body2" sx={{ color: COLORS.textSecondary }}>
-                          {selectedResv 
-                            ? `Đang gán cho: ${selectedResv.khachHang?.hoTen} (${selectedResv.soKhach} khách)` 
+                          {selectedResv
+                            ? `Đang gán cho: ${selectedResv.khachHang?.hoTen} (${selectedResv.soKhach} khách)`
                             : 'Chọn đặt bàn rồi click vào bàn để gán'}
                         </Typography>
                       </Box>
                     </Box>
-                    
+
                     {selectedResv && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -2627,7 +2696,7 @@ const Reservations = () => {
                         <Chip
                           icon={<AutoIcon />}
                           label="✨ Gợi ý bàn phù hợp"
-                          sx={{ 
+                          sx={{
                             fontWeight: 700,
                             background: `linear-gradient(135deg, ${COLORS.warning} 0%, ${COLORS.warningLight} 100%)`,
                             color: '#fff',
@@ -2638,7 +2707,7 @@ const Reservations = () => {
                       </motion.div>
                     )}
                   </Box>
-                  
+
                   <TableMap
                     tables={groupedTables}
                     onAssign={handleAssignTable}
@@ -2651,7 +2720,7 @@ const Reservations = () => {
             </motion.div>
           </Grid>
         </Grid>
-        
+
         {/* Confirm Dialog - Premium */}
         <Dialog
           open={confirmDialog.open}
@@ -2704,9 +2773,9 @@ const Reservations = () => {
             </Typography>
           </DialogTitle>
           <DialogContent>
-            <Box sx={{ 
-              p: 3, 
-              borderRadius: 4, 
+            <Box sx={{
+              p: 3,
+              borderRadius: 4,
               background: `linear-gradient(135deg, ${COLORS.secondaryPastel} 0%, ${alpha(COLORS.secondary, 0.08)} 100%)`,
               border: `1px solid ${alpha(COLORS.secondary, 0.2)}`,
               textAlign: 'center'
@@ -2714,9 +2783,9 @@ const Reservations = () => {
               <Typography variant="body1" sx={{ mb: 1.5, color: COLORS.textSecondary }}>
                 Gán bàn
               </Typography>
-              <Chip 
+              <Chip
                 label={confirmDialog.table?.ten}
-                sx={{ 
+                sx={{
                   fontSize: '1.2rem',
                   fontWeight: 800,
                   py: 2.5,
@@ -2732,20 +2801,20 @@ const Reservations = () => {
               <Typography variant="h5" sx={{ fontWeight: 800, color: COLORS.primary }}>
                 {selectedResv?.khachHang?.hoTen}
               </Typography>
-              <Box sx={{ 
-                display: 'flex', 
-                gap: 2, 
-                justifyContent: 'center', 
+              <Box sx={{
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'center',
                 mt: 1.5,
                 flexWrap: 'wrap'
               }}>
-                <Chip 
+                <Chip
                   icon={<GroupIcon />}
                   label={`${selectedResv?.soKhach} khách`}
                   size="small"
                   sx={{ bgcolor: COLORS.primaryPastel, color: COLORS.primary, fontWeight: 600 }}
                 />
-                <Chip 
+                <Chip
                   icon={<TimeIcon />}
                   label={selectedResv && new Date(selectedResv.thoiGianDen).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                   size="small"
@@ -2759,11 +2828,11 @@ const Reservations = () => {
               <Button
                 variant="outlined"
                 onClick={() => setConfirmDialog({ open: false, table: null })}
-                sx={{ 
-                  borderRadius: 3, 
-                  px: 4, 
+                sx={{
+                  borderRadius: 3,
+                  px: 4,
                   py: 1.2,
-                  textTransform: 'none', 
+                  textTransform: 'none',
                   fontWeight: 700,
                   borderWidth: 2,
                   '&:hover': { borderWidth: 2 }
@@ -2777,15 +2846,15 @@ const Reservations = () => {
                 variant="contained"
                 startIcon={<CheckIcon />}
                 onClick={confirmAssign}
-                sx={{ 
-                  borderRadius: 3, 
-                  px: 4, 
+                sx={{
+                  borderRadius: 3,
+                  px: 4,
                   py: 1.2,
-                  textTransform: 'none', 
+                  textTransform: 'none',
                   fontWeight: 700,
                   background: `linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.secondaryLight} 100%)`,
                   boxShadow: COLORS.shadowSuccess,
-                  '&:hover': { 
+                  '&:hover': {
                     background: `linear-gradient(135deg, ${COLORS.secondaryLight} 0%, ${COLORS.secondary} 100%)`,
                   }
                 }}
