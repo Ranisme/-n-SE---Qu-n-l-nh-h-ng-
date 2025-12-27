@@ -201,6 +201,9 @@ const approveVoidRequest = async (id, payload, user) => {
             },
         });
 
+        // Broadcast to KDS and POS for real-time updates
+        await broadcastSnapshot().catch(() => { });
+
         return updatedRequest;
     });
 };
