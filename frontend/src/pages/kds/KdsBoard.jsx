@@ -193,12 +193,13 @@ const shakeAnimation = {
 
 // ==================== ITEM CARD COMPONENT ====================
 const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => {
+  const isVoided = item.trangThai === 'DAHUY';
   const status = STATUS_CONFIG[item.trangThai] || STATUS_CONFIG.CHOXULY;
   const urgency = getUrgencyLevel(elapsedSeconds);
   const category = getCategoryFromItem(item);
   const catConfig = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.default;
   const hasNotes = item.ghiChu || (item.tuyChon?.length > 0);
-  const isCritical = urgency.level === 'critical';
+  const isCritical = urgency.level === 'critical' && !isVoided;
 
   return (
     <motion.div
@@ -212,23 +213,26 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
         <Paper
           sx={{
             p: 2,
-            bgcolor: COLORS.bgCard,
+            bgcolor: isVoided ? alpha(COLORS.danger, 0.05) : COLORS.bgCard,
             borderRadius: 3,
-            border: `2px solid ${urgency.color}`,
-            borderLeft: `6px solid ${catConfig.color}`,
+            border: isVoided
+              ? `2px solid ${COLORS.danger}`
+              : `2px solid ${urgency.color}`,
+            borderLeft: `6px solid ${isVoided ? COLORS.danger : catConfig.color}`,
             boxShadow: isCritical
               ? `0 0 20px ${COLORS.criticalGlow}, ${COLORS.shadowMd}`
               : COLORS.shadowSm,
             transition: 'all 0.3s ease',
             position: 'relative',
             overflow: 'hidden',
+            opacity: isVoided ? 0.6 : 1,
             '&:hover': {
-              bgcolor: COLORS.bgCardHover,
+              bgcolor: isVoided ? alpha(COLORS.danger, 0.08) : COLORS.bgCardHover,
               transform: 'translateY(-2px)',
               boxShadow: COLORS.shadowMd,
             },
             // Glow effect for status
-            '&::before': status.glowColor ? {
+            '&::before': status.glowColor && !isVoided ? {
               content: '""',
               position: 'absolute',
               top: 0,
@@ -240,12 +244,30 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
             } : {},
           }}
         >
+          {/* Voided Badge */}
+          {isVoided && (
+            <Chip
+              label="ĐÃ HỦY"
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                bgcolor: COLORS.danger,
+                color: '#fff',
+                fontWeight: 800,
+                fontSize: '0.7rem',
+                zIndex: 1,
+              }}
+            />
+          )}
+
           {/* Header: Name + Timer */}
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1.5}>
             <Box sx={{ flex: 1 }}>
               <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
                 <Box sx={{
-                  color: catConfig.color,
+                  color: isVoided ? COLORS.danger : catConfig.color,
                   display: 'flex',
                   '& svg': { fontSize: 18 }
                 }}>
@@ -255,9 +277,10 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
                   variant="h6"
                   sx={{
                     fontWeight: 800,
-                    color: COLORS.textPrimary,
+                    color: isVoided ? COLORS.danger : COLORS.textPrimary,
                     fontSize: '1.1rem',
                     lineHeight: 1.2,
+                    textDecoration: isVoided ? 'line-through' : 'none',
                   }}
                 >
                   {item.monAn?.ten || item.name}
@@ -270,44 +293,47 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
                   label={`x${item.soLuong}`}
                   size="small"
                   sx={{
-                    bgcolor: alpha(catConfig.color, 0.2),
-                    color: catConfig.color,
+                    bgcolor: alpha(isVoided ? COLORS.danger : catConfig.color, 0.2),
+                    color: isVoided ? COLORS.danger : catConfig.color,
                     fontWeight: 800,
                     fontSize: '0.75rem',
                     height: 22,
+                    textDecoration: isVoided ? 'line-through' : 'none',
                   }}
                 />
               )}
             </Box>
 
             {/* Timer */}
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-              px: 1.5,
-              py: 0.5,
-              borderRadius: 2,
-              bgcolor: alpha(urgency.color, 0.15),
-              border: `1px solid ${alpha(urgency.color, 0.3)}`,
-            }}>
-              <TimerIcon sx={{ fontSize: 16, color: urgency.color }} />
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 900,
-                  color: urgency.color,
-                  fontSize: '1.2rem',
-                  fontFamily: 'monospace',
-                }}
-              >
-                {formatTime(elapsedSeconds)}
-              </Typography>
-            </Box>
+            {!isVoided && (
+              <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 2,
+                bgcolor: alpha(urgency.color, 0.15),
+                border: `1px solid ${alpha(urgency.color, 0.3)}`,
+              }}>
+                <TimerIcon sx={{ fontSize: 16, color: urgency.color }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 900,
+                    color: urgency.color,
+                    fontSize: '1.2rem',
+                    fontFamily: 'monospace',
+                  }}
+                >
+                  {formatTime(elapsedSeconds)}
+                </Typography>
+              </Box>
+            )}
           </Stack>
 
           {/* Notes Section */}
-          {hasNotes && (
+          {hasNotes && !isVoided && (
             <Box sx={{
               mb: 1.5,
               p: 1.5,
@@ -334,44 +360,59 @@ const ItemCard = ({ item, ticketId, elapsedSeconds, onStatusChange, isNew }) => 
             </Box>
           )}
 
-          {/* Status Buttons */}
-          <Stack direction="row" spacing={1}>
-            {Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'CHOXULY').map(([key, config]) => {
-              const isActive = item.trangThai === key;
-              return (
-                <Button
-                  key={key}
-                  size="medium"
-                  variant={isActive ? 'contained' : 'outlined'}
-                  startIcon={config.icon}
-                  onClick={() => onStatusChange(item.id, key)}
-                  sx={{
-                    flex: 1,
-                    py: 1,
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.8rem',
-                    bgcolor: isActive ? config.color : 'transparent',
-                    borderColor: config.color,
-                    color: isActive ? '#fff' : config.color,
-                    boxShadow: isActive ? `0 4px 12px ${alpha(config.color, 0.4)}` : 'none',
-                    '&:hover': {
-                      bgcolor: isActive ? config.color : alpha(config.color, 0.15),
+          {/* Status Buttons or Voided Message */}
+          {isVoided ? (
+            <Typography
+              variant="body2"
+              sx={{
+                textAlign: 'center',
+                color: COLORS.danger,
+                fontWeight: 700,
+                fontStyle: 'italic',
+                py: 1,
+              }}
+            >
+              Món này đã được hủy bởi quản lý - Không cần chế biến
+            </Typography>
+          ) : (
+            <Stack direction="row" spacing={1}>
+              {Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'CHOXULY').map(([key, config]) => {
+                const isActive = item.trangThai === key;
+                return (
+                  <Button
+                    key={key}
+                    size="medium"
+                    variant={isActive ? 'contained' : 'outlined'}
+                    startIcon={config.icon}
+                    onClick={() => onStatusChange(item.id, key)}
+                    sx={{
+                      flex: 1,
+                      py: 1,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      bgcolor: isActive ? config.color : 'transparent',
                       borderColor: config.color,
-                      transform: 'translateY(-1px)',
-                    },
-                    '& .MuiButton-startIcon': {
-                      marginRight: 0.5,
-                      '& svg': { fontSize: 18 }
-                    }
-                  }}
-                >
-                  {config.shortLabel}
-                </Button>
-              );
-            })}
-          </Stack>
+                      color: isActive ? '#fff' : config.color,
+                      boxShadow: isActive ? `0 4px 12px ${alpha(config.color, 0.4)}` : 'none',
+                      '&:hover': {
+                        bgcolor: isActive ? config.color : alpha(config.color, 0.15),
+                        borderColor: config.color,
+                        transform: 'translateY(-1px)',
+                      },
+                      '& .MuiButton-startIcon': {
+                        marginRight: 0.5,
+                        '& svg': { fontSize: 18 }
+                      }
+                    }}
+                  >
+                    {config.shortLabel}
+                  </Button>
+                );
+              })}
+            </Stack>
+          )}
         </Paper>
       </motion.div>
     </motion.div>
